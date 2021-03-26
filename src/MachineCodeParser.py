@@ -4,20 +4,20 @@ import sys
 PC_INST={} # dictionary with key as PC, value as instruction
 
 # function to parse the instructions
+# comments start with #
+# comment feature is just for ease to paste code from venus
 def parser(FileName):
     instructions=open(FileName,'r') # file containing the instructions
     # format-
-    # PC INST -> in hex format, other formats not supported as of now
+    # PC INST -> in hex format
     line_number=0
     for line in instructions:
         line_number=line_number+1
         line=line.strip() # removing unnecessary whitespaces \t, \n etc
-        if line=='' or line[0]=='#': # ignores empty lines and commented lines. Comment in the same line with a command not supported!
+        if line=='' or line[0]=='#': # ignores empty lines and commented lines.
             continue
-        #print(f"\'{line}\'")
-        line=line.split() # splitting the string into PC and INST word
-        # PC_INST[line[0]]=line[1] # this was tried to store PC and instructions as strings in the dict. May be required in the future.
-        #print(line)
+        line=line.split('#')[0] # splitting the string into PC and INST word and ignoring comments
+        line=line.strip().split()
         if len(line)!=2: # line should contain exactly 2 items.
             print(f"Line {line_number}: Invalid syntax")
             sys.exit()
