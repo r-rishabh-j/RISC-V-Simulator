@@ -27,6 +27,8 @@ class ByteAddressableMemory:
     def ReadMemory(self):
 
     def WriteMemory(self, base_address, byte_size, RMin):   # writes data in RMin to address given by base_address
+        self.MAR = base_address # MAR contains the base address to be written to
+        self.MDR = RMin # MDR contains data to be written at address given by MAR
         for _byte in range(byte_size):  # loop over number of bytes to be written, data is written in little endian format
             byte = RMin&0x000000ff  # extract LSB
             if base_address+_byte < self.MIN_SIGNED_NUM or base_address > self.MAX_SIGNED_NUM: # chef if the address lies in range of data segment or not
