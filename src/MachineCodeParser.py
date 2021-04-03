@@ -38,6 +38,12 @@ def parser(FileName):
             except:
                 print(f"Line {line_number}: Invalid instruction format")
                 sys.exit()
+        if(line[0]>0xffffffff):
+            print(f"Line {line_number}: PC out of range")
+            sys.exit()
+        if(line[1]>0xffffffff):
+            print(f"Line {line_number}: Instruction word out of range")
+            sys.exit()
         PC_INST[line[0]]=line[1]
         #print(line)
     
