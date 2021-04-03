@@ -38,7 +38,19 @@ class ByteAddressableMemory:
 
     def AccessMemory(self,control):
 
-    def ReadMemory(self):
+    def ReadMemory(self, base_address, byte_size):
+        self.MAR = base_address
+        temp_mdr = 0
+        for _byte in range(
+                byte_size):  # different number of bytes need to be accessed based on the command, ld , lw etc.
+            if base_address + _byte < self.MIN_SIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
+                print("Address is not in range of data segment")
+                sys.exit()
+            temp_data = self.memory.get(base_address + _byte, 0)  # accessing the data at BaseAddress + Byte
+            for shift in range(_byte):  # for shifting left because of the little endian notation
+                temp_data = temp_data << 8  # shifting by a byte or 8 bits
+            temp_mdr + temp_data  # writing the shifted data to temp_mdr (note that if we are at base_address + 3 , then the data is shifted 3 times 8 bits at a time and then added to temp_mdr)
+        self.MDR = temp_mdr  # writing the data extracted from memory to MDR
 
     def WriteMemory(self, base_address, byte_size, RMin):   # writes data in RMin to address given by base_address
         self.MAR = base_address # MAR contains the base address to be written to
