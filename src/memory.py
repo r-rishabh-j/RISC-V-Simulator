@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 # code for memory module. We will most probably be using hashes for memory
+import sys
+
 class ByteAddressableMemory:
     MAX_SIGNED_NUM=0x7fffffff
     MIN_SIGNED_NUM=0x10000000
@@ -24,7 +26,19 @@ class ByteAddressableMemory:
 
     def ReadMemory(self):
 
-    def WriteMemory(self):
+    def WriteMemory(self, base_address, byte_size, RMin):   # writes data in RMin to address given by base_address
+        self.MAR = base_address # MAR contains the base address to be written to
+        self.MDR = RMin # MDR contains data to be written at address given by MAR
+        for _byte in range(byte_size):  # loop over number of bytes to be written, data is written in little endian format
+            byte = RMin&0x000000ff  # extract LSB
+            if base_address+_byte < self.MIN_SIGNED_NUM or base_address+_byte > self.MAX_SIGNED_NUM: # check if the address lies in range of data segment or not
+                print("Address is not in range of data segment")
+                sys.exit()
+            self.memory[base_address+_byte] = byte
+            print("Address: "+hex(base_address+_byte) + " Data: " + hex(byte))
+            RMin = RMin>>8 # shift right by 8 bits to set second last byte as LSB
+        print("Memory write successful")
+
 # a=ByteAddressableMemory()
 # a.init_memory({0x4 :0x5a583,0x8 :0x300293})
 # for key in a.memory:
