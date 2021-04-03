@@ -31,12 +31,13 @@ class ByteAddressableMemory:
         self.MDR = RMin # MDR contains data to be written at address given by MAR
         for _byte in range(byte_size):  # loop over number of bytes to be written, data is written in little endian format
             byte = RMin&0x000000ff  # extract LSB
-            if base_address+_byte < self.MIN_SIGNED_NUM or base_address > self.MAX_SIGNED_NUM: # chef if the address lies in range of data segment or not
+            if base_address+_byte < self.MIN_SIGNED_NUM or base_address+_byte > self.MAX_SIGNED_NUM: # check if the address lies in range of data segment or not
                 print("Address is not in range of data segment")
                 sys.exit()
             self.memory[base_address+_byte] = byte
             print("Address: "+hex(base_address+byte) + " Data: " + hex(byte))
             RMin = RMin>>8 # shift right by 8 bits to set second last byte as LSB
+        print("Memory write successful")
 
 # a=ByteAddressableMemory()
 # a.init_memory({0x4 :0x5a583,0x8 :0x300293})
