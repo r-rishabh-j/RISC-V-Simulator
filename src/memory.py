@@ -35,7 +35,7 @@ class ByteAddressableMemory:
                 print("Address is not in range of data segment")
                 sys.exit()
             self.memory[base_address+_byte] = byte
-            print("Address: "+hex(base_address+byte) + " Data: " + hex(byte))
+            print("Address: "+hex(base_address+_byte) + " Data: " + hex(byte))
             RMin = RMin>>8 # shift right by 8 bits to set second last byte as LSB
         print("Memory write successful")
 
