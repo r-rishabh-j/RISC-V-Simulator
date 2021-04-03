@@ -7,10 +7,11 @@ class ByteAddressableMemory:
     MIN_SIGNED_NUM=0x10000000
     MAX_UNSIGNED_NUM=0xffffffff
     MIN_UNSIGNED_NUM=0x00000000
+    MAX_PC=0x7ffffffc
 
     def __init__(self):
         self.memory=dict() # key as address, value as memory content. Memory byte addressable! Thus, every element stores a byte
-        self.MAR=0
+        self.MAR=0 # Memory address register
         self.MDR=0
         self.IRout=0
 
@@ -21,6 +22,19 @@ class ByteAddressableMemory:
                 self.memory[addr+_byte]=byte
                 PC_INST[addr]=PC_INST[addr]>>8 # bitwise right shift
         print("Program loaded to memory successfully")
+
+    def LoadInstruction(self,PC):
+        if PC%4!=0: # PC must always be a multiple of 4, word alignment!
+            print("Instruction not word aligned")
+            sys.exit()
+        elif PC<self.MIN_UNSIGNED_NUM or PC>self.MAX_PC: # PC should be in a valid range
+            print("PC out of range!!")
+        instruction=0 #stores instruction
+        for _byte in range(4):
+            instruction+=self.memory.get(PC+_byte,0)*(256**_byte)
+        self.IRout=instruction
+        self.MDR=instruction
+        return instruction
 
     def AccessMemory(self,control):
 
