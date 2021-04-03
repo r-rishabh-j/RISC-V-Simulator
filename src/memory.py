@@ -36,7 +36,21 @@ class ByteAddressableMemory:
         self.MDR=instruction
         return instruction
 
-    def AccessMemory(self,control):
+    # If MEM_read==true, ReadMemory is called.
+    # If MEM_write==true, then WriteMemory is called.
+    # Else, no action
+    def AccessMemory(self, MEM_read, MEM_write, base_address, byte_size, RMin):
+        if MEM_read==1 and MEM_write==0:
+            self.ReadMemory(base_address,byte_size)
+        elif MEM_write==1 and MEM_read==0:
+            self.WriteMemory(base_address,byte_size,RMin)
+        elif MEM_read==0 and MEM_write==0:
+            self.MDR=0
+        elif MEM_read==1 and MEM_write==1: # may change in pipelining
+            print("Invalid control signal received")
+            sys.exit()
+        return self.MDR
+
 
     def ReadMemory(self, base_address, byte_size):
         self.MAR = base_address
@@ -49,7 +63,7 @@ class ByteAddressableMemory:
             temp_data = self.memory.get(base_address + _byte, 0)  # accessing the data at BaseAddress + Byte
             for shift in range(_byte):  # for shifting left because of the little endian notation
                 temp_data = temp_data << 8  # shifting by a byte or 8 bits
-            temp_mdr + temp_data  # writing the shifted data to temp_mdr (note that if we are at base_address + 3 , then the data is shifted 3 times 8 bits at a time and then added to temp_mdr)
+            temp_mdr += temp_data  # writing the shifted data to temp_mdr (note that if we are at base_address + 3 , then the data is shifted 3 times 8 bits at a time and then added to temp_mdr)
         self.MDR = temp_mdr  # writing the data extracted from memory to MDR
 
     def WriteMemory(self, base_address, byte_size, RMin):   # writes data in RMin to address given by base_address
