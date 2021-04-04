@@ -82,27 +82,28 @@ class ControlModule:
 class DecodeModule:
 
     def __init__(self):
-        self.opcode = 0
-        self.funct3 = 0
-        self.funct7 = 0
-        self.rd = 0
-        self.rs1 = 0
-        self.rs2 = 0
-        self.imm = 0
+		self.opcode = 0
+		self.funct3 = 0
+		self.funct7 = 0
+		self.rd = 0
+		self.rs1 = 0
+		self.rs2 = 0
+		self.imm = 0
 
-    def decodeI(self, machine_code):
+    def decodeI(self,machine_code):
         inst_list = []
         machine_code = machine_code >> 7
-        inst_list.append((machine_code & 0x1f));    #rd
+        inst_list.append((machine_code & 0x1f))    #rd
         machine_code = machine_code >> 5
-        inst_list.append((machine_code & 0x3));     #funct3
+        inst_list.append((machine_code & 0x3))     #funct3
         machine_code = machine_code >> 3
-        inst_list.append((machine_code & 0x1f));    #rs1
+        inst_list.append((machine_code & 0x1f))    #rs1
         machine_code = machine_code >> 5
         inst_list.append((-(machine_code & 0x800) | (machine_code & 0x7ff)))    #imm(signed)
         #print(inst_list)
-        return inst_list;
+        return inst_list
 
+    
     def decodeS(self,machine_code):
         inst_list = []
         machine_code = machine_code >> 7
@@ -119,6 +120,7 @@ class DecodeModule:
         inst_list.append((-(temp1 & 0x800) | (temp1 & 0x7ff)))    #imm(signed)
         return inst_list
 
+    
     def decodeU(self,machine_code):
         inst_list = []
         machine_code = machine_code>> 7
@@ -130,18 +132,18 @@ class DecodeModule:
     def decodeR(self,machine_code):
         inst_list = []
         machine_code = machine_code >> 7
-        inst_list.append((machine_code& 0x1f));    #rd
+        inst_list.append((machine_code& 0x1f))    #rd
         machine_code = machine_code >> 5
-        inst_list.append((machine_code & 0x3));     #funct3
+        inst_list.append((machine_code & 0x3))    #funct3
         machine_code = machine_code >> 3
-        inst_list.append((machine_code & 0x1f));    #rs1
+        inst_list.append((machine_code & 0x1f))    #rs1
         machine_code = machine_code >> 5
-        inst_list.append((machine_code & 0x1f));    #rs2
+        inst_list.append((machine_code & 0x1f))    #rs2
         machine_code= machine_code >> 5
-        inst_list.append((machine_code & 0x7f));    #funct7
+        inst_list.append((machine_code & 0x7f))    #funct7
         return inst_list
 
-    def decodeSB(self, machine_code):
+    def decodeSB(self,machine_code):
         inst_list = []
         func3=machine_code & 0x000007000
         func3=func3>>12
@@ -168,7 +170,7 @@ class DecodeModule:
         inst_list.append(im)
         return inst_list
 
-    def decodeUJ(self, machine_code):
+    def decodeUJ(self,machine_code):
         inst_list = []
         rdd=machine_code & 0x00000F80
         rdd=rdd>>7
@@ -190,7 +192,7 @@ class DecodeModule:
         return inst_list
 
     def decode(self,hex_string):
-        machine_code = hex_string;
+        machine_code = hex_string
         self.opcode = (machine_code& 0x7f)
         #print(opcode, temp)
         if self.opcode in I:
@@ -201,11 +203,11 @@ class DecodeModule:
             self.imm = inst_list[3]
             #print(PC, "I type", opcode, funct3, rs1, rd, imm)
         elif self.opcode in S:
-            self.inst_list = self.decodeS(machine_code)
-            self.funct3 = self.inst_list[0]
-            self.rs1 = self.inst_list[1]
-            self.rs2 = self.inst_list[2]
-            self.imm = self.inst_list[3]
+            inst_list = self.decodeS(machine_code)
+            self.funct3 = inst_list[0]
+            self.rs1 = inst_list[1]
+            self.rs2 = inst_list[2]
+            self.imm = inst_list[3]
             #print(PC, "S type", opcode, funct3, rs1, rs2, imm)
         elif self.opcode in U:
             inst_list = self.decodeU(machine_code)
