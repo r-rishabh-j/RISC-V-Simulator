@@ -90,7 +90,7 @@ class DecodeModule:
 		self.rs2 = 0
 		self.imm = 0
 
-    def decodeI(machine_code):
+    def decodeI(self,machine_code):
         inst_list = []
         machine_code = machine_code >> 7
         inst_list.append((machine_code & 0x1f));    #rd
@@ -103,7 +103,7 @@ class DecodeModule:
         #print(inst_list)
         return inst_list;
     
-    def decodeS(machine_code):
+    def decodeS(self,machine_code):
         inst_list = []
         machine_code = machine_code >> 7
         temp1 = machine_code & 0x1f     #building the register in temp1
@@ -119,7 +119,7 @@ class DecodeModule:
         inst_list.append((-(temp1 & 0x800) | (temp1 & 0x7ff)))    #imm(signed)
         return inst_list
     
-    def decodeU(machine_code):
+    def decodeU(self,machine_code):
         inst_list = []
         machine_code = machine_code>> 7
         inst_list.append((machine_code & 0x1f))     #rd
@@ -127,7 +127,7 @@ class DecodeModule:
         inst_list.append((-(machine_code & 0x80000) | (machine_code & 0x7ffff)))    #upper-imm(signed)
         return inst_list
 
-    def decodeR(machine_code):
+    def decodeR(self,machine_code):
         inst_list = []
         machine_code = machine_code >> 7
         inst_list.append((machine_code& 0x1f));    #rd
@@ -141,7 +141,7 @@ class DecodeModule:
         inst_list.append((machine_code & 0x7f));    #funct7
         return inst_list
 
-    def decodeSB(machine_code):
+    def decodeSB(self,machine_code):
         inst_list = []
         func3=machine_code & 0x000007000  
         func3=func3>>12
@@ -168,7 +168,7 @@ class DecodeModule:
         inst_list.append(im)
         return inst_list
 
-    def decodeUJ(machine_code):
+    def decodeUJ(self,machine_code):
         inst_list = []
         rdd=machine_code & 0x00000F80 
         rdd=rdd>>7
