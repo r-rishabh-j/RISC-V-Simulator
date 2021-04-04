@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # this file contains code for the simulator. Contains the ALU
-from registers import registers as reg # contains 32 GP registers and PC,IR
-from memory import ByteAddressableMemory# processor memory interface
+from Registers import Registers as reg # contains 32 GP registers and PC,IR
+from Memory import ByteAddressableMemory# processor memory interface
 from ControlCircuit import ControlModule # generates control signals
 import ALU
 
@@ -17,13 +17,13 @@ MIN_UNSIGNED_NUM=0x00000000
 # reg[3]=0x10000000 # global pointer gp
 # reg[4]=0x00000000 # thread pointer tp
 # reg[5]=0x00000000 # frame pointer fp
-register=reg() # register object
+registers=reg() # register object
 control_module=ControlModule()
 
 def fetch():
 
 def decode():
-    control_module.decoder.decode(register.IR)
+    control_module.decoder.decode(registers.IR)
 def execute(): # ALU
 
 def mem_access():
