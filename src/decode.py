@@ -141,7 +141,7 @@ def decode(hex_string):
             #print("Done decoding all instructions!")
             #break
         #PC = int(instruction[0], 16)
-        #temp = int(hex_string, 16)
+        temp = hex_string;
         opcode = (temp & 0x7f)
         #print(opcode, temp)
         if opcode in I:
