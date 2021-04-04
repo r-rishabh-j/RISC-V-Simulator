@@ -81,16 +81,15 @@ class ControlModule:
         self.imm = imm
 
 class DecodeModule:
-
     def __init__(self):
-		self.opcode = 0
-		self.funct3 = 0
-		self.funct7 = 0
-		self.rd = 0
-		self.rs1 = 0
-		self.rs2 = 0
-		self.imm = 0
-
+        self.opcode = 0
+        self.funct3 = 0
+        self.funct7 = 0
+        self.rd = 0
+        self.rs1 = 0
+        self.rs2 = 0
+        self.imm = 0
+    
     def decodeI(self,machine_code):
         inst_list = []
         machine_code = machine_code >> 7
