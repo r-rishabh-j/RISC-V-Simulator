@@ -8,16 +8,16 @@ import math
 #lh 3 1
 #lw 3 2
 #jalr 103 0
-I = [19, 3, 103]
+I = [19, 3, 103] #opcodes for I
 
 #sb 35 0
 #sh 35 1
 #sw 35 2
-S = [35]
+S = [35] #opcode for S
 
 #auipc 23
 #lui 55
-U = [23, 55]
+U = [23, 55]  #opcodes for U
 
 #add 51 0 0
 #and 51 7 0
@@ -31,9 +31,9 @@ U = [23, 55]
 #mul 51 0 1
 #div 51 4 1
 #rem 51 6 1
-R = [51]
-SB = [99]
-UJ = [111]
+R = [51]  #opcode for R
+SB = [99]  #opcode for SB
+UJ = [111] #opcode for UJ
 
 def decodeI(temp):
     inst_list = []
@@ -88,49 +88,49 @@ def decodeR(temp):
     
 def decodeSB(n):
     inst_list = []
-    func3=n & 0x000007000
+    func3=n & 0x000007000  
     func3=func3>>12
-    inst_list.append(func3)
+    inst_list.append(func3) #funct3
     r1=n & 0x000F8000
     r1=r1>>15
-    inst_list.append(r1)
+    inst_list.append(r1)  #rs1
     r2=n & 0x01F00000
     r2=r2>>20
-    inst_list.append(r2)
+    inst_list.append(r2)   #rs2
     temp=n>>7
-    temp11=temp & 0x01
+    temp11=temp & 0x01   #imm[11]
     temp11=temp11<<11
     temp1=n>>8
-    temp1=temp1 & 0x0F
+    temp1=temp1 & 0x0F  #imm[4:1]
     temp1=temp1<<1
     temp5=n>>25
-    temp5=temp5 & 0x03F
+    temp5=temp5 & 0x03F  #imm[10:5]
     temp5=temp5<<5
     temp12=n>>31
-    temp12=temp12<<12
-    immf=temp12+temp11+temp5+temp1
-    im=(-(immf & 0x1000)| (immf& 0x0FFF))
+    temp12=temp12<<12   #imm[12]
+    immf=temp12+temp11+temp5+temp1  #finding final imm
+    im=(-(immf & 0x1000)| (immf& 0x0FFF))  #making it signed
     inst_list.append(im)
     return inst_list
     
 def decodeUJ(n):
     inst_list = []
-    rdd=n & 0x00000F80
+    rdd=n & 0x00000F80 
     rdd=rdd>>7
-    inst_list.append(rdd)
+    inst_list.append(rdd)   #rd
     temp12=n>>12
     temp12=temp12 & 0x0FF
-    temp12=temp12<<12
+    temp12=temp12<<12  #imm[19:12]
     temp11=n>>20
     temp11=temp11 & 0x01
-    temp11=temp11<<11
+    temp11=temp11<<11  #imm[11]
     temp1=n>>21
     temp1=temp1 & 0x03FF
-    temp1=temp1<<1
+    temp1=temp1<<1   #imm[10:1]
     temp20=n>>31
-    temp20=temp20<<20
-    immf=temp20+temp12+temp11+temp1
-    im=(-(immf & 0x100000)|(immf & 0x0FFFFF));
+    temp20=temp20<<20  #immp[20]
+    immf=temp20+temp12+temp11+temp1  #final imm
+    im=(-(immf & 0x100000)|(immf & 0x0FFFFF));  #making it signed
     inst_list.append(im)
     return inst_list
     
