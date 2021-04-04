@@ -48,6 +48,7 @@ class ControlModule:
         self.rs1 = 0
         self.rs2 = 0
         self.imm = 0
+        self.decoder=DecodeModule()
 
     def getOpcode(self):
         return self.opcode
@@ -191,7 +192,7 @@ class DecodeModule:
         inst_list.append(im)
         return inst_list
 
-    def decode(self,hex_string):
+    def decode(self,hex_string): # hex_string==IR
         machine_code = hex_string
         self.opcode = (machine_code& 0x7f)
         #print(opcode, temp)
