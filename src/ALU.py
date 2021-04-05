@@ -4,103 +4,171 @@ MAX_SIGNED_NUM = 0x7fffffff
 MIN_SIGNED_NUM = -0x80000000
 MAX_UNSIGNED_NUM = 0xffffffff
 MIN_UNSIGNED_NUM = 0x00000000
+MSmask32=0x80000000
+bit_0_to_31_mask=0x7fffffff
 
 
 class ArithmeticLogicUnit:
     def __init__(self):
         self.output32 = 0
         self.outputBool = False  # for branch instructions
-        self.input1 = 0
-        self.input2 = 0
+        self.input1 = 0 # rs1
+        self.input2 = 0 # rs2 or imm
 
     def ALUexecute(self, control, inp1, inp2):
+        self.input1=inp1
+        self.input2=inp2
+        
+    def add(self): # add, addi, lb, lw, lh, jalr, sb, sw, sh
+        add=self.input1+self.input2
+        add=(-(add&MSmask32)+(add&bit_0_to_31_mask)) # truncated and signed extended
+        self.output32=add
+        self.outputBool=True
+        print(f"ALU- added {hex(self.input1)} and {self.input2}")
+        return add
 
+    def subtract(self): # sub
+        sub=self.input1-self.input2
+        sub=(-(sub&MSmask32)+(sub&bit_0_to_31_mask)) # truncated and signed extended
+        self.output32=sub
+        self.outputBool=True
+        print(f"ALU- Subtracted {hex(self.input2)} from {self.input1}")
+        return sub
+    
+    def AUIPC(self): # input1=PC, input2=imm20
+        op1=self.input2&0xfffff
+        op1<<=12
+        out=self.input1+op1
+        out=(-(out&MSmask32)+(out&bit_0_to_31_mask))
+        self.output32=out
+        self.outputBool=True
+        return out
 
-    def add(self):
-        temp = (self.input1 + self.input2) & 0xffffffff
-        if temp != self.input1 + self.input2:
-            raise Exception("Overflow error")
-        else:
-            self.output32 = temp
-        print("Addition successful")
+    def LUI(self): # input1=rs1, input2=imm20
+        op1=self.input2&0xfffff
+        op1<<=12
+        out=self.input1+op1
+        out=(-(out&MSmask32)+(out&bit_0_to_31_mask))
+        self.output32=out
+        self.outputBool=True
+        return out
+        
+    def multiply(self): # mul
+        mult=self.input1*self.input2
+        mult=(-(mult&MSmask32)+(mult&bit_0_to_31_mask)) # truncated and signed extended
+        self.output32=mult
+        self.outputBool=True
+        print(f"ALU- multiplied {hex(self.input1)} and {self.input2}")
+        return mult
 
-    def subtract(self):
-        temp = (self.input1 - self.input2) & 0xffffffff
-        if temp != self.input1 - self.input2:
-            raise Exception("Overflow error")
-        else:
-            self.output32 = temp
-        if temp == 0:
-            self.outputBool = True
-        print("Subtraction successful")
-
-    def multiply(self):
-        temp = (self.input1 * self.input2) & 0xffffffff
-        if temp != self.input1 * self.input2:
-            raise Exception("Overflow error")
-        else:
-            self.output32 = temp
-        print("Multiplication successful")
-
-    def division(self):
+    def division(self): # div
         if self.input2 == 0:
-            raise Exception("Second argument cannot be 0")
-        temp = (self.input1 / self.input2) & 0xffffffff
-        if temp != self.input1 / self.input2:
-            raise Exception("Overflow error")
-        else:
-            self.output32 = temp
-        print("Division successful")
+            raise Exception("Divide by 0 error")
+        div=self.input1//self.input2 # floor division
+        div=(-(div&MSmask32)+(div&bit_0_to_31_mask)) # truncated and signed extended
+        self.output32=div
+        self.outputBool=True
+        print(f"ALU- Divided {hex(self.input1)} by {self.input2}")
+        return div
 
-    def remainder(self):
+    def remainder(self): # rem
         if self.input2 == 0:
-            raise Exception("Second argument cannot be 0")
-        temp = (self.input1 % self.input2) & 0xffffffff
-        if temp != self.input1 % self.input2:
-            raise Exception("Overflow error")
-        else:
-            self.output32 = temp
-        print("Modulus successful")
+            raise Exception("Divide by 0 error")
+        mod=self.input1%self.input2 # floor division
+        mod=(-(mod&MSmask32)+(mod&bit_0_to_31_mask)) # truncated and signed extended
+        self.output32=mod
+        self.outputBool=True
+        print(f"ALU- Modulo of {hex(self.input1)} by {self.input2}")
+        return mod
 
-    def rightShift(self):
+    def rightShiftlogical(self): # srl
+        temp=self.input1&0xffffffff
+        temp = (temp >> self.input2)
+        temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask)) # truncated and signed extended
+        self.output32=temp
+        self.outputBool=True
+        print(f"ALU- Logical right shift {self.input1} by {self.input2}")
+        return temp
 
-    def rightShiftlogical(self):
-        temp = (self.input1 >> self.input2) & 0xffffffff
-        if temp != self.input1 >> self.input2:
-            raise Exception("Overflow error")
-        else:
-            self.output32 = temp
-        print("Logical right shift successful successful")
+    def rightShiftarithmetic(self): # sra
+        temp = (self.input1 >> self.input2)
+        temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask)) # truncated and signed extended
+        self.output32=temp
+        self.outputBool=True
+        print(f"ALU- Arithmetic right shift {self.input1} by {self.input2}")
+        return temp
 
-    def rightShiftarithmetic(self):
-        if self.input1 & 2 ** (32 - 1) != 0:  # MSB is 1, i.e. x is negative
-            filler = int('1' * self.input2 + '0' * (32 - self.input2), 2)
-            self.output32 = (self.input1 >> self.input2) | filler  # fill in 0's with 1's
-        else:
-            self.output32 = self.input1 >> self.input2
-        print("Arithmetic right shift successful")
-
-    def leftShift(self):
+    def leftShift(self): #sll
         temp = (self.input1 << self.input2) & 0xffffffff
-        if temp != self.input1 >> self.input2:
-            raise Exception("Overflow error")
-        else:
-            self.output32 = temp
-        print("Left shift successful successful")
+        temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask)) # truncated and signed extended
+        self.output32=temp
+        self.outputBool=True
+        print(f"ALU- Leftshift {self.input1} by {self.input2}")
+        return temp
 
-    def bitwiseAND(self):
+    def bitwiseAND(self): # and, andi
         temp = (self.input1 & self.input2)
-        self.output32 = temp
-        print("And successful")
+        temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask))
+        self.output32=temp
+        self.outputBool=True
+        print(f"ALU- Bitwise AND {self.input1}, {self.input2}l")
+        return temp
 
-    def bitwiseXOR(self):
+    def bitwiseXOR(self): #  xor
         temp = (self.input1 ^ self.input2)
+        temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask))
         self.output32 = temp
-        print("XOR successful")
+        self.outputBool=True
+        print(f"ALU- Bitwise XOR {self.input1}, {self.input2}l")
+        return temp
 
-    def bitwiseOR(self):
+    def bitwiseOR(self): # or, ori
         temp = (self.input1 | self.input2)
+        temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask))
         self.output32 = temp
-        print("OR successful")
+        self.outputBool=True
+        print(f"ALU- Bitwise OR {self.input1}, {self.input2}l")
+        return temp
+    
+    def areEqual(self): # beq
+        if(self.input1==self.input2):
+            self.outputBool=True
+            self.output32=1
+            return True
+        else:
+            self.outputBool=False
+            self.output32=0
+            return False
+
+    def areNotEqual(self): # bne
+        if(self.input1!=self.input2):
+            self.outputBool=True
+            self.output32=1
+            return True
+        else:
+            self.outputBool=False
+            self.output32=0
+            return False
+    
+    def GreaterThanEqualTo(self): # rs1>=rs1, bge
+        if(self.input1>=self.input2):
+            self.outputBool=True
+            self.output32=1
+            return True
+        else:
+            self.outputBool=False
+            self.output32=0
+            return False
+
+    def LessThan(self): # rs1<rs1, blt
+        if(self.input1<self.input2):
+            self.outputBool=True
+            self.output32=1
+            return True
+        else:
+            self.outputBool=False
+            self.output32=0
+            return False
+
 
 # comparision operation TBD
