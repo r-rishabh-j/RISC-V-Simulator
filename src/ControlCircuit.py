@@ -197,6 +197,8 @@ class DecodeModule:
         #print(opcode, temp)
         if self.opcode in I:
             inst_list = self.decodeI(machine_code)
+            self.funct7 = 0
+            self.rs1 = 0
             self.rd = inst_list[0]
             self.funct3 = inst_list[1]
             self.rs1 = inst_list[2]
@@ -204,6 +206,8 @@ class DecodeModule:
             #print(PC, "I type", opcode, funct3, rs1, rd, imm)
         elif self.opcode in S:
             inst_list = self.decodeS(machine_code)
+            self.funct7 = 0
+            self.rd = 0
             self.funct3 = inst_list[0]
             self.rs1 = inst_list[1]
             self.rs2 = inst_list[2]
@@ -211,11 +215,16 @@ class DecodeModule:
             #print(PC, "S type", opcode, funct3, rs1, rs2, imm)
         elif self.opcode in U:
             inst_list = self.decodeU(machine_code)
+            self.funct3 = 0
+            self.funct7 = 0
+            self.rs1 = 0
+            self.rs2 = 0
             self.rd = inst_list[0]
             self.imm = inst_list[1]
             #print(PC, "U type", opcode, rd, imm)
         elif self.opcode in R:
             inst_list = self.decodeR(machine_code)
+            self.imm = 0
             self.rd = inst_list[0]
             self.funct3 = inst_list[1]
             self.rs1 = inst_list[2]
@@ -224,6 +233,8 @@ class DecodeModule:
             #print(PC, "R type", opcode, funct3, funct7, rs1, rs2, rd)
         elif self.opcode in SB:
             inst_list = self.decodeSB(machine_code)
+            self.funct7 = 0
+            self.rd = 0
             self.funct3 = inst_list[0]
             self.rs1 = inst_list[1]
             self.rs2 = inst_list[2]
@@ -231,6 +242,10 @@ class DecodeModule:
             #print(PC, "SB type", opcode, funct3, rs1, rs2, imm)
         elif self.opcode in UJ:
             inst_list = self.decodeUJ(machine_code)
+            self.funct3 = 0
+            self.funct7 = 0
+            self.rs1 = 0
+            self.rs2 = 0
             self.rd = inst_list[0]
             self.imm = inst_list[1]
             #print(PC, "UJ type", opcode, rd, imm)
