@@ -13,8 +13,15 @@ class InstructionAddressGenerator:
         self.temppc=0 # temp pc which stores PC+4
         self.IAGimmediate=0 # branch offset , this is the immediate value
 
+
     def PcTempUpdate(self):     # this is the function for 1st step which will store the value of PC+4 in register temppc
         self.temppc=self.pc+4
+
+
+    def Pcset(self,ra,MuxPCSelect):  # to chose the output of MuxPc , RA or PC itself , after this the offset would be added In func PcUpdate
+        if MuxPCSelect==1:             # if this control signal is 1 then put the value of ra (which would be given by register in jalr instruction ) would be given to PC
+            self.pc=ra
+
 
     def SetBranchOffset(self,boffset):      # this will take as input the immediate value which will be supplied after the decode step
         self.IAGimmediate=boffset
