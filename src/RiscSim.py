@@ -25,7 +25,7 @@ control_module=ControlModule()
 def fetch():
 
 def decode():
-    control_module.decoder.decode(registers.ReadIR(True))
+    control_module.decode(registers.ReadIR(True))
 def execute(): # ALU
 
 def mem_access():

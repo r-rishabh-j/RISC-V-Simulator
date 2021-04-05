@@ -1,4 +1,4 @@
-ALUcontrolgenerator(opcode, funct3, funct7):
+def ALUcontrolgenerator(opcode, funct3, funct7):
     if opcode == 51:
         if funct3 == 0:
             if funct7 == 0:
