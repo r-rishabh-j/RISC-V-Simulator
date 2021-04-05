@@ -28,6 +28,5 @@ class InstructionAddressGenerator:
                 print("Address is not in range of data segment")
                 sys.exit()
                 
-
 # at the end of this , if all functions are called sequentially we will have the required value of PC in the register PC
 # here using this function at the end the value of temppc is also supplied to MuxY , which is the step before write back.(only used in case of JAL like instructions)
