@@ -60,6 +60,7 @@ class ControlModule:
         self.MuxPCSelect=0 # to IAG
         self.MuxY_select=0 # present at output of ALU
         self.branch=0 # signal to enforce checking output of ALU since branches are conditional
+        self.jump=0 # for jump signals(see doc)
         # 0- RZ
         # 1- MDR
         # 2- Return address from PC # PC has to be incremented in fetch stage itself
