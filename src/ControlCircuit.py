@@ -47,7 +47,7 @@ class ControlModule:
         self.rd = 0
         self.rs1 = 0
         self.rs2 = 0
-        self.imm = 0
+        self.imm = 0 # for imm12, imm5, imm20, imm13
         self.MemRead=False
         self.MemWrite=False
         self.ALUop=0
@@ -59,6 +59,7 @@ class ControlModule:
         self.MuxINCSelect=0 # to IAG
         self.MuxPCSelect=0 # to IAG
         self.MuxY_select=0 # present at output of ALU
+        self.branch=0 # signal to enforce checking output of ALU since branches are conditional
         # 0- RZ
         # 1- MDR
         # 2- Return address from PC # PC has to be incremented in fetch stage itself
