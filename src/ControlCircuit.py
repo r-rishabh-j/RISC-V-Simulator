@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 # generates control signals for the ALU and muxes 
 import math
-import sys
 
 # addi 19 0
 # andi 19 7
@@ -61,13 +60,14 @@ class ControlModule:
         # self.BytesToWrite = 0  # for the memory
         self.BytesToAccess=0 # memory access
         self.MuxINCSelect = 0  # to IAG, 0 for 4(sequential next), 1 for branch offset(imm)
-        self.MuxPCSelect = 0  # to IAG, 0 for ra and 1 for normal PC
+        self.MuxPCSelect = 1  # to IAG, 0 for ra and 1 for normal PC
         self.MuxYSelect = 0  # present at output of ALU
         self.MuxAselect=0
         self.branch = 0  # signal to enforce checking output of ALU since branches are conditional
         self.jump = 0  # for jump signals(see doc)
         self.MuxBSelect=0  # present at 2nd input of ALU
         self.MuxASelect = 0
+        self.terminate=0
         # 0- RZ
         # 1- MDR
         # 2- Return address from PC # PC has to be incremented in fetch stage itself
@@ -77,8 +77,16 @@ class ControlModule:
         # self.MuxMDRSelect  # present at output of memory
         # self.decoder=DecodeModule()
 
-    def controlStateUpdate(self): # for stage dependant control signals
-        a=1
+    def controlStateUpdate(self, stage): # for stage dependant control signals
+        if stage==0:
+            self.IRwrite=1
+        else:
+            self.IRwrite=0
+        if stage==2:
+            self.PCwrite=1
+        else:
+            self.PCwrite=0
+
     def ControlSignalGenerator(self):
         if self.opcode == 51:  #R-type
             self.ALUOp = 1  #ALU usage required
@@ -235,12 +243,16 @@ class ControlModule:
             self.MemRead = False
             self.MemWrite = False
             #MuxMASelect = 1     #PC send to MAR in step1
-        
+
     def decode(self, IR):
         machine_code = IR
         self.opcode = (machine_code & 0x7f)
         # print(opcode, temp)
-        if self.opcode in I:
+        if self.opcode == 17:
+            print("Program Terminated Successfully")
+            self.terminate=1
+            return
+        elif self.opcode in I:
             inst_list = self.decodeI(machine_code)
             self.funct7 = 0
             self.rs1 = 0
@@ -300,12 +312,9 @@ class ControlModule:
             self.imm = inst_list[1]
             # print(PC, "UJ type", opcode, rd, imm)
             #self.Interpret_UJ()
-        elif self.opcode == 17:
-            sys.exit("Program Terminated Successfully.")
-
+            # sys.exit("Program Terminated Successfully.")
         else:
             raise Exception("Not an instruction")
-        
         # generate control signals for ALU and other modules
         self.ControlSignalGenerator()
         self.ALUcontrol = self.ALUcontrolgenerator()

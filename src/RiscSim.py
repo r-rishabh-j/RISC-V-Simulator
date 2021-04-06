@@ -47,18 +47,21 @@ def MuxY(MuxY_select):
     return MuxYout
 
 ###########Stage functions###############
-def fetch():
+def fetch(stage):
     # control state update function to be called here
+    control_module.controlStateUpdate(stage)
     memory.LoadInstruction(IAGmodule.PC)  # this will fetch the instruction and put it in MDR
     registers.WriteIR(memory.MDR,control_module.IRwrite)  # This loads the Instruction from MDR to IR
     IAGmodule.PCTempUpdate()  # this will do PC temp = PC + 4
 
-def decode():
+def decode(stage):
+    control_module.controlStateUpdate(stage)
     global MuxAout
     global MuxBout
     control_module.decode(registers.ReadIR())  # this will decode the instruction present in IR and then will set the controls based on the type of instructions
     #decode
-    buffer.setRA(registers.ReadGpRegisters(control_module.rs1))  # putting the value of RS1 in RA buffer which will then be sent to IAG as input wire
+    if(control_module.terminate==1):
+        return
 
     IAGmodule.PCset(buffer.getRA(),control_module.MuxPCSelect) # this function will choose PC to be PC or RA based on the control signal generated
     IAGmodule.SetBranchOffset(control_module.imm)  # this puts the immediate value decoded to the immediate wire in IAG
@@ -67,10 +70,11 @@ def decode():
     MuxAout=MuxA(control_module.MuxASelect)   # this will  (based on control)select what would go into 1st input of ALU
     MuxBout=MuxB(control_module.MuxBSelect)     # this will (based on control) select what would go into 2nd input of ALU
 
+    buffer.setRA(registers.ReadGpRegisters(control_module.rs1))  # putting the value of RS1 in RA buffer which will then be sent to IAG as input wire
     buffer.setRM(registers.ReadGpRegisters(control_module.rs2))  # putting the value of RS2 in RM buffer
 
-def execute(): # ALU
-
+def execute(stage): # ALU
+    control_module.controlStateUpdate(stage)
     global MuxAout
     global MuxBout
 
@@ -80,20 +84,28 @@ def execute(): # ALU
     control_module.branching_controlUpdate(ALUmodule.outputBool)  # this will update MuxINCselect based on wether to jump or not based on the comparison
     IAGmodule.PCUpdate(control_module.MuxINCSelect)  # this will update PC by adding immediate or by adding 4 based on the control signal provided
 
-def mem_access():
-
-    # ye thik krio , control_module.BytesToAccess define karo instead of 4 different variables.
+def mem_access(stage):
+    control_module.controlStateUpdate(stage)
     memory.AccessMemory(control_module.MemRead,control_module.MemWrite,buffer.getRZ(),control_module.BytesToAccess,buffer.getRM())  #Sent the value of RZ in MAR and sent the value of RM in MDR along with appropriate control signals , then based on this the data will be loaded or stored ,for loading data will be available in MDR
 
-def reg_writeback():
+def reg_writeback(stage):
+    control_module.controlStateUpdate(stage)
     buffer.setRY(MuxY(control_module.MuxYSelect))    # sets the value of RY buffer as the output of MuxY which will be selected based on control signals
     registers.WriteGpRegisters(control_module.rd,control_module.RegWrite,buffer.getRY())  # This will simply write back to the registers based on the control signal
 
 
 def RunSim():
     #loop
-    fetch()
-    decode()
-    execute()
-    mem_access()
-    reg_writeback()
+    while(1):
+        stage=0
+        fetch(stage)
+        stage=1
+        decode(stage)
+        if(control_module.terminate==1):
+            return
+        stage=2
+        execute(stage)
+        stage=3
+        mem_access(stage)
+        stage=4
+        reg_writeback(stage)
