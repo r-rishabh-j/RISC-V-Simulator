@@ -51,7 +51,7 @@ class ControlModule:
         self.imm = 0  # for imm12, imm5, imm20, imm13
         self.MemRead = False
         self.MemWrite = False
-        self.ALUop = 0  # to use ALU or not
+        self.ALUOp = 0  # to use ALU or not
         self.ALUcontrol=0
         self.RegWrite = 0  # 1-to update the register(write back stage)
         self.IRwrite = 0
@@ -104,6 +104,7 @@ class ControlModule:
             self.MuxINCSelect = 0    #sequentially next PC
             #self.#MuxMASelect = 1     #PC send to MAR in step1
         elif self.opcode == 19:    #I-type (ori, andi, addi)
+            #print("ho")
             self.ALUOp = 1
             self.RegWrite = 1    #update register
             self.MemRead = False

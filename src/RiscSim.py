@@ -77,8 +77,9 @@ def execute(stage): # ALU
     control_module.controlStateUpdate(stage)
     global MuxAout
     global MuxBout
-
-    ALUmodule.ALUexecute(control_module.ALUop, control_module.ALUcontrol,MuxAout, MuxBout)   # This will perform the required Arithmetic / logical operation
+    # print("ALUop is", control_module.ALUOp)
+    # temp=control_module.ALUOp
+    ALUmodule.ALUexecute(control_module.ALUOp, control_module.ALUcontrol,MuxAout, MuxBout)   # This will perform the required Arithmetic / logical operation
     buffer.setRZ(ALUmodule.output32)  # this will put the value obtained from ALU after execution  in RZ buffer
 
     control_module.branching_controlUpdate(ALUmodule.outputBool)  # this will update MuxINCselect based on wether to jump or not based on the comparison

@@ -17,6 +17,7 @@ class ArithmeticLogicUnit:
 
     def ALUexecute(self, ALUop, ALUcontrol, inp1, inp2):
         if(ALUop==0): # ALU in NoOp condition
+            print("hi")
             self.output32=0
             self.outputBool=False
             return 0
