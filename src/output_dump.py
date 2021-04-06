@@ -5,7 +5,7 @@ import numpy as np
 def padhexa(s):
     return '0x' + s[2:].zfill(8)
 
-def print_reg(arr):
+def print_reg(arr): # input is numpy array
     for i in range(32):
         print("x",i," ",sep="",end="") # print address of register for eg. x5
         if(arr[i]>=0):
@@ -19,7 +19,7 @@ def print_reg(arr):
 # print_reg(arr)
 
 # dumping memory
-def print_mem(dic):
+def print_mem(dic): # input is dictionary with key as address and value as data
     lst=[] # stores keys present in dictionary
     temp_lst=[] # stores base address
     for key in dic:
