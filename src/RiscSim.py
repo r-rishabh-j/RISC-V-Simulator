@@ -27,9 +27,9 @@ MuxYout=0 # output of MuxY
 def MuxB(MuxB_select):
     global MuxBout
     if MuxB_select==0:
-        MuxBout=control_module.imm
-    elif MuxB_select==1:
         MuxBout=registers.ReadGpRegisters(control_module.rs2)
+    elif MuxB_select==1:
+        MuxBout=control_module.imm
     return MuxBout
 def MuxA(MuxA_select):
     global MuxAout
@@ -48,15 +48,20 @@ def MuxY(MuxY_select):
         MuxYout=IAGmodule.PC_temp
     return MuxYout
 
-
 ###########Stage functions###############
 def fetch():
 
 def decode():
     control_module.decode(registers.ReadIR(True))
+    #decode
+
+    #loading the register values
+    MuxAout=MuxA(control_module.MuxAselect)
+    MuxBout=MuxB(control_module.MuxBselect)
 def execute(): # ALU
-    ALUmodule.input1=MuxA(control_module.MuxAselect)
-    ALUmodule.input2=MuxB(control_module.MuxBselect)
+    # ALUmodule.input1=MuxA(control_module.MuxAselect)
+    # ALUmodule.input2=MuxB(control_module.MuxBselect)
+    #ALUmodule.ALUexecute(control_module.ALUop, control_module.ALUcontrol, MuxA(control_module.MuxAselect), MuxB(control_module.MuxBselect))
 
 def mem_access():
 

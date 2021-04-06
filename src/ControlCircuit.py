@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # generates control signals for the ALU and muxes 
 import math
+import sys
 
 # addi 19 0
 # andi 19 7
@@ -40,7 +41,6 @@ MIN_SIGNED_NUM = -0x80000000
 MAX_UNSIGNED_NUM = 0xffffffff
 MIN_UNSIGNED_NUM = 0x00000000
 
-
 class ControlModule:
     def __init__(self):
         self.opcode = 0
@@ -65,497 +65,170 @@ class ControlModule:
         self.MuxAselect=0
         self.branch = 0  # signal to enforce checking output of ALU since branches are conditional
         self.jump = 0  # for jump signals(see doc)
+        self.MuxBSelect=0  # present at 2nd input of ALU
+        self.MuxASelect = 0
         # 0- RZ
         # 1- MDR
         # 2- Return address from PC # PC has to be incremented in fetch stage itself
-        self.MuxBSelect  # present at 2nd input of ALU
         # 0- rs2
         # 1- imm
         # self.MuxMASelect  # Present at address input of memory
         # self.MuxMDRSelect  # present at output of memory
         # self.decoder=DecodeModule()
-	self.MuxASelect = 0
 
-    def controlStateUpdate(self): # will be called in each of 5 stages to release control signals specific to that stage
+    def controlStateUpdate(self): # for stage dependant control signals
 
-
-    def Interpret_UJ(self):
-        self.MemRead = False #Mem is not Read in jal
-        self.MemWrite = False #mem is not written to in jal
-        self.ALUop = 0  #ALU is not used in jal
-        self.RegWrite = 1 #PC value is written to register
-        self.IRwrite = 0
-        self.PCwrite = 1 # PC has to be updated in Jump
-        self.BytesToRead = 0 #don't care
-        self.BytesToWrite = 0 #don't care
-        self.MuxINCSelect = 1 #Branch offset in used in IAG instead of 4
-        self.MuxPCSelect = 1 #PC is selected instead of base address
-        self.MuxYSelect = 2 #ra given to MuxY
-        self.branch = 0
-        self.jump = 1
-        self.MuxBSelect = 0 # don't cares
-        self.MuxMASelect = 0 # don't cares
-        self.MuxMDRSelect = 0 # don't cares
-
-    def Interpret_U(self):
-        if self.opcode == 23:
-        # print("auipc")
-            self.MemRead = False #no memory read/write
-            self.MemWrite = False
-            self.ALUop = 1 #ALU is used to add to PC
-            self.RegWrite = 1 #Register is updated
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0 # no memory access
-            self.BytesToWrite = 0 # no memory access
-            self.MuxINCSelect = 0 # 4 is chosen
-            self.MuxPCSelect = 0 # PC is chosen, move sequentially next PC
-            self.MuxYSelect = 0 # ALU output is chosen
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 1 # immediate selected
-            self.MuxMASelect = 0 # don't care
-            self.MuxMDRSelect = 0 # don't care
-        elif self.opcode == 55:
-        # print("lui")
-            self.MemRead = False #no memory access
-            self.MemWrite = False #no memory access
-            self.ALUop = 1 # AlU is used
-            self.RegWrite = 1 # Register is written to
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0 #don't care
-            self.BytesToWrite = 0 #don't care
-            self.MuxINCSelect = 0 #4 is added to PC
-            self.MuxPCSelect = 1 # Pc is chosen
-            self.MuxYSelect = 0 # ALU output is chosen
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 1 #imm is chosen
-            self.MuxMASelect = 0 #don't care
-            self.MuxMDRSelect = 0 #don't care
-
-    def Interpret_S(self):
-        if self.funct3 == 0:
-        # print("sb")
-            self.MemRead = False
-            self.MemWrite = True #Mem is written to
-            self.ALUop = 1 #ALU is used to get address
-            self.RegWrite = 0 #Register is not written to
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0 #don't care
-            self.BytesToWrite = 1
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 1
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 1 #imm is used
-            self.MuxMASelect = 0 #rz is used
-            self.MuxMDRSelect = 0 #not sure
-        elif self.funct3 == 1:
-        # print("sh")
-            self.MemRead = False
-            self.MemWrite = True  # Mem is written to
-            self.ALUop = 1  # ALU is used to get address
-            self.RegWrite = 0  # Register is not written to
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0  # don't care
-            self.BytesToWrite = 2
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 1
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 1  # imm is used
-            self.MuxMASelect = 0  # rz is used
-            self.MuxMDRSelect = 0  # not sure
-        elif self.funct3 == 2:
-            self.MemRead = False
-            self.MemWrite = True  # Mem is written to
-            self.ALUop = 1  # ALU is used to get address
-            self.RegWrite = 0  # Register is not written to
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0  # don't care
-            self.BytesToWrite = 4
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 1
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 1  # imm is used
-            self.MuxMASelect = 0  # rz is used
-            self.MuxMDRSelect = 0  # not sure
-
-    # print("sw")
-
-    def Interpret_SB(self):
-        if self.funct3 == 0:
-        # print("beq")
-        elif self.funct3 == 1:
-        # print("bne")
-        elif self.funct3 == 4:
-        # print("blt")
-        elif self.funct3 == 5:
-
-    # print("bge")
-
-    def Interpret_I(self):
-        if self.opcode == 19:
-            if self.funct3 == 0:
-            # print("addi")
-                self.MemRead = False
-                self.MemWrite = False
-                self.ALUop = 1
-                self.RegWrite = 1
-                self.IRwrite = 0
-                self.PCwrite = 0
-                self.BytesToRead = 0
-                self.BytesToWrite = 0
-                self.MuxINCSelect = 0
-                self.MuxPCSelect = 1
-                self.MuxYSelect = 0
-                self.branch = 0
-                self.jump = 0
-                self.MuxBSelect = 1
-                self.MuxMASelect = 0
-                self.MuxMDRSelect = 0
-            elif self.funct3 == 7:
-            # print("andi")
-                self.MemRead = False
-                self.MemWrite = False
-                self.ALUop = 1
-                self.RegWrite = 1
-                self.IRwrite = 0
-                self.PCwrite = 0
-                self.BytesToRead = 0
-                self.BytesToWrite = 0
-                self.MuxINCSelect = 0
-                self.MuxPCSelect = 1
-                self.MuxYSelect = 0
-                self.branch = 0
-                self.jump = 0
-                self.MuxBSelect = 1
-                self.MuxMASelect = 0
-                self.MuxMDRSelect = 0
-            elif self.funct3 == 6:
-            # print("ori")
-                self.MemRead = False
-                self.MemWrite = False
-                self.ALUop = 1
-                self.RegWrite = 1
-                self.IRwrite = 0
-                self.PCwrite = 0
-                self.BytesToRead = 0
-                self.BytesToWrite = 0
-                self.MuxINCSelect = 0
-                self.MuxPCSelect = 1
-                self.MuxYSelect = 0
-                self.branch = 0
-                self.jump = 0
-                self.MuxBSelect = 1
-                self.MuxMASelect = 0
-                self.MuxMDRSelect = 0
-        elif self.opcode == 3:
-            if self.funct3 == 0:
-            # print("lb")
-                self.MemRead = False
-                self.MemWrite = False
-                self.ALUop = 1
-                self.RegWrite = 1
-                self.IRwrite = 0
-                self.PCwrite = 0
-                self.BytesToRead = 0
-                self.BytesToWrite = 0
-                self.MuxINCSelect = 0
-                self.MuxPCSelect = 0
-                self.MuxYSelect = 0
-                self.branch = 0
-                self.jump = 0
-                self.MuxBSelect = 1
-                self.MuxMASelect = 0
-                self.MuxMDRSelect = 0
-            elif self.funct3 == 1:
-            # print("lh")
-                self.MemRead = False
-                self.MemWrite = False
-                self.ALUop = 1
-                self.RegWrite = 1
-                self.IRwrite = 0
-                self.PCwrite = 0
-                self.BytesToRead = 0
-                self.BytesToWrite = 0
-                self.MuxINCSelect = 0
-                self.MuxPCSelect = 0
-                self.MuxYSelect = 0
-                self.branch = 0
-                self.jump = 0
-                self.MuxBSelect = 1
-                self.MuxMASelect = 0
-                self.MuxMDRSelect = 0
-            elif self.funct3 == 2:
-            # print("lw")
-                self.MemRead = False
-                self.MemWrite = False
-                self.ALUop = 1
-                self.RegWrite = 1
-                self.IRwrite = 0
-                self.PCwrite = 0
-                self.BytesToRead = 0
-                self.BytesToWrite = 0
-                self.MuxINCSelect = 0
-                self.MuxPCSelect = 0
-                self.MuxYSelect = 0
-                self.branch = 0
-                self.jump = 0
-                self.MuxBSelect = 0
-                self.MuxMASelect = 0
-                self.MuxMDRSelect = 0
-        elif self.opcode == 103:
-        # print("jalr")
+    def ControlSignalGenerator(self):
+        if self.opcode == 51:  #R-type
+            self.ALUOp = 1  #ALU usage required
+            self.RegWrite = 1  #update register
             self.MemRead = False
             self.MemWrite = False
-            self.ALUop = 1
+            self.branch = 0  #required to update control for branch inst
+            self.jump=0
+            self.MuxASelect = 0      #rs1
+            self.MuxBSelect = 0  #no immediate
+            self.MuxYSelect = 0  #choose output of ALU in RZ
+            self.MuxPCSelect = 1     #not ra
+            self.BytestoRead = 0
+            self.BytestoWrite = 0
+            self.MuxINCSelect = 0    #sequentially next PC
+            #self.#MuxMASelect = 1     #PC send to MAR in step1
+        elif self.opcode == 19:    #I-type (ori, andi, addi)
+            self.ALUOp = 1
+            self.RegWrite = 1    #update register
+            self.MemRead = False
+            self.MemWrite = False
+            self.branch = 0          #required to update control for branch inst
+            self.jump = 0          #required to update control for jump inst
+            self.MuxASelect = 0      #rs1
+            self.MuxBSelect = 1   #imm value used in MuxB
+            self.MuxYSelect = 0    #choose output of ALU in RZ
+            self.MuxPCSelect = 1     #not ra
+            self.BytestoRead = 0
+            self.BytestoWrite = 0
+            self.MuxINCSelect = 0    #sequentially next PC
+            #self.#MuxMASelect = 1     #PC send to MAR in step1
+        elif opcode == 3:   #I-type(load-instructions)
+            self.ALUOp = 1       #ALU used to calculate effective address
+            self.RegWrite = 1    #update register
+            self.MemRead = True
+            self.MemWrite = False
+            if self.funct3 == 0:   #lb
+                self.BytestoRead = 1
+            elif self.funct3 == 1:   #lh
+                self.BytestoRead = 2
+            elif self.funct3 == 2:   #lw
+                self.BytestoRead = 4
+            else:
+                raise Exception("Invalid funct3")
+            self.BytestoWrite = 0
+            self.MuxINCSelect = 0  #sequentially next PC
+            self.MuxASelect = 0  # rs1
+            self.MuxBSelect = 1  # imm value used in MuxB
+            self.MuxYSelect = 1  # MDR value selected
+            self.branch = 0 #required to update control for branch inst
+            self.jump = 0 #required to update control for jump inst
+            self.MuxPCSelect = 1 # not ra
+            #MuxMASelect = 1     #PC send to MAR in step1
+        elif self.opcode == 103:     #I-type(jalr)
+            self.ALUOp = 0   #ALU not used, done in IAG
+            self.MuxBSelect = 0  #don't-care
+            self.MuxYSelect = 2  #ra given to MuxY
+            self.BytestoRead = 0
+            self.BytestoWrite = 0
+            self.RegWrite = 1    #update register
+            self.MuxINCSelect = 1 # receive imm
+            self.MuxASelect = 0      #rs1
+            self.branch = 0          #required to update control for branch inst
+            self.jump=1 # jump instruction
+            self.MuxPCSelect = 0     #ra input to MuxPC
+            self.MemRead = False
+            self.MemWrite = False
+            #MuxMASelect = 1     #PC send to MAR in step1
+        elif opcode == 35:      #S-type
+            self.ALUOp = 1   #ALU used to calculate effective address
+            self.MuxBSelect = 1  #imm value used in MuxB
+            self.MuxYSelect = 0  #don't-care
+            self.BytestoRead = 0
+            if self.funct3 == 0: #sb
+                self.BytestoWrite = 1
+            elif self.funct3 == 1: #sh
+                self.BytestoWrite = 2
+            elif self.funct3 == 2: #sw
+                self.BytestoWrite = 4
+            else:
+                raise Exception("Invalid funct3")
+            self.RegWrite = 0    #Register update not required
+            self.MuxINCSelect = 0    #sequentially next PC
+            self.MuxASelect = 0      #rs1
+            self.branch = 0          #required to update control for branch inst
+            self.jump=0
+            self.MuxPCSelect = 1     #not ra
+            self.MemRead = False
+            self.MemWrite = True
+            #self.MuxMASelect = 1     #PC send to MAR in step1
+        elif self.opcode == 23 :  #U-type(auipc)
+            self.ALUOp = 1
+            self.MuxBSelect = 1
+            self.MuxYSelect = 0  #choose output of ALU in RZ
+            self.BytestoRead = 0
+            self.BytestoWrite = 0
             self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-
-    def Interpret_R(self):
-        if self.funct3 == 0 and self.funct7 == 0:
-            #print("add")
+            self.MuxINCSelect = 0    #sequentially next PC
+            self.MuxASelect = 1      #PC as input1 of ALU
+            self.MuxPCSelect = 1     #not ra
+            self.branch = 0          #required to update control for branch inst
+            self.jump=0
+            self.MemWrite = False
+            self.MemRead = False
+            #MuxMASelect = 1     #PC send to MAR in step1
+        elif opcode == 55:  #U-type(lui)
+            self.ALUOp = 1
+            self.MuxBSelect = 1
+            self.MuxYSelect = 0  #choose output of ALU in RZ
+            self.BytestoRead = 0
+            self.BytestoWrite = 0
+            self.RegWrite = 1
+            self.MuxINCSelect = 0    #sequentially next PC(4)
+            self.MuxASelect = 0      #rs1
+            self.branch = 0          #required to update control for branch inst
+            self.jump=0
+            self.MuxPCSelect = 1     #not ra
             self.MemRead = False
             self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch= 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-
-        elif self.funct3 == 7 and self.funct7 == 0:
-            # print("and")
+            #self.#MuxMASelect = 1     #PC send to MAR in step1
+        elif self.opcode == 111: #UJ-type(jal)
+            self.ALUOp = 0   #ALU not required, done in IAG
+            self.MuxBSelect = 0  #don't-care
+            self.MuxYSelect = 2  #ra given to MuxY
+            self.BytestoRead = 0
+            self.BytestoWrite = 0
+            self.RegWrite = 1    #update register
+            self.MuxINCSelect = 1
+            self.MuxASelect = 0      #rs1
+            self.branch = 0          #required to update control for branch inst
+            self.jump=1
+            self.MuxPCSelect = 1     #not ra
             self.MemRead = False
             self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-
-        elif self.funct3 == 6 and self.funct7 == 0:
-            # print("or")
+            #MuxMASelect = 1     #PC send to MAR in step1
+        elif self.opcode == 99:  #SB type
+            self.ALUOp = 1 # ALU computes boolean for branch
+            self.MuxBSelect = 0  #rs2 is required, imm is used in IAG
+            self.MuxYSelect = 0  #RZ, but don't-care
+            self.RegWrite = 0    #do not update register
+            self.BytestoRead = 0
+            self.BytestoWrite = 0
+            self.MuxINCSelect = 0   #to be updated after ALU
+            self.MuxASelect = 0      #rs1
+            self.branch = 1          #required to update control for branch inst
+            self.jump=0
+            self.MuxPCSelect = 1     #not ra
             self.MemRead = False
             self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-
-        elif self.funct3 == 1 and self.funct7 == 0:
-            # print("sll")
-            self.MemRead = False
-            self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-
-        elif self.funct3 == 2 and self.funct7 == 0:
-            # print("slt")
-            self.MemRead = False
-            self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-
-        elif self.funct3 == 5 and self.funct7 == 32:
-            # print("sra")
-            self.MemRead = False
-            self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-        elif self.funct3 == 5 and self.funct7 == 0:
-            # print("srl")
-            self.MemRead = False
-            self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-        elif self.funct3 == 0 and self.funct7 == 32:
-            # print("sub")
-            self.MemRead = False
-            self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-        elif self.funct3 == 4 and self.funct7 == 0:
-            # print("xor")
-            self.MemRead = False
-            self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-        elif self.funct3 == 0 and self.funct7 == 1:
-            # print("mul")
-            self.MemRead = False
-            self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-        elif self.funct3 == 4 and self.funct7 == 1:
-            # print("div")
-            self.MemRead = False
-            self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-        elif self.funct3 == 6 and self.funct7 == 1:
-            # print("rem")
-            self.MemRead = False
-            self.MemWrite = False
-            self.ALUop = 1
-            self.RegWrite = 1
-            self.IRwrite = 0
-            self.PCwrite = 0
-            self.BytesToRead = 0
-            self.BytesToWrite = 0
-            self.MuxINCSelect = 0
-            self.MuxPCSelect = 0
-            self.MuxYSelect = 0
-            self.branch = 0
-            self.jump = 0
-            self.MuxBSelect = 0
-            self.MuxMASelect = 0
-            self.MuxMDRSelect = 0
-
+            #MuxMASelect = 1     #PC send to MAR in step1
+        
     def decode(self, IR):
         machine_code = IR
         self.opcode = (machine_code & 0x7f)
@@ -569,7 +242,7 @@ class ControlModule:
             self.rs1 = inst_list[2]
             self.imm = inst_list[3]
             # print(PC, "I type", opcode, funct3, rs1, rd, imm)
-            self.Interpret_I()
+            #self.Interpret_I()
         elif self.opcode in S:
             inst_list = self.decodeS(machine_code)
             self.funct7 = 0
@@ -579,7 +252,7 @@ class ControlModule:
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
             # print(PC, "S type", opcode, funct3, rs1, rs2, imm)
-            self.Interpret_S()
+            #self.Interpret_S()
         elif self.opcode in U:
             inst_list = self.decodeU(machine_code)
             self.funct3 = 0
@@ -589,7 +262,7 @@ class ControlModule:
             self.rd = inst_list[0]
             self.imm = inst_list[1]
             # print(PC, "U type", opcode, rd, imm)
-            self.Interpret_U()
+            #self.Interpret_U()
         elif self.opcode in R:
             inst_list = self.decodeR(machine_code)
             self.imm = 0
@@ -599,7 +272,7 @@ class ControlModule:
             self.rs2 = inst_list[3]
             self.funct7 = inst_list[4]
             # print(PC, "R type", opcode, funct3, funct7, rs1, rs2, rd)
-            self.Interpret_R()
+            #self.Interpret_R()
         elif self.opcode in SB:
             inst_list = self.decodeSB(machine_code)
             self.funct7 = 0
@@ -609,7 +282,7 @@ class ControlModule:
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
             # print(PC, "SB type", opcode, funct3, rs1, rs2, imm)
-            self.Interpret_SB()
+            #self.Interpret_SB()
         elif self.opcode in UJ:
             inst_list = self.decodeUJ(machine_code)
             self.funct3 = 0
@@ -619,10 +292,12 @@ class ControlModule:
             self.rd = inst_list[0]
             self.imm = inst_list[1]
             # print(PC, "UJ type", opcode, rd, imm)
-            self.Interpret_UJ()
+            #self.Interpret_UJ()
         else:
             raise Exception("Not an instruction")
-
+        
+        # generate control signals for ALU and other modules
+        self.ControlSignalGenerator()
         self.ALUcontrol = self.ALUcontrolgenerator(self.opcode, self.funct3, self.funct7)
 
     def decodeI(self, machine_code):
@@ -810,6 +485,484 @@ class ControlModule:
                 raise Exception("Not a valid Instruction")
         else:
             raise Exception("Not a valid Instruction")
+
+
+    # def Interpret_UJ(self):
+    #     self.MemRead = False #Mem is not Read in jal
+    #     self.MemWrite = False #mem is not written to in jal
+    #     self.ALUop = 0  #ALU is not used in jal
+    #     self.RegWrite = 1 #PC value is written to register
+    #     self.IRwrite = 0
+    #     self.PCwrite = 1 # PC has to be updated in Jump
+    #     self.BytesToRead = 0 #don't care
+    #     self.BytesToWrite = 0 #don't care
+    #     self.MuxINCSelect = 1 #Branch offset in used in IAG instead of 4
+    #     self.MuxPCSelect = 1 #PC is selected instead of base address
+    #     self.MuxYSelect = 2 #ra given to MuxY
+    #     self.branch = 0
+    #     self.jump = 1
+    #     self.MuxBSelect = 0 # don't cares
+    #     self.MuxMASelect = 0 # don't cares
+    #     self.MuxMDRSelect = 0 # don't cares
+
+    # def Interpret_U(self):
+    #     if self.opcode == 23:
+    #     # print("auipc")
+    #         self.MemRead = False #no memory read/write
+    #         self.MemWrite = False
+    #         self.ALUop = 1 #ALU is used to add to PC
+    #         self.RegWrite = 1 #Register is updated
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0 # no memory access
+    #         self.BytesToWrite = 0 # no memory access
+    #         self.MuxINCSelect = 0 # 4 is chosen
+    #         self.MuxPCSelect = 0 # PC is chosen, move sequentially next PC
+    #         self.MuxYSelect = 0 # ALU output is chosen
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 1 # immediate selected
+    #         self.MuxMASelect = 0 # don't care
+    #         self.MuxMDRSelect = 0 # don't care
+    #     elif self.opcode == 55:
+    #     # print("lui")
+    #         self.MemRead = False #no memory access
+    #         self.MemWrite = False #no memory access
+    #         self.ALUop = 1 # AlU is used
+    #         self.RegWrite = 1 # Register is written to
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0 #don't care
+    #         self.BytesToWrite = 0 #don't care
+    #         self.MuxINCSelect = 0 #4 is added to PC
+    #         self.MuxPCSelect = 1 # Pc is chosen
+    #         self.MuxYSelect = 0 # ALU output is chosen
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 1 #imm is chosen
+    #         self.MuxMASelect = 0 #don't care
+    #         self.MuxMDRSelect = 0 #don't care
+
+    # def Interpret_S(self):
+    #     if self.funct3 == 0:
+    #     # print("sb")
+    #         self.MemRead = False
+    #         self.MemWrite = True #Mem is written to
+    #         self.ALUop = 1 #ALU is used to get address
+    #         self.RegWrite = 0 #Register is not written to
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0 #don't care
+    #         self.BytesToWrite = 1
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 1
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 1 #imm is used
+    #         self.MuxMASelect = 0 #rz is used
+    #         self.MuxMDRSelect = 0 #not sure
+    #     elif self.funct3 == 1:
+    #     # print("sh")
+    #         self.MemRead = False
+    #         self.MemWrite = True  # Mem is written to
+    #         self.ALUop = 1  # ALU is used to get address
+    #         self.RegWrite = 0  # Register is not written to
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0  # don't care
+    #         self.BytesToWrite = 2
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 1
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 1  # imm is used
+    #         self.MuxMASelect = 0  # rz is used
+    #         self.MuxMDRSelect = 0  # not sure
+    #     elif self.funct3 == 2:
+    #         self.MemRead = False
+    #         self.MemWrite = True  # Mem is written to
+    #         self.ALUop = 1  # ALU is used to get address
+    #         self.RegWrite = 0  # Register is not written to
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0  # don't care
+    #         self.BytesToWrite = 4
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 1
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 1  # imm is used
+    #         self.MuxMASelect = 0  # rz is used
+    #         self.MuxMDRSelect = 0  # not sure
+
+    # # print("sw")
+
+    # def Interpret_SB(self):
+    #     if self.funct3 == 0:
+    #     # print("beq")
+    #     elif self.funct3 == 1:
+    #     # print("bne")
+    #     elif self.funct3 == 4:
+    #     # print("blt")
+    #     elif self.funct3 == 5:
+
+    # # print("bge")
+
+    # def Interpret_I(self):
+    #     if self.opcode == 19:
+    #         if self.funct3 == 0:
+    #         # print("addi")
+    #             self.MemRead = False
+    #             self.MemWrite = False
+    #             self.ALUop = 1
+    #             self.RegWrite = 1
+    #             self.IRwrite = 0
+    #             self.PCwrite = 0
+    #             self.BytesToRead = 0
+    #             self.BytesToWrite = 0
+    #             self.MuxINCSelect = 0
+    #             self.MuxPCSelect = 1
+    #             self.MuxYSelect = 0
+    #             self.branch = 0
+    #             self.jump = 0
+    #             self.MuxBSelect = 1
+    #             self.MuxMASelect = 0
+    #             self.MuxMDRSelect = 0
+    #         elif self.funct3 == 7:
+    #         # print("andi")
+    #             self.MemRead = False
+    #             self.MemWrite = False
+    #             self.ALUop = 1
+    #             self.RegWrite = 1
+    #             self.IRwrite = 0
+    #             self.PCwrite = 0
+    #             self.BytesToRead = 0
+    #             self.BytesToWrite = 0
+    #             self.MuxINCSelect = 0
+    #             self.MuxPCSelect = 1
+    #             self.MuxYSelect = 0
+    #             self.branch = 0
+    #             self.jump = 0
+    #             self.MuxBSelect = 1
+    #             self.MuxMASelect = 0
+    #             self.MuxMDRSelect = 0
+    #         elif self.funct3 == 6:
+    #         # print("ori")
+    #             self.MemRead = False
+    #             self.MemWrite = False
+    #             self.ALUop = 1
+    #             self.RegWrite = 1
+    #             self.IRwrite = 0
+    #             self.PCwrite = 0
+    #             self.BytesToRead = 0
+    #             self.BytesToWrite = 0
+    #             self.MuxINCSelect = 0
+    #             self.MuxPCSelect = 1
+    #             self.MuxYSelect = 0
+    #             self.branch = 0
+    #             self.jump = 0
+    #             self.MuxBSelect = 1
+    #             self.MuxMASelect = 0
+    #             self.MuxMDRSelect = 0
+    #     elif self.opcode == 3:
+    #         if self.funct3 == 0:
+    #         # print("lb")
+    #             self.MemRead = False
+    #             self.MemWrite = False
+    #             self.ALUop = 1
+    #             self.RegWrite = 1
+    #             self.IRwrite = 0
+    #             self.PCwrite = 0
+    #             self.BytesToRead = 0
+    #             self.BytesToWrite = 0
+    #             self.MuxINCSelect = 0
+    #             self.MuxPCSelect = 0
+    #             self.MuxYSelect = 0
+    #             self.branch = 0
+    #             self.jump = 0
+    #             self.MuxBSelect = 1
+    #             self.MuxMASelect = 0
+    #             self.MuxMDRSelect = 0
+    #         elif self.funct3 == 1:
+    #         # print("lh")
+    #             self.MemRead = False
+    #             self.MemWrite = False
+    #             self.ALUop = 1
+    #             self.RegWrite = 1
+    #             self.IRwrite = 0
+    #             self.PCwrite = 0
+    #             self.BytesToRead = 0
+    #             self.BytesToWrite = 0
+    #             self.MuxINCSelect = 0
+    #             self.MuxPCSelect = 0
+    #             self.MuxYSelect = 0
+    #             self.branch = 0
+    #             self.jump = 0
+    #             self.MuxBSelect = 1
+    #             self.MuxMASelect = 0
+    #             self.MuxMDRSelect = 0
+    #         elif self.funct3 == 2:
+    #         # print("lw")
+    #             self.MemRead = False
+    #             self.MemWrite = False
+    #             self.ALUop = 1
+    #             self.RegWrite = 1
+    #             self.IRwrite = 0
+    #             self.PCwrite = 0
+    #             self.BytesToRead = 0
+    #             self.BytesToWrite = 0
+    #             self.MuxINCSelect = 0
+    #             self.MuxPCSelect = 0
+    #             self.MuxYSelect = 0
+    #             self.branch = 0
+    #             self.jump = 0
+    #             self.MuxBSelect = 0
+    #             self.MuxMASelect = 0
+    #             self.MuxMDRSelect = 0
+    #     elif self.opcode == 103:
+    #     # print("jalr")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+
+    # def Interpret_R(self):
+    #     if self.funct3 == 0 and self.funct7 == 0:
+    #         #print("add")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch= 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+
+    #     elif self.funct3 == 7 and self.funct7 == 0:
+    #         # print("and")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+
+    #     elif self.funct3 == 6 and self.funct7 == 0:
+    #         # print("or")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+
+    #     elif self.funct3 == 1 and self.funct7 == 0:
+    #         # print("sll")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+
+    #     elif self.funct3 == 2 and self.funct7 == 0:
+    #         # print("slt")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+
+    #     elif self.funct3 == 5 and self.funct7 == 32:
+    #         # print("sra")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+    #     elif self.funct3 == 5 and self.funct7 == 0:
+    #         # print("srl")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+    #     elif self.funct3 == 0 and self.funct7 == 32:
+    #         # print("sub")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+    #     elif self.funct3 == 4 and self.funct7 == 0:
+    #         # print("xor")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+    #     elif self.funct3 == 0 and self.funct7 == 1:
+    #         # print("mul")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+    #     elif self.funct3 == 4 and self.funct7 == 1:
+    #         # print("div")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
+    #     elif self.funct3 == 6 and self.funct7 == 1:
+    #         # print("rem")
+    #         self.MemRead = False
+    #         self.MemWrite = False
+    #         self.ALUop = 1
+    #         self.RegWrite = 1
+    #         self.IRwrite = 0
+    #         self.PCwrite = 0
+    #         self.BytesToRead = 0
+    #         self.BytesToWrite = 0
+    #         self.MuxINCSelect = 0
+    #         self.MuxPCSelect = 0
+    #         self.MuxYSelect = 0
+    #         self.branch = 0
+    #         self.jump = 0
+    #         self.MuxBSelect = 0
+    #         self.MuxMASelect = 0
+    #         self.MuxMDRSelect = 0
 
     # def getOpcode(self):
     #     return self.opcode
