@@ -17,7 +17,7 @@ class Registers:
     def WriteIR(self, WriteVal, writeIR):
         if(writeIR==True):
             self.IR=WriteVal
-
+            
     def WriteGpRegisters(self, RegNumber, RegWrite, WriteVal):
         if(RegNumber<0 or RegNumber>31):
             raise Exception("Invalid register number!")

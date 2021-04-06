@@ -13,6 +13,7 @@ class InstructionAddressGenerator:
         self.PC_temp=0 # temp pc which stores PC+4
         self.IAGimmediate=0 # branch offset , this is the immediate value
 
+
     def ReadPC(self):
         PCval=self.PC
         return PCval
