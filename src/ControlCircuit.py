@@ -71,6 +71,78 @@ class ControlModule:
         self.MuxMDRSelect #present at output of memory
         #self.decoder=DecodeModule()
     
+    def Interpret_UJ(self):
+        #print("jalr")
+    
+    def Interpret_U(self):
+        if self.opcode==23:
+            #print("auipc")
+        elif self.opcode==55:
+            #print("lui")
+
+    def Interpret_S(self):
+        if self.funct3==0:
+            #print("sb")
+        elif self.funct3==1:
+            #print("sh")
+        elif self.funct3==2:
+            #print("sw")
+
+    def Interpret_SB(self):
+        if self.funct3==0:
+            #print("beq")
+        elif self.funct3==1:
+            #print("bne")
+        elif self.funct3==4:
+            #print("blt")
+        elif self.funct3==5:
+            #print("bge")
+
+    def Interpret_I(self):
+        if self.opcode==19:
+            if self.funct3==0:
+                #print("addi")
+            elif self.funct3==7:
+                #print("andi")
+            elif self.funct3==6:
+                #print("ori")
+        elif self.opcode==3:
+            if self.funct3==0:
+                #print("lb")
+            elif self.funct3==1:
+                #print("lh")
+            elif self.funct3==2:
+                #print("lw")
+        elif self.opcode==103:
+            #print("jalr")
+
+    def Interpret_R(self):
+        if self.funct3==0 and self.funct7==0:
+            #print("add")
+        elif self.funct3==7 and self.funct7==0:
+            #print("and")
+        elif self.funct3==6 and self.funct7==0:
+            #print("or")
+        elif self.funct3==1 and self.funct7==0:
+            #print("sll")
+        elif self.funct3==2 and self.funct7==0:
+            #print("slt")
+        elif self.funct3==5 and self.funct7==32:
+            #print("sra")
+        elif self.funct3==5 and self.funct7==0:
+            #print("srl")
+        elif self.funct3==0 and self.funct7==32:
+            #print("sub")
+        elif self.funct3==4 and self.funct7==0:
+            #print("xor")
+        elif self.funct3==0 and self.funct7==1:
+            #print("mul")
+        elif self.funct3==4 and self.funct7==1:
+            #print("div")
+        elif self.funct3==6 and self.funct7==1:
+            #print("rem")
+
+
     def decode(self,IR): 
         machine_code = IR
         self.opcode = (machine_code& 0x7f)
@@ -84,6 +156,7 @@ class ControlModule:
             self.rs1 = inst_list[2]
             self.imm = inst_list[3]
             #print(PC, "I type", opcode, funct3, rs1, rd, imm)
+            self.Interpret_I()
         elif self.opcode in S:
             inst_list = self.decodeS(machine_code)
             self.funct7 = 0
@@ -93,6 +166,7 @@ class ControlModule:
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
             #print(PC, "S type", opcode, funct3, rs1, rs2, imm)
+            self.Interpret_S()
         elif self.opcode in U:
             inst_list = self.decodeU(machine_code)
             self.funct3 = 0
@@ -102,6 +176,7 @@ class ControlModule:
             self.rd = inst_list[0]
             self.imm = inst_list[1]
             #print(PC, "U type", opcode, rd, imm)
+            self.Interpret_U()
         elif self.opcode in R:
             inst_list = self.decodeR(machine_code)
             self.imm = 0
@@ -111,6 +186,7 @@ class ControlModule:
             self.rs2 = inst_list[3]
             self.funct7 = inst_list[4]
             #print(PC, "R type", opcode, funct3, funct7, rs1, rs2, rd)
+            self.Interpret_R()
         elif self.opcode in SB:
             inst_list = self.decodeSB(machine_code)
             self.funct7 = 0
@@ -120,6 +196,7 @@ class ControlModule:
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
             #print(PC, "SB type", opcode, funct3, rs1, rs2, imm)
+            self.Interpret_SB()
         elif self.opcode in UJ:
             inst_list = self.decodeUJ(machine_code)
             self.funct3 = 0
@@ -129,6 +206,7 @@ class ControlModule:
             self.rd = inst_list[0]
             self.imm = inst_list[1]
             #print(PC, "UJ type", opcode, rd, imm)
+            self.Interpret_UJ()
         else:
             raise Exception("Not an instruction")
             
