@@ -78,7 +78,7 @@ class ControlModule:
         # self.decoder=DecodeModule()
 
     def controlStateUpdate(self): # for stage dependant control signals
-
+        a=1
     def ControlSignalGenerator(self):
         if self.opcode == 51:  #R-type
             self.ALUOp = 1  #ALU usage required
@@ -111,7 +111,7 @@ class ControlModule:
             # self.BytestoWrite = 0
             self.MuxINCSelect = 0    #sequentially next PC
             #self.#MuxMASelect = 1     #PC send to MAR in step1
-        elif opcode == 3:   #I-type(load-instructions)
+        elif self.opcode == 3:   #I-type(load-instructions)
             self.ALUOp = 1       #ALU used to calculate effective address
             self.RegWrite = 1    #update register
             self.MemRead = True
@@ -149,7 +149,7 @@ class ControlModule:
             self.MemRead = False
             self.MemWrite = False
             #MuxMASelect = 1     #PC send to MAR in step1
-        elif opcode == 35:      #S-type
+        elif self.opcode == 35:      #S-type
             self.ALUOp = 1   #ALU used to calculate effective address
             self.MuxBSelect = 1  #imm value used in MuxB
             self.MuxYSelect = 0  #don't-care
@@ -187,7 +187,7 @@ class ControlModule:
             self.MemWrite = False
             self.MemRead = False
             #MuxMASelect = 1     #PC send to MAR in step1
-        elif opcode == 55:  #U-type(lui)
+        elif self.opcode == 55:  #U-type(lui)
             self.ALUOp = 1
             self.MuxBSelect = 1
             self.MuxYSelect = 0  #choose output of ALU in RZ
@@ -300,12 +300,15 @@ class ControlModule:
             self.imm = inst_list[1]
             # print(PC, "UJ type", opcode, rd, imm)
             #self.Interpret_UJ()
+        elif self.opcode == 17:
+            sys.exit("Program Terminated Successfully.")
+
         else:
             raise Exception("Not an instruction")
         
         # generate control signals for ALU and other modules
         self.ControlSignalGenerator()
-        self.ALUcontrol = self.ALUcontrolgenerator(self.opcode, self.funct3, self.funct7)
+        self.ALUcontrol = self.ALUcontrolgenerator()
 
     def decodeI(self, machine_code):
         inst_list = []
@@ -402,11 +405,11 @@ class ControlModule:
         temp20 = machine_code >> 31
         temp20 = temp20 << 20  # immp[20]
         immf = temp20 + temp12 + temp11 + temp1  # final imm
-        im = (-(immf & 0x100000) | (immf & 0x0FFFFF));  # making it signed
+        im = (-(immf & 0x100000) | (immf & 0x0FFFFF))  # making it signed
         inst_list.append(im)
         return inst_list
 
-    def ALUcontrolgenerator(self, opcode, funct3, funct7):
+    def ALUcontrolgenerator(self):
         if self.opcode == 51:
             if self.funct3 == 0:
                 if self.funct7 == 0:
@@ -495,6 +498,8 @@ class ControlModule:
 
 
     def branching_controlUpdate(self,outputBool):   # this function will help decide whether to jump or not in branching instructions based on ALU output
+        if self.branch==1 and self.jump==1:
+            raise Exception("Invalid control signal")
         if self.branch==0:
             if self.jump==0:
                 self.MuxINCSelect=0
