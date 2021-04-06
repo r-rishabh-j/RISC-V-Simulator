@@ -53,6 +53,7 @@ class ControlModule:
         self.MemRead = False
         self.MemWrite = False
         self.ALUop = 0  # to use ALU or not
+        self.ALUcontrol=0
         self.RegWrite = 0  # 1-to update the register(write back stage)
         self.IRwrite = 0
         self.PCwrite = 0
@@ -73,23 +74,26 @@ class ControlModule:
         self.MuxMDRSelect  # present at output of memory
         # self.decoder=DecodeModule()
 
+    def controlStateUpdate(self): # will be called in each of 5 stages to release control signals specific to that stage
+
+
     def Interpret_UJ(self):
         self.MemRead = False #Mem is not Read in jal
         self.MemWrite = False #mem is not written to in jal
         self.ALUop = 0  #ALU is not used in jal
         self.RegWrite = 1 #PC value is written to register
         self.IRwrite = 0
-        self.PCwrite = 0
+        self.PCwrite = 1 # PC has to be updated in Jump
         self.BytesToRead = 0 #don't care
         self.BytesToWrite = 0 #don't care
         self.MuxINCSelect = 1 #Branch offset in used in IAG instead of 4
-        self.MuxPCSelect = 1 #PC is selected instead of return address
+        self.MuxPCSelect = 1 #PC is selected instead of base address
         self.MuxYSelect = 2 #ra given to MuxY
         self.branch = 0
         self.jump = 1
-        self.MuxBSelect = 0
-        self.MuxMASelect = 0
-        self.MuxMDRSelect = 0
+        self.MuxBSelect = 0 # don't cares
+        self.MuxMASelect = 0 # don't cares
+        self.MuxMDRSelect = 0 # don't cares
 
     def Interpret_U(self):
         if self.opcode == 23:
@@ -103,11 +107,11 @@ class ControlModule:
             self.BytesToRead = 0 # no memory access
             self.BytesToWrite = 0 # no memory access
             self.MuxINCSelect = 0 # 4 is chosen
-            self.MuxPCSelect = 1 # PC is chosen
+            self.MuxPCSelect = 0 # PC is chosen, move sequentially next PC
             self.MuxYSelect = 0 # ALU output is chosen
             self.branch = 0
             self.jump = 0
-            self.MuxBSelect = 1
+            self.MuxBSelect = 1 # immediate selected
             self.MuxMASelect = 0 # don't care
             self.MuxMDRSelect = 0 # don't care
         elif self.opcode == 55:
@@ -617,7 +621,7 @@ class ControlModule:
         else:
             raise Exception("Not an instruction")
 
-        self.ALUop = self.ALUcontrolgenerator(self.opcode, self.funct3, self.funct7)
+        self.ALUcontrol = self.ALUcontrolgenerator(self.opcode, self.funct3, self.funct7)
 
     def decodeI(self, machine_code):
         inst_list = []
