@@ -244,7 +244,7 @@ class ControlModule:
             self.MemWrite = False
             #MuxMASelect = 1     #PC send to MAR in step1
 
-    def decode(self, IR):
+    def decode(self, IR, PC):
         machine_code = IR
         self.opcode = (machine_code & 0x7f)
         # print(opcode, temp)
@@ -260,7 +260,7 @@ class ControlModule:
             self.funct3 = inst_list[1]
             self.rs1 = inst_list[2]
             self.imm = inst_list[3]
-            # print(PC, "I type", opcode, funct3, rs1, rd, imm)
+            print(PC, "I type", self.opcode, self.funct3, self.rs1, self.rd, self.imm)
             #self.Interpret_I()
         elif self.opcode in S:
             inst_list = self.decodeS(machine_code)
@@ -270,7 +270,7 @@ class ControlModule:
             self.rs1 = inst_list[1]
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
-            # print(PC, "S type", opcode, funct3, rs1, rs2, imm)
+            print(PC, "S type", self.opcode, self.funct3, self.rs1, self.rs2, self.imm)
             #self.Interpret_S()
         elif self.opcode in U:
             inst_list = self.decodeU(machine_code)
@@ -280,7 +280,7 @@ class ControlModule:
             self.rs2 = 0
             self.rd = inst_list[0]
             self.imm = inst_list[1]
-            # print(PC, "U type", opcode, rd, imm)
+            print(PC, "U type", self.opcode, self.rd, self.imm)
             #self.Interpret_U()
         elif self.opcode in R:
             inst_list = self.decodeR(machine_code)
@@ -290,7 +290,7 @@ class ControlModule:
             self.rs1 = inst_list[2]
             self.rs2 = inst_list[3]
             self.funct7 = inst_list[4]
-            # print(PC, "R type", opcode, funct3, funct7, rs1, rs2, rd)
+            print(PC, "R type", self.opcode, self.funct3, self.funct7, self.rs1, self.rs2, self.rd)
             #self.Interpret_R()
         elif self.opcode in SB:
             inst_list = self.decodeSB(machine_code)
@@ -300,7 +300,7 @@ class ControlModule:
             self.rs1 = inst_list[1]
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
-            # print(PC, "SB type", opcode, funct3, rs1, rs2, imm)
+            print(PC, "SB type", self.opcode, self.funct3, self.rs1, self.rs2, self.imm)
             #self.Interpret_SB()
         elif self.opcode in UJ:
             inst_list = self.decodeUJ(machine_code)
@@ -310,7 +310,7 @@ class ControlModule:
             self.rs2 = 0
             self.rd = inst_list[0]
             self.imm = inst_list[1]
-            # print(PC, "UJ type", opcode, rd, imm)
+            print(PC, "UJ type", self.opcode, self.rd, self.imm)
             #self.Interpret_UJ()
             # sys.exit("Program Terminated Successfully.")
         else:
@@ -341,7 +341,7 @@ class ControlModule:
         machine_code = machine_code >> 3
         inst_list.append((machine_code & 0x1f))  # rs1
         machine_code = machine_code >> 5
-        inst_list.append((machine_codep & 0x1f))  # rs2
+        inst_list.append((machine_code & 0x1f))  # rs2
         machine_code = machine_code >> 5
         machine_code = machine_code << 5
         temp1 = temp1 + machine_code

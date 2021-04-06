@@ -27,6 +27,7 @@ with open(f"RegisterDump.mc", "w") as fileReg:
         else:
             reg = RiscSim.registers.reg[i] & 0xffffffff  # signed
             fileReg.write(hex(reg))
+        fileReg.write("\n")
 
 # dumping memory
 with open(f"MemoryDump.mc", "w") as fileMem:  # input is dictionary with key as address and value as data

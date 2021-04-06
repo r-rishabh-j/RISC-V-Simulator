@@ -4,7 +4,9 @@ class Registers:
     def __init__(self):
         self.IR=0 # instruction register, holds the instruction to be executed
         # self.PC=0 # program counter, holds pointer to memory location containing instruction
-        self.reg=np.zeros(32) # 32 general purpose registers
+        self.reg=[] # 32 general purpose registers
+        for i in range(32):
+            self.reg.append(0)
         self.reg[2]=0x7ffffff0 # stack pointer sp
         self.reg[3]=0x10000000 # global pointer gp
         self.reg[4]=0x00000000 # thread pointer tp
@@ -17,7 +19,7 @@ class Registers:
     def WriteIR(self, WriteVal, writeIR):
         if(writeIR==True):
             self.IR=WriteVal
-            
+
     def WriteGpRegisters(self, RegNumber, RegWrite, WriteVal):
         if(RegNumber<0 or RegNumber>31):
             raise Exception("Invalid register number!")

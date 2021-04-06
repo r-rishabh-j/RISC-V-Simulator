@@ -30,7 +30,6 @@ class InstructionAddressGenerator:
         if MuxPCSelect==0:             # if this control signal is 1 then put the value of ra (which would be given by register in jalr instruction ) would be given to PC
             self.PC=RA
 
-
     def SetBranchOffset(self,boffset):      # this will take as input the immediate value which will be supplied after the decode step
         self.IAGimmediate=boffset
 

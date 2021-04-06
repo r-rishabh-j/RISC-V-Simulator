@@ -58,7 +58,7 @@ def decode(stage):
     control_module.controlStateUpdate(stage)
     global MuxAout
     global MuxBout
-    control_module.decode(registers.ReadIR())  # this will decode the instruction present in IR and then will set the controls based on the type of instructions
+    control_module.decode(registers.ReadIR(),IAGmodule.PC)  # this will decode the instruction present in IR and then will set the controls based on the type of instructions
     #decode
     if(control_module.terminate==1):
         return

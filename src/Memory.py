@@ -102,9 +102,10 @@ class ByteAddressableMemory:
         return data
 
     def WriteValueAtAddress(self, base_address : int, no_of_bytes: int, write_val: int): # can take both signed/unsigned value
+        val=write_val
         for _byte in range(no_of_bytes): # loop over every byte in the instruction, extract it and store it in little-endian format
-            byte=write_val&0x000000ff # bitmask to extract LS byte
+            byte=val&0x000000ff # bitmask to extract LS byte
             if base_address+_byte>self.MAX_SIGNED_NUM or base_address+_byte<self.MIN_UNSIGNED_NUM:
                 raise Exception("Memory address out of range! Segmentation fault(core dumped)")
             self.memory[base_address+_byte]=byte
-            write_val=write_val>>8 # bitwise right shift
+            val=val>>8 # bitwise right shift
