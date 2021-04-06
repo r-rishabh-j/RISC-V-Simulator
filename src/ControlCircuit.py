@@ -723,86 +723,86 @@ class ControlModule:
         return inst_list
 
     def ALUcontrolgenerator(self, opcode, funct3, funct7):
-        if opcode == 51:
-            if funct3 == 0:
-                if funct7 == 0:
+        if self.opcode == 51:
+            if self.funct3 == 0:
+                if self.funct7 == 0:
                     return 0
-                elif funct7 == 32:
+                elif self.funct7 == 32:
                     return 7
-                elif funct7 == 1:
+                elif self.funct7 == 1:
                     return 9
-            elif funct3 == 7:
-                if funct7 == 0:
+            elif self.funct3 == 7:
+                if self.funct7 == 0:
                     return 1
-            elif funct3 == 6:
-                if funct7 == 0:
+            elif self.funct3 == 6:
+                if self.funct7 == 0:
                     return 2
-                elif funct7 == 1:
+                elif self.funct7 == 1:
                     return 11
-            elif funct3 == 1:
+            elif self.funct3 == 1:
                 return 3
-            elif funct3 == 5:
-                if funct7 == 0:
+            elif self.funct3 == 5:
+                if self.funct7 == 0:
                     return 4
-                elif funct7 == 32:
+                elif self.funct7 == 32:
                     return 5
-            elif funct3 == 2:
-                if funct7 == 0:
+            elif self.funct3 == 2:
+                if self.funct7 == 0:
                     return 6
-            elif funct3 == 4:
-                if funct7 == 0:
+            elif self.funct3 == 4:
+                if self.funct7 == 0:
                     return 8
-                elif funct7 == 1:
+                elif self.funct7 == 1:
                     return 10
             else:
                 raise Exception("Not a valid Instruction")
-        elif opcode == 19:
-            if funct3 == 0 and funct7 == 0:
+        elif self.opcode == 19:
+            if self.funct3 == 0 and self.funct7 == 0:
                 return 0
-            elif funct3 == 7 and funct7 == 0:
+            elif self.funct3 == 7 and self.funct7 == 0:
                 return 1
-            elif funct3 == 6 and funct7 == 0:
+            elif self.funct3 == 6 and self.funct7 == 0:
                 return 2
             else:
                 raise Exception("Not a valid Instruction")
-        elif opcode == 3:
-            if funct3 in [0, 1, 2] and funct7 == 0:
+        elif self.opcode == 3:
+            if self.funct3 in [0, 1, 2] and self.funct7 == 0:
                 return 0
             else:
                 raise Exception("Not a valid Instruction")
-        elif opcode == 103:
-            if funct3 == 0 and funct7 == 0:
+        elif self.opcode == 103:
+            if self.funct3 == 0 and self.funct7 == 0:
                 return 0
             else:
                 raise Exception("Not a valid Instruction")
-        elif opcode == 35:
-            if funct3 in [0, 1, 2] and funct7 == 0:
+        elif self.opcode == 35:
+            if self.funct3 in [0, 1, 2] and self.funct7 == 0:
                 return 0
             else:
                 raise Exception("Not a valid Instruction")
-        elif opcode == 23:
-            if funct3 == 0 and funct7 == 0:
+        elif self.opcode == 23:
+            if self.funct3 == 0 and self.funct7 == 0:
                 return 12
             else:
                 raise Exception("Not a valid Instruction")
-        elif opcode == 55:
-            if funct3 == 0 and funct7 == 0:
+        elif self.opcode == 55:
+            if self.funct3 == 0 and self.funct7 == 0:
                 return 12
             else:
                 raise Exception("Not a valid Instruction")
-        elif opcode == 111:
-            if funct3 == 0 and funct7 == 0:
+        elif self.opcode == 111:
+            if self.funct3 == 0 and self.funct7 == 0:
                 return 0
             else:
                 raise Exception("Not a valid Instruction")
-        elif opcode == 99:
-            if funct3 == 0 and funct7 == 0:
+        elif self.opcode == 99:
+            if self.funct3 == 0 and self.funct7 == 0:
                 return 13
-            elif funct3 == 1 and funct7 == 0:
+            elif self.funct3 == 1 and self.funct7 == 0:
                 return 14
-            elif funct3 == 5 and funct7 == 0:
+            elif self.funct3 == 5 and self.funct7 == 0:
                 return 15
-            elif funct3 == 4 and funct7 == 0:
+            elif self.funct3 == 4 and self.funct7 == 0:
                 return 16
             else:
                 raise Exception("Not a valid Instruction")
