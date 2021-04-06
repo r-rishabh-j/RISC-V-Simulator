@@ -300,6 +300,9 @@ class ControlModule:
             self.imm = inst_list[1]
             # print(PC, "UJ type", opcode, rd, imm)
             #self.Interpret_UJ()
+		elif self.opcode == 17:
+			sys.exit("All instructions executed, end of program")
+
         else:
             raise Exception("Not an instruction")
         
