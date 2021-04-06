@@ -62,6 +62,7 @@ class ControlModule:
         self.MuxINCSelect = 0  # to IAG, 0 for 4(sequential next), 1 for branch offset(imm)
         self.MuxPCSelect = 0  # to IAG
         self.MuxYSelect = 0  # present at output of ALU
+        self.MuxAselect=0
         self.branch = 0  # signal to enforce checking output of ALU since branches are conditional
         self.jump = 0  # for jump signals(see doc)
         # 0- RZ
@@ -70,8 +71,8 @@ class ControlModule:
         self.MuxBSelect  # present at 2nd input of ALU
         # 0- rs2
         # 1- imm
-        self.MuxMASelect  # Present at address input of memory
-        self.MuxMDRSelect  # present at output of memory
+        # self.MuxMASelect  # Present at address input of memory
+        # self.MuxMDRSelect  # present at output of memory
         # self.decoder=DecodeModule()
 
     def controlStateUpdate(self): # will be called in each of 5 stages to release control signals specific to that stage

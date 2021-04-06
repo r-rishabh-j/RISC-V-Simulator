@@ -4,29 +4,59 @@ from Registers import Registers as reg # contains 32 GP registers and PC,IR
 from Memory import ProcessorMemoryInterface# processor memory interface
 from ControlCircuit import ControlModule # generates control signals
 from IAG import InstructionAddressGenerator
-import ALU
+from ALU import ArithmeticLogicUnit
+import Mux
 
 MAX_SIGNED_NUM=0x7fffffff
 MIN_SIGNED_NUM=-0x80000000
 MAX_UNSIGNED_NUM=0xffffffff
 MIN_UNSIGNED_NUM=0x00000000
-# IR=0 # instruction register, holds the instruction to be executed
-# PC=0 # program counter, holds pointer to memory location containing instruction
-#
-# reg=np.zeros(32) # 32 general purpose registers
-# reg[2]=0x7ffffff0 # stack pointer sp
-# reg[3]=0x10000000 # global pointer gp
-# reg[4]=0x00000000 # thread pointer tp
-# reg[5]=0x00000000 # frame pointer fp
 registers=reg() # register object
 memory=ProcessorMemoryInterface()
 control_module=ControlModule()
+ALUmodule=ArithmeticLogicUnit()
+IAGmodule=InstructionAddressGenerator()
+#buffer registers
+RZ=0
+RM=0
+RY=0
+# Muxes
+MuxAout=0 # input 1 of ALU
+MuxBout=0 # input 2 of ALU
+MuxYout=0 # output of MuxY
+def MuxB(MuxB_select):
+    global MuxBout
+    if MuxB_select==0:
+        MuxBout=control_module.imm
+    elif MuxB_select==1:
+        MuxBout=registers.ReadGpRegisters(control_module.rs2)
+    return MuxBout
+def MuxA(MuxA_select):
+    global MuxAout
+    if MuxA_select==0:
+        MuxAout=registers.ReadGpRegisters(control_module.rs1)
+    elif MuxA_select==1:
+        MuxAout=IAGmodule.PC
+    return MuxAout
+def MuxY(MuxY_select):
+    global MuxYout
+    if MuxY_select==0:
+        MuxYout=RZ
+    elif MuxY_select==1:
+        MuxYout=memory.MDR
+    elif MuxY_select==2:
+        MuxYout=IAGmodule.PC_temp
+    return MuxYout
 
+
+###########Stage functions###############
 def fetch():
 
 def decode():
     control_module.decode(registers.ReadIR(True))
 def execute(): # ALU
+    ALUmodule.input1=MuxA(control_module.MuxAselect)
+    ALUmodule.input2=MuxB(control_module.MuxBselect)
 
 def mem_access():
 
