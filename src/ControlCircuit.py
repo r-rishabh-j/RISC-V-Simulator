@@ -487,6 +487,18 @@ class ControlModule:
             raise Exception("Not a valid Instruction")
 
 
+    def branching_controlUpdate(self,outputBool):   # this function will help decide whether to jump or not in branching instructions based on ALU output
+        if self.branch==0:
+            if self.jump==0:
+                self.MuxINCSelect=0
+            else:
+                self.MuxINCSelect=1
+        elif self.branch==1:
+            if outputBool==1:
+                self.MuxINCSelect=1
+            else:
+                self.MuxINCSelect=0
+
     # def Interpret_UJ(self):
     #     self.MemRead = False #Mem is not Read in jal
     #     self.MemWrite = False #mem is not written to in jal
