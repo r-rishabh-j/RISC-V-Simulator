@@ -50,25 +50,25 @@ class ControlModule:
         self.imm = 0 # for imm12, imm5, imm20, imm13
         self.MemRead=False
         self.MemWrite=False
-        self.ALUop=0
-        self.RegWrite=0
+        self.ALUop=0	#to use ALU or not
+        self.RegWrite=0	#1-to update the register(write back stage)
         self.IRwrite=0
         self.PCwrite=0
         self.BytesToRead=0 # for the memory 
         self.BytesToWrite=0 # for the memory 
-        self.MuxINCSelect=0 # to IAG
+        self.MuxINCSelect=0 # to IAG, 0 for 4(sequential next), 1 for branch offset(imm)
         self.MuxPCSelect=0 # to IAG
-        self.MuxY_select=0 # present at output of ALU
+        self.MuxYSelect=0 # present at output of ALU
         self.branch=0 # signal to enforce checking output of ALU since branches are conditional
         self.jump=0 # for jump signals(see doc)
         # 0- RZ
         # 1- MDR
         # 2- Return address from PC # PC has to be incremented in fetch stage itself
-        self.MuxB_select # present at 2nd input of ALU
+        self.MuxBSelect # present at 2nd input of ALU
         # 0- rs2
         # 1- imm
-        self.MuxMA_select # Present at address input of memory
-        self.MuxMDR_select #present at output of memory
+        self.MuxMASelect # Present at address input of memory
+        self.MuxMDRSelect #present at output of memory
         #self.decoder=DecodeModule()
     
     def decode(self,IR): 
