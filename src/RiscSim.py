@@ -87,7 +87,7 @@ def mem_access():
     memory.AccessMemory(control_module.MemRead,control_module.MemWrite,buffer.getRZ(),control_module.BytesToAccess,buffer.getRM())  #Sent the value of RZ in MAR and sent the value of RM in MDR along with appropriate control signals , then based on this the data will be loaded or stored ,for loading data will be available in MDR
 
 def reg_writeback():
-    buffer.setRY(MuxY(control_module.MuxYSelect))    # sets the value of RY buffer as the output of MuxY which will be selected based on control signals
+    buffer.setRY(MuxY(control_module.MuxYSelect))    # sets the value of RY buffer as the output of MuxY which will be selected based on control signals )
     registers.WriteGpRegisters(control_module.rd,control_module.RegWrite,buffer.getRY())  # This will simply write back to the registers based on the control signal
 
 
