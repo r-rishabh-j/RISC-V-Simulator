@@ -8,6 +8,12 @@ def ControlSignalGenerator(opcode, funct3):
         BytestoWrite = 0
         RegWrite = 1    #update register
         MuxINCSelect = 0    #sequentially next PC
+        MuxASelect = 0      #rs1
+        branch = 0          #required to update control for branch inst
+        MuxPCSelect = 1     #not ra
+        #MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
     elif opcode == 19:    #I-type (ori, andi, addi)
         ALUOp = 1
         MuxBSelect = 1     #imm value used in MuxB
@@ -16,6 +22,12 @@ def ControlSignalGenerator(opcode, funct3):
         BytestoWrite = 0
         RegWrite = 1    #update register
         MuxINCSelect = 0    #sequentially next PC
+        MuxASelect = 0      #rs1
+        branch = 0          #required to update control for branch inst
+        MuxPCSelect = 1     #not ra
+        #MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
     elif opcode == 3:   #I-type(load-instructions)
         ALUOp = 1       #ALU used to calculate effective address
         MuxBSelect = 1     #imm value used in MuxB
@@ -29,6 +41,12 @@ def ControlSignalGenerator(opcode, funct3):
         BytestoWrite = 0
         RegWrite = 1    #update register
         MuxINCSelect = 0    #sequentially next PC
+        MuxASelect = 0      #rs1
+        branch = 0          #required to update control for branch inst
+        MuxPCSelect = 1     #not ra
+        #MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = True
+        MemWrite = False
     elif opcode == 103:     #I-type(jalr)
         ALUOp = 0   #ALU not used, done in IAG
         MuxBSelect = 0  #don't-care
@@ -37,6 +55,12 @@ def ControlSignalGenerator(opcode, funct3):
         BytestoWrite = 0
         RegWrite = 1    #update register
         MuxINCSelect = 1
+        MuxASelect = 0      #rs1
+        branch = 0          #required to update control for branch inst
+        MuxPCSelect = 0     #ra input to MuxPC
+        #MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
     elif opcode == 35:      #S-type
         ALUOp = 1   #ALU used to calculate effective address
         MuxBSelect = 1  #imm value used in MuxB
@@ -50,6 +74,12 @@ def ControlSignalGenerator(opcode, funct3):
             BytestoWrite = 4
         RegWrite = 0    #Register update not required
         MuxINCSelect = 0    #sequentially next PC
+        MuxASelect = 0      #rs1
+        branch = 0          #required to update control for branch inst
+        MuxPCSelect = 1     #not ra
+        #MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = True
     elif opcode == 23 :  #U-type(auipc)
         ALUOp = 1
         MuxBSelect = 1
@@ -58,6 +88,12 @@ def ControlSignalGenerator(opcode, funct3):
         BytestoWrite = 0
         RegWrite = 1
         MuxINCSelect = 0    #sequentially next PC
+        MuxASelect = 1      #PC as input1 of ALU
+        branch = 0          #required to update control for branch inst
+        MuxPCSelect = 1     #not ra
+        #MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
     elif opcode == 55:  #U-type(lui)
         ALUOp = 1
         MuxBSelect = 1
@@ -65,7 +101,13 @@ def ControlSignalGenerator(opcode, funct3):
         BytestoRead = 0
         BytestoWrite = 0
         RegWrite = 1
-        MuxINCSelect = 0    #sequentially next PC
+        MuxINCSelect = 0    #sequentially next PC(4)
+        MuxASelect = 0      #rs1
+        branch = 0          #required to update control for branch inst
+        MuxPCSelect = 1     #not ra
+        #MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
     elif opcode == 111: #UJ-type(jal)
         ALUOp = 0   #ALU not required, done in IAG
         MuxBSelect = 0  #don't-care
@@ -74,6 +116,12 @@ def ControlSignalGenerator(opcode, funct3):
         BytestoWrite = 0
         RegWrite = 1    #update register
         MuxINCSelect = 1
+        MuxASelect = 0      #rs1
+        branch = 0          #required to update control for branch inst
+        MuxPCSelect = 1     #not ra
+        #MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
     elif opcode == 99:  #SB type
         ALUOp = 1
         MuxBSelect = 0  #rs2 is required, imm is used in IAG
@@ -81,4 +129,11 @@ def ControlSignalGenerator(opcode, funct3):
         BytestoRead = 0
         BytestoWrite = 0
         RegWrite = 0    #do not update register
-        #MuxINCSelect = 0 /1   #sequentially next PC?
+        MuxINCSelect = 0   #to be updated after ALU
+        MuxASelect = 0      #rs1
+        branch = 1          #required to update control for branch inst
+        MuxPCSelect = 1     #not ra
+        #MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
+        
