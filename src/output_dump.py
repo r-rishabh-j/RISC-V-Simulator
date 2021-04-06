@@ -17,6 +17,11 @@ def print_reg(arr): # input is numpy array
 #for checking
 # arr = np.array([1, -2, 3])
 # print_reg(arr)
+# output example 
+# x0 0x00000001
+# x1 0xfffffffe
+# x2 0x00000003
+
 
 # dumping memory
 def print_mem(dic): # input is dictionary with key as address and value as data
@@ -53,3 +58,6 @@ def print_mem(dic): # input is dictionary with key as address and value as data
 # for checking
 # dic = {19:3,4:11,6:7,241:241}
 # print_mem(dic)
+# output example 
+# 0x00000004 0b 00 07 00 
+# 0x00000010 00 00 00 03
