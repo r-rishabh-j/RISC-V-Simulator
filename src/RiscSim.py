@@ -48,19 +48,19 @@ def MuxY(MuxY_select):
 
 ###########Stage functions###############
 def fetch():
-
-    IAGmodule.PcTempUpdate()  # this will do PC temp = PC + 4
+    # control state update function to be called here
     memory.LoadInstruction(IAGmodule.PC)  # this will fetch the instruction and put it in MDR
     registers.WriteIR(memory.MDR,control_module.IRwrite)  # This loads the Instruction from MDR to IR
+    IAGmodule.PCTempUpdate()  # this will do PC temp = PC + 4
 
 def decode():
     global MuxAout
     global MuxBout
-    control_module.decode(registers.ReadIR(True))  # this will decode the instruction present in IR and then will set the controls based on the type of instructions
+    control_module.decode(registers.ReadIR())  # this will decode the instruction present in IR and then will set the controls based on the type of instructions
     #decode
     buffer.setRA(registers.ReadGpRegisters(control_module.rs1))  # putting the value of RS1 in RA buffer which will then be sent to IAG as input wire
 
-    IAGmodule.Pcset(buffer.getRA(),control_module.MuxPCSelect) # this function will choose PC to be PC or RA based on the control signal generated
+    IAGmodule.PCset(buffer.getRA(),control_module.MuxPCSelect) # this function will choose PC to be PC or RA based on the control signal generated
     IAGmodule.SetBranchOffset(control_module.imm)  # this puts the immediate value decoded to the immediate wire in IAG
 
     #loading the register values
@@ -75,11 +75,10 @@ def execute(): # ALU
     global MuxBout
 
     ALUmodule.ALUexecute(control_module.ALUop, control_module.ALUcontrol,MuxAout, MuxBout)   # This will perform the required Arithmetic / logical operation
-    control_module.branching_controlUpdate(ALUmodule.outputBool)  # this will update MuxINCselect based on wether to jump or not based on the comparison
-
-    IAGmodule.PcUpdate(control_module.MuxINCSelect)  # this will update PC by adding immediate or by adding 4 based on the control signal provided
-
     buffer.setRZ(ALUmodule.output32)  # this will put the value obtained from ALU after execution  in RZ buffer
+
+    control_module.branching_controlUpdate(ALUmodule.outputBool)  # this will update MuxINCselect based on wether to jump or not based on the comparison
+    IAGmodule.PCUpdate(control_module.MuxINCSelect)  # this will update PC by adding immediate or by adding 4 based on the control signal provided
 
 def mem_access():
 

@@ -495,6 +495,8 @@ class ControlModule:
 
 
     def branching_controlUpdate(self,outputBool):   # this function will help decide whether to jump or not in branching instructions based on ALU output
+        if branch&jump==1:
+            raise Exception("Invalid control signal")
         if self.branch==0:
             if self.jump==0:
                 self.MuxINCSelect=0
