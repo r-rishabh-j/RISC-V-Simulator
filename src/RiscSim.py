@@ -63,6 +63,8 @@ def decode(stage):
     if(control_module.terminate==1):
         return
 
+    buffer.setRA(registers.ReadGpRegisters(control_module.rs1))  # putting the value of RS1 in RA buffer which will then be sent to IAG as input wire
+    buffer.setRM(registers.ReadGpRegisters(control_module.rs2))  # putting the value of RS2 in RM buffer
     IAGmodule.PCset(buffer.getRA(),control_module.MuxPCSelect) # this function will choose PC to be PC or RA based on the control signal generated
     IAGmodule.SetBranchOffset(control_module.imm)  # this puts the immediate value decoded to the immediate wire in IAG
 
@@ -70,8 +72,6 @@ def decode(stage):
     MuxAout=MuxA(control_module.MuxASelect)   # this will  (based on control)select what would go into 1st input of ALU
     MuxBout=MuxB(control_module.MuxBSelect)     # this will (based on control) select what would go into 2nd input of ALU
 
-    buffer.setRA(registers.ReadGpRegisters(control_module.rs1))  # putting the value of RS1 in RA buffer which will then be sent to IAG as input wire
-    buffer.setRM(registers.ReadGpRegisters(control_module.rs2))  # putting the value of RS2 in RM buffer
 
 def execute(stage): # ALU
     control_module.controlStateUpdate(stage)
