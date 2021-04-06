@@ -1,4 +1,213 @@
+# control signals generator
+def ControlSignalGenerator(opcode, funct3):
+    if opcode == 51:  # R-type
+        ALUOp = 1  # ALU usage required
+        MuxBSelect = 0  # no immediate
+        MuxYSelect = 0  # choose output of ALU in RZ
+        BytestoRead = 0
+        BytestoWrite = 0
+        RegWrite = 1  # update register
+        MuxINCSelect = 0  # sequentially next PC
+        MuxASelect = 0  # rs1
+        branch = 0  # required to update control for branch inst
+        MuxPCSelect = 1  # not ra
+        # MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
+    elif opcode == 19:  # I-type (ori, andi, addi)
+        ALUOp = 1
+        MuxBSelect = 1  # imm value used in MuxB
+        MuxYSelect = 0  # choose output of ALU in RZ
+        BytestoRead = 0
+        BytestoWrite = 0
+        RegWrite = 1  # update register
+        MuxINCSelect = 0  # sequentially next PC
+        MuxASelect = 0  # rs1
+        branch = 0  # required to update control for branch inst
+        MuxPCSelect = 1  # not ra
+        # MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
+    elif opcode == 3:  # I-type(load-instructions)
+        ALUOp = 1  # ALU used to calculate effective address
+        MuxBSelect = 1  # imm value used in MuxB
+        MuxYSelect = 1  # MDR value selected
+        if funct3 == 0:  # lb
+            BytestoRead = 1
+        if funct3 == 1:  # lh
+            BytestoRead = 2
+        if funct3 == 2:  # lw
+            BytestoRead = 4
+        BytestoWrite = 0
+        RegWrite = 1  # update register
+        MuxINCSelect = 0  # sequentially next PC
+        MuxASelect = 0  # rs1
+        branch = 0  # required to update control for branch inst
+        MuxPCSelect = 1  # not ra
+        # MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = True
+        MemWrite = False
+    elif opcode == 103:  # I-type(jalr)
+        ALUOp = 0  # ALU not used, done in IAG
+        MuxBSelect = 0  # don't-care
+        MuxYSelect = 2  # ra given to MuxY
+        BytestoRead = 0
+        BytestoWrite = 0
+        RegWrite = 1  # update register
+        MuxINCSelect = 1
+        MuxASelect = 0  # rs1
+        branch = 0  # required to update control for branch inst
+        MuxPCSelect = 0  # ra input to MuxPC
+        # MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
+    elif opcode == 35:  # S-type
+        ALUOp = 1  # ALU used to calculate effective address
+        MuxBSelect = 1  # imm value used in MuxB
+        MuxYSelect = 0  # don't-care
+        BytestoRead = 0
+        if funct3 == 0:  # sb
+            BytestoWrite = 1
+        if funct3 == 1:  # sh
+            BytestoWrite = 2
+        if funct3 == 2:  # sw
+            BytestoWrite = 4
+        RegWrite = 0  # Register update not required
+        MuxINCSelect = 0  # sequentially next PC
+        MuxASelect = 0  # rs1
+        branch = 0  # required to update control for branch inst
+        MuxPCSelect = 1  # not ra
+        # MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = True
+    elif opcode == 23:  # U-type(auipc)
+        ALUOp = 1
+        MuxBSelect = 1
+        MuxYSelect = 0  # choose output of ALU in RZ
+        BytestoRead = 0
+        BytestoWrite = 0
+        RegWrite = 1
+        MuxINCSelect = 0  # sequentially next PC
+        MuxASelect = 1  # PC as input1 of ALU
+        branch = 0  # required to update control for branch inst
+        MuxPCSelect = 1  # not ra
+        # MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
+    elif opcode == 55:  # U-type(lui)
+        ALUOp = 1
+        MuxBSelect = 1
+        MuxYSelect = 0  # choose output of ALU in RZ
+        BytestoRead = 0
+        BytestoWrite = 0
+        RegWrite = 1
+        MuxINCSelect = 0  # sequentially next PC(4)
+        MuxASelect = 0  # rs1
+        branch = 0  # required to update control for branch inst
+        MuxPCSelect = 1  # not ra
+        # MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
+    elif opcode == 111:  # UJ-type(jal)
+        ALUOp = 0  # ALU not required, done in IAG
+        MuxBSelect = 0  # don't-care
+        MuxYSelect = 2  # ra given to MuxY
+        BytestoRead = 0
+        BytestoWrite = 0
+        RegWrite = 1  # update register
+        MuxINCSelect = 1
+        MuxASelect = 0  # rs1
+        branch = 0  # required to update control for branch inst
+        MuxPCSelect = 1  # not ra
+        # MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
+    elif opcode == 99:  # SB type
+        ALUOp = 1
+        MuxBSelect = 0  # rs2 is required, imm is used in IAG
+        MuxYSelect = 2  # ra, but don't-care
+        BytestoRead = 0
+        BytestoWrite = 0
+        RegWrite = 0  # do not update register
+        MuxINCSelect = 0  # to be updated after ALU
+        MuxASelect = 0  # rs1
+        branch = 1  # required to update control for branch inst
+        MuxPCSelect = 1  # not ra
+        # MuxMASelect = 1     #PC send to MAR in step1
+        MemRead = False
+        MemWrite = False
 
+    ######mem#########
+    # def InitMemory(self,PC_INST): # loads instruction to memory before execution of program
+    #     for addr in PC_INST: # loop over every instruction
+    #         for _byte in range(4): # loop over every byte in the instruction, extract it and store it in little-endian format
+    #             byte=PC_INST[addr]&0x000000ff # bitmask to extract LS byte
+    #             self.memory[addr+_byte]=byte
+    #             PC_INST[addr]=PC_INST[addr]>>8 # bitwise right shift
+    #     print("Program loaded to memory successfully")
+
+    # def LoadInstruction(self,PC):
+    #     if PC%4!=0: # PC must always be a multiple of 4, word alignment!
+    #         print("Instruction not word aligned")
+    #         sys.exit()
+    #     elif PC<self.MIN_UNSIGNED_NUM or PC>self.MAX_PC: # PC should be in a valid range
+    #         print("PC out of range!!")
+    #     instruction=0 #stores instruction
+    #     for _byte in range(4):
+    #         instruction+=self.memory.get(PC+_byte,0)*(256**_byte)
+    #     self.IRout=instruction
+    #     self.MDR=instruction
+    #     return instruction
+
+    # # If MEM_read==true, ReadMemory is called.
+    # # If MEM_write==true, then WriteMemory is called.
+    # # Else, no action
+    # def AccessMemory(self, MEM_read, MEM_write, base_address, byte_size, RMin):
+    #     if MEM_read==1 and MEM_write==0:
+    #         self.ReadMemory(base_address,byte_size)
+    #     elif MEM_write==1 and MEM_read==0:
+    #         self.WriteMemory(base_address,byte_size,RMin)
+    #     elif MEM_read==0 and MEM_write==0:
+    #         self.MDR=0
+    #     elif MEM_read==1 and MEM_write==1: # may change in pipelining
+    #         print("Invalid control signal received")
+    #         sys.exit()
+    #     return self.MDR
+
+
+    # def ReadMemory(self, base_address, byte_size):
+    #     self.MAR = base_address
+    #     temp_mdr = 0
+    #     for _byte in range(
+    #             byte_size):  # different number of bytes need to be accessed based on the command, ld , lw etc.
+    #         if base_address + _byte < self.MIN_SIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
+    #             print("Address is not in range of data segment")
+    #             sys.exit()
+    #         temp_data = self.memory.get(base_address + _byte, 0)  # accessing the data at BaseAddress + Byte
+    #         for shift in range(_byte):  # for shifting left because of the little endian notation
+    #             temp_data = temp_data << 8  # shifting by a byte or 8 bits
+    #         temp_mdr += temp_data  # writing the shifted data to temp_mdr (note that if we are at base_address + 3 , then the data is shifted 3 times 8 bits at a time and then added to temp_mdr)
+    #     self.MDR = temp_mdr  # writing the data extracted from memory to MDR
+
+    # def WriteMemory(self, base_address, byte_size, RMin):   # writes data in RMin to address given by base_address
+    #     self.MAR = base_address # MAR contains the base address to be written to
+    #     self.MDR = RMin # MDR contains data to be written at address given by MAR
+    #     for _byte in range(byte_size):  # loop over number of bytes to be written, data is written in little endian format
+    #         byte = RMin&0x000000ff  # extract LSB
+    #         if base_address+_byte < self.MIN_SIGNED_NUM or base_address+_byte > self.MAX_SIGNED_NUM: # check if the address lies in range of data segment or not
+    #             print("Address is not in range of data segment")
+    #             sys.exit()
+    #         self.memory[base_address+_byte] = byte
+    #         print("Address: "+hex(base_address+_byte) + " Data: " + hex(byte))
+    #         RMin = RMin>>8 # shift right by 8 bits to set second last byte as LSB
+    #     print("Memory write successful")
+
+# a=ByteAddressableMemory()
+# a.init_memory({0x4 :0x5a583,0x8 :0x300293})
+# for key in a.memory:
+#     print(hex(key),hex(a.memory[key]))
+
+#######decoder#########
     # def Interpret_UJ(self):
     #     self.MemRead = False #Mem is not Read in jal
     #     self.MemWrite = False #mem is not written to in jal

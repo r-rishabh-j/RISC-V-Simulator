@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # this file contains code for the simulator. Contains the ALU
-from Registers import Registers as reg # contains 32 GP registers and PC,IR
+from Registers import Registers as reg # contains 32 GP registers and IR
 from Memory import ProcessorMemoryInterface# processor memory interface
 from ControlCircuit import ControlModule # generates control signals
 from IAG import InstructionAddressGenerator
@@ -64,8 +64,8 @@ def decode():
     IAGmodule.SetBranchOffset(control_module.imm)  # this puts the immediate value decoded to the immediate wire in IAG
 
     #loading the register values
-    MuxAout=MuxA(control_module.MuxAselect)   # this will  (based on control)select what would go into 1st input of ALU
-    MuxBout=MuxB(control_module.MuxBselect)     # this will (based on control) select what would go into 2nd input of ALU
+    MuxAout=MuxA(control_module.MuxASelect)   # this will  (based on control)select what would go into 1st input of ALU
+    MuxBout=MuxB(control_module.MuxBSelect)     # this will (based on control) select what would go into 2nd input of ALU
 
     buffer.setRM(registers.ReadGpRegisters(control_module.rs2))  # putting the value of RS2 in RM buffer
 

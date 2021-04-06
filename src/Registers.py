@@ -18,14 +18,6 @@ class Registers:
         if(writeIR==True):
             self.IR=WriteVal
 
-    def ReadPC(self):
-        PCval=self.PC
-        return PCval
-
-    def WritePC(self, WriteVal, writePC):
-        if(writePC==True):
-            self.PC=WriteVal
-
     def WriteGpRegisters(self, RegNumber, RegWrite, WriteVal):
         if(RegNumber<0 or RegNumber>31):
             raise Exception("Invalid register number!")
