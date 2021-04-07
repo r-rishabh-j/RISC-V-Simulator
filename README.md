@@ -53,7 +53,7 @@ The instruction goes through- fetch, decode, execute, memory access and write-ba
 
 Information regarding the status of the program and the results including register values and memory elements are displayed with the help of a user-friendly GUI developed with PyQt(a sample shown below).
 
-<img src="https://github.com/r-rishabh-j/RISC-V-Simulator/blob/main/GUI_sample.jpg" width="100" height="100">
+<img src="https://github.com/r-rishabh-j/RISC-V-Simulator/blob/main/GUI_sample.jpg" width="1000" height="1000">
 
 **CONTRIBUTIONS:**</br>
 As a team effort, no strict separation was followed. A loose outline of the work is as follows:
