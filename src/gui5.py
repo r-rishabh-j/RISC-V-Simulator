@@ -66,7 +66,7 @@ class Ui_MainWindow(object):
         self.tableWidget2.setGeometry(QtCore.QRect(30, 40, 331, 631))
         self.tableWidget2.setRowCount(0)
         self.tableWidget2.setColumnCount(0)
-        self.tableWidget.setObjectName("tableWidget2")
+        self.tableWidget2.setObjectName("tableWidget2")
         self.frame_3 = QtWidgets.QFrame(self.centralwidget)
         self.frame_3.setGeometry(QtCore.QRect(930, 50, 451, 711))
         self.frame_3.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -205,13 +205,13 @@ class Ui_MainWindow(object):
         # code to start running the code
         # code to add data in register text Box
         code = self.MachineCode.toPlainText()
-        print(code)
+        #print(code)
         fhand = open("gui_instructions.mc", 'w')
         fhand.write(code)
         fhand.close()
 
         MachineCodeParser.parser("gui_instructions.mc")
-        print(MachineCodeParser.PC_INST)
+        #print(MachineCodeParser.PC_INST)
         # program load
         RiscSim.memory.InitMemory(MachineCodeParser.PC_INST)
         # Run the simulator
