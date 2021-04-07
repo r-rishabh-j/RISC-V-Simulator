@@ -1,10 +1,8 @@
 # RISC-V-SIMULATOR
 
-CS204 AY 2020-21 Sem2 Project: RISC-V 32I Simulator
-
-Language for Source Code: Python
-
-GUI : PyQt5
+CS204 AY 2020-21 Sem2 Project: RISC-V 32I Simulator<br/>
+Language for Source Code: Python</br>
+GUI : PyQt5</br>
 
 **TEAM DETAILS:**
 
