@@ -5,11 +5,11 @@ Language for Source Code: Python</br>
 GUI : PyQt5</br>
 
 **TEAM DETAILS:**<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Ayush Verma		2019CSB1147<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Bhumika			2019CSB1152<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Keshav Krishna	2019CSB1224<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Rishabh Jain	2019CSB1286<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;Vishawam Datta	2019CSB1305<br/>
+Ayush Verma		2019CSB1147<br/>
+Bhumika			2019CSB1152<br/>
+Keshav Krishna	2019CSB1224<br/>
+Rishabh Jain	2019CSB1286<br/>
+Vishawam Datta	2019CSB1305<br/>
 
 **HOW TO RUN:**<br/>
     Clone the repository to your local system. After ensuring the installation of the following dependencies, run the steps as mentioned hereafter.
@@ -21,7 +21,7 @@ GUI : PyQt5</br>
 	-PyQt5 >= 5.12
     
 **Steps to run via GUI:**
-- Run the command “python gui6.py” or “python3 gui6,py” on Windows and Linux 		 respectively(name to be decided later)
+- Run the command “python gui6.py” or “python3 gui6,py” on Windows and Linux 		 respectively
 - The user-interface pops up. Type in your machine code in the “Machine Code” Editor in the format specified in the description below.
 - Press the Run button. The Register and Memory state of the program is updated and displayed
 - Meaningful messages from the simulator will be displayed on the terminal.
@@ -35,7 +35,7 @@ GUI : PyQt5</br>
 **PHASE1 DESCRIPTION:**</br>
     A 5-step single-cycle instruction execution is implemented. The input is taken in the form of a list of machine codes in the format:
 
->\ <address of instruction\> \<machine code of the instruction\> \<optional ‘#’ beginning comments\>
+> <address of instruction\> \<machine code of the instruction\> \<optional ‘#’ beginning comments\>
 
 The program terminates with the "\<address of instruction\> 0x11" code.
 
