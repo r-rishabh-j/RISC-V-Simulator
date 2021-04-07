@@ -15,12 +15,13 @@ RiscSim.RunSim()
 #fileReg=open("RegisterDump.mc",'w')
 #fileMem=open("MemoryDump.mc",'w')
 
+# this fxn extends 0x2 to 0x00000002
 def padhexa(s):
     return '0x' + s[2:].zfill(8)
 
 #def print_reg(arr):  # input is numpy array
 with open(f"RegisterDump.mc", "w") as fileReg:
-    for i in range(32):
+    for i in range(32): # for all 32 registers
         fileReg.write(f"x{i} ")  # print address of register for eg. x5
         if (RiscSim.registers.reg[i] >= 0):
             fileReg.write(padhexa(hex(RiscSim.registers.reg[i])))
@@ -44,9 +45,9 @@ with open(f"MemoryDump.mc", "w") as fileMem:  # input is dictionary with key as 
     for i in temp_lst:
         fileMem.write(f"{padhexa(hex(i))} ")  # printing base address
         if i in lst:
-            fileMem.write(f"{padhexa(hex(RiscSim.memory.memory_module.memory[i]))[8:]} " )  # if data in dictionary
+            fileMem.write(f"{padhexa(hex(RiscSim.memory.memory_module.memory[i]))[8:]} " )  # if key in dictionary, print its data
         else:
-            fileMem.write("00  ")  # if data not in dictionary
+            fileMem.write("00  ")  # if key not in dictionary, print 00
         if (i + 1) in lst:
             fileMem.write(f"{padhexa(hex(RiscSim.memory.memory_module.memory[i + 1]))[8:]} ")
         else:
