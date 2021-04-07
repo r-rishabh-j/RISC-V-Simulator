@@ -9,17 +9,17 @@ def print_reg(arr): # input is numpy array
     for i in range(32):
         print("x",i," ",sep="",end="") # print address of register for eg. x5
         if(arr[i]>=0):
-            print(padhexa(hex(arr[i])))    
+            print(padhexa(hex(arr[i])).upper())    
         else:
             reg=arr[i] & 0xffffffff  # signed
-            print(hex(reg))
+            print(hex(reg).upper())
             
 #for checking
 # arr = np.array([1, -2, 3])
 # print_reg(arr)
 # output example 
 # x0 0x00000001
-# x1 0xfffffffe
+# x1 0xFFFFFFFE
 # x2 0x00000003
 
 
@@ -36,21 +36,21 @@ def print_mem(dic): # input is dictionary with key as address and value as data
             temp_lst.append(temp)
     temp_lst.sort()
     for i in temp_lst:
-        print(padhexa(hex(i)),end=" ")  # printing base address
+        print((padhexa(hex(i)).upper()),end=" ")  # printing base address
         if i in lst:
-            print(padhexa(hex(dic[i]))[8:],end=" ") # if data in dictionary
+            print((padhexa(hex(dic[i])).upper())[8:],end=" ") # if data in dictionary
         else:
             print("00",end=" ") # if data not in dictionary
         if (i+1) in lst:
-            print(padhexa(hex(dic[i+1]))[8:],end=" ")
+            print((padhexa(hex(dic[i+1])).upper())[8:],end=" ")
         else:
             print("00",end=" ")
         if (i+2) in lst:
-            print(padhexa(hex(dic[i+2]))[8:],end=" ")
+            print((padhexa(hex(dic[i+2])).upper())[8:],end=" ")
         else:
             print("00",end=" ")
         if (i+3) in lst:
-            print(padhexa(hex(dic[i+3]))[8:],end=" ")
+            print((padhexa(hex(dic[i+3])).upper())[8:],end=" ")
         else:
             print("00",end=" ")
         print() # new line
@@ -59,5 +59,5 @@ def print_mem(dic): # input is dictionary with key as address and value as data
 # dic = {19:3,4:11,6:7,241:241}
 # print_mem(dic)
 # output example 
-# 0x00000004 0b 00 07 00 
+# 0x00000004 0B 00 07 00 
 # 0x00000010 00 00 00 03
