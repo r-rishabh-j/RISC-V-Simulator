@@ -111,10 +111,10 @@ class Ui_MainWindow(object):
             text = "x"+str(i)
             # print address of register for eg. x5
             if arr[i] >= 0:
-                self.Registers.append(text + "\t" + (self.padhexa(hex(arr[i]))).upper())
+                self.Registers.append(text + "\t" + (self.padhexa(hex(arr[i]))).upper().replace('X', 'x'))
             else:
                 reg = arr[i] & 0xffffffff  # signed
-                self.Registers.append(text + "\t" + (hex(reg)).upper())
+                self.Registers.append(text + "\t" + (hex(reg)).upper().replace('X', 'x'))
 
     def update_memory(self, dic):
         lst = []  # stores keys present in dictionary
@@ -129,7 +129,7 @@ class Ui_MainWindow(object):
         temp_lst.sort()
         for i in temp_lst:
             text = ""
-            text = text + (self.padhexa(hex(i)).upper()) # printing base address
+            text = text + (self.padhexa(hex(i)).upper().replace('X', 'x')) # printing base address
             if i in lst:
                   # if data in dictionary
                 text = text + "\t" + (self.padhexa(hex(dic[i])).upper())[8:]

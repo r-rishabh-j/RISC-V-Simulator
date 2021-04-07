@@ -9,10 +9,10 @@ def print_reg(arr): # input is numpy array
     for i in range(32):
         print("x",i," ",sep="",end="") # print address of register for eg. x5
         if(arr[i]>=0):
-            print(padhexa(hex(arr[i])).upper())    
+            print(padhexa(hex(arr[i])).upper().replace('X', 'x'))    
         else:
             reg=arr[i] & 0xffffffff  # signed
-            print(hex(reg).upper())
+            print(hex(reg).upper().replace('X', 'x'))
             
 #for checking
 # arr = np.array([1, -2, 3])
@@ -36,7 +36,7 @@ def print_mem(dic): # input is dictionary with key as address and value as data
             temp_lst.append(temp)
     temp_lst.sort()
     for i in temp_lst:
-        print((padhexa(hex(i)).upper()),end=" ")  # printing base address
+        print((padhexa(hex(i)).upper().replace('X', 'x')),end=" ")  # printing base address
         if i in lst:
             print((padhexa(hex(dic[i])).upper())[8:],end=" ") # if data in dictionary
         else:
