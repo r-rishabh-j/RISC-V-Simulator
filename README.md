@@ -35,7 +35,7 @@ Vishawam Datta	2019CSB1305<br/>
 **PHASE1 DESCRIPTION:**</br>
     A 5-step single-cycle instruction execution is implemented. The input is taken in the form of a list of machine codes in the format:
 
-> <address of instruction\> \<machine code of the instruction\> \<optional ‘#’ beginning comments\>
+> \<address of instruction\> \<machine code of the instruction\> \<optional ‘#’ beginning comments\>
 
 The program terminates with the "\<address of instruction\> 0x11" code.
 
@@ -53,6 +53,7 @@ The instruction goes through- fetch, decode, execute, memory access and write-ba
 
 Information regarding the status of the program and the results including register values and memory elements are displayed with the help of a user-friendly GUI developed with PyQt(a sample shown below).
 
+![Sample GUI Output](https://github.com/r-rishabh-j/RISC-V-Simulator/blob/main/GUI_sample.jpg)
 
 **CONTRIBUTIONS:**</br>
 As a team effort, no strict separation was followed. A loose outline of the work is as follows:
