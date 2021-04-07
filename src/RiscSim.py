@@ -97,7 +97,9 @@ def reg_writeback(stage):
 
 def RunSim():
     #loop
+    clock=1
     while(1):
+        print(f"\n\033[1;96mCycle {clock}\033[0m")
         stage=0
         fetch(stage)
         stage=1
@@ -110,3 +112,6 @@ def RunSim():
         mem_access(stage)
         stage=4
         reg_writeback(stage)
+        clock=clock+1
+        
+

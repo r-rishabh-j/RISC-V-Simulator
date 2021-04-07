@@ -17,19 +17,19 @@ class ProcessorMemoryInterface:
     def InitMemory(self,PC_INST): # loads instruction to memory before execution of program
         for addr in PC_INST: # loop over every instruction
             self.memory_module.WriteValueAtAddress(addr,4,PC_INST[addr])
-        print("Program loaded to memory successfully")
+        print("\033[92mProgram loaded to memory successfully\033[0m")
 
     def LoadInstruction(self,PC):
         if PC%4!=0: # PC must always be a multiple of 4, word alignment!
-            raise Exception("Instruction not word aligned")
+            raise Exception("\033[1;31mInstruction not word aligned\033[0m")
         elif PC<self.MIN_UNSIGNED_NUM or PC>self.MAX_PC: # PC should be in a valid range
-            raise Exception("PC out of range!!")
+            raise Exception("\033[1;31mPC out of range!!\033[0m")
         self.MAR=PC
         instruction=0 #stores instruction
         instruction=self.memory_module.GetUnsignedValueAtAddress(self.MAR,4)
         self.IRout=instruction
         self.MDR=instruction
-        print(f"Loaded instruction from {hex(PC)}")
+        print(f"\033[93mLoaded instruction from {hex(PC)}\033[0m")
         return instruction
 
     # If MEM_read==true, ReadMemory is called.
@@ -43,14 +43,14 @@ class ProcessorMemoryInterface:
         elif MEM_read==0 and MEM_write==0:
             self.MDR=0
         elif MEM_read==1 and MEM_write==1: # may change in pipelining
-            raise Exception("Invalid control signal received")
+            raise Exception("\033[1;31mInvalid control signal received\033[0m")
         return self.MDR
 
 
     def ReadMemory(self, base_address:int, no_of_bytes:int):
         self.MAR = base_address
         self.MDR=self.memory_module.GetSignedValueAtAddress(self.MAR, no_of_bytes)
-        print(f"Read {no_of_bytes} bytes from {hex(base_address)}")
+        print(f"\033[93mRead {no_of_bytes} bytes from {hex(base_address)}\033[0m")
         data=self.MDR
         return data
 
@@ -58,7 +58,7 @@ class ProcessorMemoryInterface:
         self.MAR = base_address # MAR contains the base address to be written to
         self.MDR = RMin # MDR contains data to be written at address given by MAR
         self.memory_module.WriteValueAtAddress(base_address, byte_size, self.MDR)
-        print(f"Wrote {byte_size} bytes at {hex(base_address)}")
+        print(f"\033[93mWrote {byte_size} bytes at {hex(base_address)}\033[0m")
 
 class ByteAddressableMemory:
     MAX_SIGNED_NUM=0x7fffffff
@@ -74,17 +74,17 @@ class ByteAddressableMemory:
         data=0
         for _byte in range(no_of_bytes):
             if base_address + _byte < self.MIN_UNSIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
-                raise Exception("Address is not in range of data segment")
+                raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
             data+=self.memory.get(base_address+_byte,0)*(256**_byte)
         return data
 
     def GetSignedValueAtAddress(self, base_address : int, no_of_bytes: int):
         if(no_of_bytes==3):
-            raise Exception("Instruction not supported")
+            raise Exception("\033[1;31mInstruction not supported\033[0m")
         data=0
         for _byte in range(no_of_bytes):  # different number of bytes need to be accessed based on the command, ld , lw etc.
             if base_address + _byte < self.MIN_UNSIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
-                raise Exception("Address is not in range of data segment")
+                raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
             data+=self.memory.get(base_address+_byte,0)*(256**_byte)
         # conversion to signed value
         MSmask=0 # to get MSB
@@ -106,6 +106,6 @@ class ByteAddressableMemory:
         for _byte in range(no_of_bytes): # loop over every byte in the instruction, extract it and store it in little-endian format
             byte=val&0x000000ff # bitmask to extract LS byte
             if base_address+_byte>self.MAX_SIGNED_NUM or base_address+_byte<self.MIN_UNSIGNED_NUM:
-                raise Exception("Memory address out of range! Segmentation fault(core dumped)")
+                raise Exception("\033[1;31mMemory address out of range! Segmentation fault(core dumped)\033[0m")
             self.memory[base_address+_byte]=byte
             val=val>>8 # bitwise right shift

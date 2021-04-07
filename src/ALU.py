@@ -17,7 +17,6 @@ class ArithmeticLogicUnit:
 
     def ALUexecute(self, ALUop, ALUcontrol, inp1, inp2):
         if(ALUop==0): # ALU in NoOp condition
-            print("hi")
             self.output32=0
             self.outputBool=False
             return 0
@@ -64,7 +63,7 @@ class ArithmeticLogicUnit:
         add=(-(add&MSmask32)+(add&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=add
         self.outputBool=True
-        print(f"ALU- added {hex(self.input1)} and {self.input2}")
+        print(f"\033[95mALU- added {hex(self.input1)} and {self.input2}\033[0m")
         return add
 
     def subtract(self): # sub
@@ -72,7 +71,7 @@ class ArithmeticLogicUnit:
         sub=(-(sub&MSmask32)+(sub&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=sub
         self.outputBool=True
-        print(f"ALU- Subtracted {hex(self.input2)} from {self.input1}")
+        print(f"\033[95mALU- Subtracted {hex(self.input2)} from {self.input1}\033[0m")
         return sub
     
     def AUIPC_LUI(self): # input1=PC, input2=imm20
@@ -102,7 +101,7 @@ class ArithmeticLogicUnit:
         mult=(-(mult&MSmask32)+(mult&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=mult
         self.outputBool=True
-        print(f"ALU- multiplied {hex(self.input1)} and {self.input2}")
+        print(f"\033[95mALU- multiplied {hex(self.input1)} and {self.input2}\033[0m")
         return mult
 
     def division(self): # div
@@ -112,7 +111,7 @@ class ArithmeticLogicUnit:
         div=(-(div&MSmask32)+(div&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=div
         self.outputBool=True
-        print(f"ALU- Divided {hex(self.input1)} by {self.input2}")
+        print(f"\033[95mALU- Divided {hex(self.input1)} by {self.input2}\033[0m")
         return div
 
     def remainder(self): # rem
@@ -122,7 +121,7 @@ class ArithmeticLogicUnit:
         mod=(-(mod&MSmask32)+(mod&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=mod
         self.outputBool=True
-        print(f"ALU- Modulo of {hex(self.input1)} by {self.input2}")
+        print(f"\033[95mALU- Modulo of {hex(self.input1)} by {self.input2}\033[0m")
         return mod
 
     def rightShiftlogical(self): # srl
@@ -131,7 +130,7 @@ class ArithmeticLogicUnit:
         temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=temp
         self.outputBool=True
-        print(f"ALU- Logical right shift {self.input1} by {self.input2}")
+        print(f"\033[95mALU- Logical right shift {self.input1} by {self.input2}\033[0m")
         return temp
 
     def rightShiftarithmetic(self): # sra
@@ -139,7 +138,7 @@ class ArithmeticLogicUnit:
         temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=temp
         self.outputBool=True
-        print(f"ALU- Arithmetic right shift {self.input1} by {self.input2}")
+        print(f"\033[95mALU- Arithmetic right shift {self.input1} by {self.input2}\033[0m")
         return temp
 
     def leftShift(self): #sll
@@ -147,7 +146,7 @@ class ArithmeticLogicUnit:
         temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=temp
         self.outputBool=True
-        print(f"ALU- Leftshift {self.input1} by {self.input2}")
+        print(f"\033[95mALU- Leftshift {self.input1} by {self.input2}\033[0m")
         return temp
 
     def bitwiseAND(self): # and, andi
@@ -155,7 +154,7 @@ class ArithmeticLogicUnit:
         temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask))
         self.output32=temp
         self.outputBool=True
-        print(f"ALU- Bitwise AND {self.input1}, {self.input2}l")
+        print(f"\033[95mALU- Bitwise AND {self.input1}, {self.input2}\033[0m")
         return temp
 
     def bitwiseXOR(self): #  xor
@@ -163,7 +162,7 @@ class ArithmeticLogicUnit:
         temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask))
         self.output32 = temp
         self.outputBool=True
-        print(f"ALU- Bitwise XOR {self.input1}, {self.input2}l")
+        print(f"\033[95mALU- Bitwise XOR {self.input1}, {self.input2}\033[0m")
         return temp
 
     def bitwiseOR(self): # or, ori
@@ -171,7 +170,7 @@ class ArithmeticLogicUnit:
         temp=(-(temp&MSmask32)+(temp&bit_0_to_31_mask))
         self.output32 = temp
         self.outputBool=True
-        print(f"ALU- Bitwise OR {self.input1}, {self.input2}l")
+        print(f"\033[95mALU- Bitwise OR {self.input1}, {self.input2}\033[0m")
         return temp
     
     def areEqual(self): # beq

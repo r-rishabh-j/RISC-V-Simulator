@@ -22,23 +22,23 @@ class Registers:
 
     def WriteGpRegisters(self, RegNumber, RegWrite, WriteVal):
         if(RegNumber<0 or RegNumber>31):
-            raise Exception("Invalid register number!")
+            raise Exception("\033[1;31mInvalid register number!\033[0m")
         elif(RegNumber==0 or RegWrite==False):
             return 0
         # elif(RegWrite==0):
         #     raise Exception("RegWrite not activated! Cannot write to register")
         elif(WriteVal>=2**31 or WriteVal<-2**31):
-            raise Exception("WriteValue out of range!")
+            raise Exception("\033[1;31mWriteValue out of range!\033[0m")
         self.reg[RegNumber]=WriteVal
-        print(f"Written {WriteVal} in x{RegNumber}")
+        print(f"\033[94mWritten {WriteVal} in x{RegNumber}\033[0m")
 
     def ReadGpRegisters(self, RegNumber):
         if(RegNumber<0 or RegNumber>31):
-            raise Exception("Invalid register number!")
+            raise Exception("\033[1;31mInvalid register number!\033[0m")
         # elif(RegRead==0):
         #     raise Exception("RegRead not activated! Cannot read register")
         elif(RegNumber==0):
             return 0
         val=self.reg[RegNumber]
-        print(f"Read {val} from x{RegNumber}")
+        print(f"\033[94mRead {val} from x{RegNumber}\033[0m")
         return val

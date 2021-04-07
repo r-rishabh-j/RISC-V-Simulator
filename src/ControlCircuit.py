@@ -132,7 +132,7 @@ class ControlModule:
             elif self.funct3 == 2:   #lw
                 self.BytesToAccess = 4
             else:
-                raise Exception("Invalid funct3")
+                raise Exception("\033[1;31mInvalid funct3\033[0m")
             #self.BytestoWrite = 0
             self.MuxINCSelect = 0  #sequentially next PC
             self.MuxASelect = 0  # rs1
@@ -170,7 +170,7 @@ class ControlModule:
             elif self.funct3 == 2: #sw
                 self.BytesToAccess = 4
             else:
-                raise Exception("Invalid funct3")
+                raise Exception("\033[1;31mInvalid funct3\033[0m")
             self.RegWrite = 0    #Register update not required
             self.MuxINCSelect = 0    #sequentially next PC
             self.MuxASelect = 0      #rs1
@@ -250,7 +250,7 @@ class ControlModule:
         self.opcode = (machine_code & 0x7f)
         # print(opcode, temp)
         if self.opcode == 17:
-            print("Program Terminated Successfully")
+            print("\033[1;92m\nProgram Terminated Successfully\033[0m")
             self.terminate=1
             return
         elif self.opcode in I:
@@ -261,7 +261,7 @@ class ControlModule:
             self.funct3 = inst_list[1]
             self.rs1 = inst_list[2]
             self.imm = inst_list[3]
-            print(PC, "I type", self.opcode, self.funct3, self.rs1, self.rd, self.imm)
+            print(f"I type, opt: {self.opcode}, funct3: {self.funct3}, rs1: {self.rs1}, rd: {self.rd}, imm: {self.imm}")
             #self.Interpret_I()
         elif self.opcode in S:
             inst_list = self.decodeS(machine_code)
@@ -271,7 +271,7 @@ class ControlModule:
             self.rs1 = inst_list[1]
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
-            print(PC, "S type", self.opcode, self.funct3, self.rs1, self.rs2, self.imm)
+            print(f"S type, opt: {self.opcode}, funct3: {self.funct3}, rs1: {self.rs1}, rs2: {self.rs2}, imm: {self.imm}")
             #self.Interpret_S()
         elif self.opcode in U:
             inst_list = self.decodeU(machine_code)
@@ -281,7 +281,7 @@ class ControlModule:
             self.rs2 = 0
             self.rd = inst_list[0]
             self.imm = inst_list[1]
-            print(PC, "U type", self.opcode, self.rd, self.imm)
+            print(f"U type, opt: {self.opcode}, rd: {self.rd}, imm: {self.imm}")
             #self.Interpret_U()
         elif self.opcode in R:
             inst_list = self.decodeR(machine_code)
@@ -291,7 +291,7 @@ class ControlModule:
             self.rs1 = inst_list[2]
             self.rs2 = inst_list[3]
             self.funct7 = inst_list[4]
-            print(PC, "R type", self.opcode, self.funct3, self.funct7, self.rs1, self.rs2, self.rd)
+            print(f"R type, opt: {self.opcode}, funct3: {self.funct3}, funct7: {self.funct7}, rs1: {self.rs1}, rs2: {self.rs2}, rd: {self.rd}")
             #self.Interpret_R()
         elif self.opcode in SB:
             inst_list = self.decodeSB(machine_code)
@@ -301,7 +301,7 @@ class ControlModule:
             self.rs1 = inst_list[1]
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
-            print(PC, "SB type", self.opcode, self.funct3, self.rs1, self.rs2, self.imm)
+            print(f"SB type, opt: {self.opcode}, funct3: {self.funct3}, rs1: {self.rs1}, rs2: {self.rs2}, imm: {self.imm}")
             #self.Interpret_SB()
         elif self.opcode in UJ:
             inst_list = self.decodeUJ(machine_code)
@@ -311,11 +311,11 @@ class ControlModule:
             self.rs2 = 0
             self.rd = inst_list[0]
             self.imm = inst_list[1]
-            print(PC, "UJ type", self.opcode, self.rd, self.imm)
+            print(f"UJ type, opt: {self.opcode}, rd: {self.rd}, imm: {self.imm}")
             #self.Interpret_UJ()
             # sys.exit("Program Terminated Successfully.")
         else:
-            raise Exception("Not an instruction")
+            raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         # generate control signals for ALU and other modules
         self.ControlSignalGenerator()
         self.ALUcontrol = self.ALUcontrolgenerator()
@@ -452,7 +452,7 @@ class ControlModule:
                 elif self.funct7 == 1:
                     return 10
             else:
-                raise Exception("Not a valid Instruction")
+                raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         elif self.opcode == 19:
             if self.funct3 == 0 and self.funct7 == 0:
                 return 0
@@ -461,37 +461,37 @@ class ControlModule:
             elif self.funct3 == 6 and self.funct7 == 0:
                 return 2
             else:
-                raise Exception("Not a valid Instruction")
+                raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         elif self.opcode == 3:
             if self.funct3 in [0, 1, 2] and self.funct7 == 0:
                 return 0
             else:
-                raise Exception("Not a valid Instruction")
+                raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         elif self.opcode == 103:
             if self.funct3 == 0 and self.funct7 == 0:
                 return 0
             else:
-                raise Exception("Not a valid Instruction")
+                raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         elif self.opcode == 35:
             if self.funct3 in [0, 1, 2] and self.funct7 == 0:
                 return 0
             else:
-                raise Exception("Not a valid Instruction")
+                raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         elif self.opcode == 23:
             if self.funct3 == 0 and self.funct7 == 0:
                 return 12
             else:
-                raise Exception("Not a valid Instruction")
+                raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         elif self.opcode == 55:
             if self.funct3 == 0 and self.funct7 == 0:
                 return 12
             else:
-                raise Exception("Not a valid Instruction")
+                raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         elif self.opcode == 111:
             if self.funct3 == 0 and self.funct7 == 0:
                 return 0
             else:
-                raise Exception("Not a valid Instruction")
+                raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         elif self.opcode == 99:
             if self.funct3 == 0 and self.funct7 == 0:
                 return 13
@@ -502,14 +502,14 @@ class ControlModule:
             elif self.funct3 == 4 and self.funct7 == 0:
                 return 16
             else:
-                raise Exception("Not a valid Instruction")
+                raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         else:
-            raise Exception("Not a valid Instruction")
+            raise Exception("\033[1;31mNot a valid Instruction\033[0m")
 
 
     def branching_controlUpdate(self,outputBool):   # this function will help decide whether to jump or not in branching instructions based on ALU output
         if self.branch==1 and self.jump==1:
-            raise Exception("Invalid control signal")
+            raise Exception("\033[1;31mInvalid control signal\033[0m")
         if self.branch==0:
             if self.jump==0:
                 self.MuxINCSelect=0

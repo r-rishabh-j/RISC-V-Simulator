@@ -9,9 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import MachineCodeParser
-import RiscSim
-
+import importlib
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -209,6 +207,8 @@ class Ui_MainWindow(object):
             #self.Memory.append(text)
 
     def run(self):
+        import MachineCodeParser
+        import RiscSim
         # code to start running the code
         # code to add data in register text Box
         code = self.MachineCode.toPlainText()
@@ -228,6 +228,8 @@ class Ui_MainWindow(object):
         # #code to add memory in memory text Box
         # dic = {19: 3, 4: 11, 6: 7, 241: 241}
         self.update_memory(RiscSim.memory.memory_module.memory)
+        importlib.reload(RiscSim)
+        importlib.reload(MachineCodeParser)
 
 
 if __name__ == "__main__":

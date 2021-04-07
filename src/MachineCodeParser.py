@@ -45,5 +45,6 @@ def parser(FileName):
             print(f"Line {line_number}: Instruction word out of range")
             sys.exit()
         PC_INST[line[0]]=line[1]
+    instructions.close()
         #print(line)
     
