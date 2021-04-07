@@ -24,10 +24,10 @@ with open(f"RegisterDump.mc", "w") as fileReg:
     for i in range(32): # for all 32 registers
         fileReg.write(f"x{i} ")  # print address of register for eg. x5
         if (RiscSim.registers.reg[i] >= 0):
-            fileReg.write(padhexa(hex(RiscSim.registers.reg[i])))
+            fileReg.write(padhexa(hex(arr[i])).upper())))
         else:
             reg = RiscSim.registers.reg[i] & 0xffffffff  # signed
-            fileReg.write(hex(reg))
+            fileReg.write(hex(reg).upper())
         fileReg.write("\n")
 
 # dumping memory
@@ -43,21 +43,21 @@ with open(f"MemoryDump.mc", "w") as fileMem:  # input is dictionary with key as 
             temp_lst.append(temp)
     temp_lst.sort()
     for i in temp_lst:
-        fileMem.write(f"{padhexa(hex(i))} ")  # printing base address
+        fileMem.write(f"{(padhexa(hex(i)).upper())} ")  # printing base address
         if i in lst:
-            fileMem.write(f"{padhexa(hex(RiscSim.memory.memory_module.memory[i]))[8:]} " )  # if key in dictionary, print its data
+            fileMem.write(f"{(padhexa(hex(RiscSim.memory.memory_module.memory[i])).upper())[8:]} " )  # if key in dictionary, print its data
         else:
             fileMem.write("00  ")  # if key not in dictionary, print 00
         if (i + 1) in lst:
-            fileMem.write(f"{padhexa(hex(RiscSim.memory.memory_module.memory[i + 1]))[8:]} ")
+            fileMem.write(f"{(padhexa(hex(RiscSim.memory.memory_module.memory[i + 1])).upper())[8:]} ")
         else:
             fileMem.write("00  ")
         if (i + 2) in lst:
-            fileMem.write(f"{padhexa(hex(RiscSim.memory.memory_module.memory[i + 2]))[8:]} ")
+            fileMem.write(f"{(padhexa(hex(RiscSim.memory.memory_module.memory[i + 2])).upper())[8:]} ")
         else:
             fileMem.write("00  ")
         if (i + 3) in lst:
-            fileMem.write(f"{padhexa(hex(RiscSim.memory.memory_module.memory[i + 3]))[8:]} ")
+            fileMem.write(f"{(padhexa(hex(RiscSim.memory.memory_module.memory[i + 3])).upper())[8:]} ")
         else:
             fileMem.write("00  ")
         fileMem.write("\n")  # new line
