@@ -21,14 +21,14 @@ Vishawam Datta	2019CSB1305<br/>
 	-PyQt5 >= 5.12
     
 **Steps to run via GUI:**
-- Run the command “python gui6.py” or “python3 gui6,py” on Windows and Linux 		 respectively
+- Run the command ```python gui6.py``` or ```python3 gui6.py``` on Windows and Linux 		 respectively
 - The user-interface pops up. Type in your machine code in the “Machine Code” Editor in the format specified in the description below.
 - Press the Run button. The Register and Memory state of the program is updated and displayed
 - Meaningful messages from the simulator will be displayed on the terminal.
 
 **Steps to run via command line interface:**
 - Enter your machine code in instructions.mc(filename and case important)
-- Run the command ‘python main.py’ in windows and ‘python3 main.py’ in mac or linux.
+- Run the command ```python main.py``` in windows and ```python3 main.py``` in mac or linux.
 - Meaningful messages from the simulator will be displayed on the terminal.
 - Register and memory outputs will be stored in RegisterDump.mc and MemoryDump.mc respectively.
 
@@ -60,6 +60,6 @@ As a team effort, no strict separation was followed. A loose outline of the work
 - Ayush Verma:  Decode unit functions, Register And Memory Update functions. 
 - Bhumika: Decode unit, Control Circuitry including Control Signals and ALU Control, Buffers
 - Keshav Krishna: Control circuitry, memory, GUI frontend and backend
-- Rishabh Jain: Memory, register, ALU, some parts of Control, GUI
+- Rishabh Jain: Memory, register, ALU, some parts of Control, program flow and GUI
 - Vishawam Datta: Program Flow(RiscSim.py), IAG module , memory module and some parts of Control
 
