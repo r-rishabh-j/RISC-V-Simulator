@@ -24,7 +24,7 @@ with open(f"RegisterDump.mc", "w") as fileReg:
     for i in range(32): # for all 32 registers
         fileReg.write(f"x{i} ")  # print address of register for eg. x5
         if (RiscSim.registers.reg[i] >= 0):
-            fileReg.write(padhexa(hex(arr[i])).upper().replace('X', 'x'))
+            fileReg.write(padhexa(hex(RiscSim.registers.reg[i])).upper().replace('X', 'x'))
         else:
             reg = RiscSim.registers.reg[i] & 0xffffffff  # signed
             fileReg.write(hex(reg).upper().replace('X', 'x'))
@@ -61,4 +61,4 @@ with open(f"MemoryDump.mc", "w") as fileMem:  # input is dictionary with key as 
         else:
             fileMem.write("00  ")
         fileMem.write("\n")  # new line
-print("Files dump successfully")
+print("\033[1;92mRegister and memory outputs written in RegisterDump.mc and MemoryDump.mc respectively\033[0m")
