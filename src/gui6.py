@@ -131,13 +131,13 @@ class Ui_MainWindow(object):
             if arr[i] >= 0:
                 #self.Registers.append(text + "\t" + (self.padhexa(hex(arr[i]))).upper())
                 self.tableWidget2.setItem(self.tableWidget2.rowCount() - 1, 1,
-                                         QtWidgets.QTableWidgetItem((self.padhexa(hex(arr[i]))).upper()))
+                                         QtWidgets.QTableWidgetItem((self.padhexa(hex(arr[i]))).upper().replace('X', 'x')))
 
             else:
                 reg = arr[i] & 0xffffffff  # signed
                 #self.Registers.append(text + "\t" + (hex(reg)).upper())
                 self.tableWidget2.setItem(self.tableWidget2.rowCount() - 1, 1,
-                                         QtWidgets.QTableWidgetItem((hex(reg)).upper()))
+                                         QtWidgets.QTableWidgetItem((hex(reg)).upper().replace('X', 'x')))
 
     def update_memory(self, dic):
         lst = []  # stores keys present in dictionary
@@ -167,7 +167,7 @@ class Ui_MainWindow(object):
             #text = text + (self.padhexa(hex(i)).upper())  # printing base address
             self.tableWidget.insertRow(self.tableWidget.rowCount())
             self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 0,
-                                     QtWidgets.QTableWidgetItem((self.padhexa(hex(i)).upper())))
+                                     QtWidgets.QTableWidgetItem((self.padhexa(hex(i)).upper().replace('X', 'x'))))
             if i in lst:
                 # if data in dictionary
                 #text = text + "\t" + (self.padhexa(hex(dic[i])).upper())[8:]
