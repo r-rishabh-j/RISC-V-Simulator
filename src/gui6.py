@@ -13,7 +13,7 @@ import importlib
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("RISC-V-Simulator")
         MainWindow.resize(1390, 844)
         font = QtGui.QFont()
         font.setPointSize(11)
@@ -104,12 +104,12 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "RISC-V SIMULATOR"))
-        self.label_2.setText(_translate("MainWindow", "Machine Code"))
-        self.label_3.setText(_translate("MainWindow", "Registers"))
-        self.label_4.setText(_translate("MainWindow", "Memory"))
-        self.Run.setText(_translate("MainWindow", "RUN"))
+        MainWindow.setWindowTitle(_translate("RISC-V-Simulator", "RISC-V-Simulator"))
+        self.label.setText(_translate("RISC-V-Simulator", "RISC-V SIMULATOR"))
+        self.label_2.setText(_translate("RISC-V-Simulator", "Machine Code"))
+        self.label_3.setText(_translate("RISC-V-Simulator", "Registers"))
+        self.label_4.setText(_translate("RISC-V-Simulator", "Memory"))
+        self.Run.setText(_translate("RISC-V-Simulator", "RUN"))
 
     def padhexa(self, s):
         return '0x' + s[2:].zfill(8)
