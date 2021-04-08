@@ -325,7 +325,7 @@ class ControlModule:
         machine_code = machine_code >> 7
         inst_list.append((machine_code & 0x1f))  # rd
         machine_code = machine_code >> 5
-        inst_list.append((machine_code & 0x3))  # funct3
+        inst_list.append((machine_code & 0x7))  # funct3
         machine_code = machine_code >> 3
         inst_list.append((machine_code & 0x1f))  # rs1
         machine_code = machine_code >> 5
@@ -338,7 +338,7 @@ class ControlModule:
         machine_code = machine_code >> 7
         temp1 = machine_code & 0x1f  # building the register in temp1
         machine_code = machine_code >> 5
-        inst_list.append((machine_code & 0x3))  # funct3
+        inst_list.append((machine_code & 0x7))  # funct3
         machine_code = machine_code >> 3
         inst_list.append((machine_code & 0x1f))  # rs1
         machine_code = machine_code >> 5
@@ -362,7 +362,7 @@ class ControlModule:
         machine_code = machine_code >> 7
         inst_list.append((machine_code & 0x1f))  # rd
         machine_code = machine_code >> 5
-        inst_list.append((machine_code & 0x3))  # funct3
+        inst_list.append((machine_code & 0x7))  # funct3
         machine_code = machine_code >> 3
         inst_list.append((machine_code & 0x1f))  # rs1
         machine_code = machine_code >> 5
