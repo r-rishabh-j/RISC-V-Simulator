@@ -27,8 +27,8 @@ Vishawam Datta	2019CSB1305<br/>
 - Meaningful messages from the simulator will be displayed on the terminal.
 
 **Steps to run via command line interface:**
-- Enter your machine code in instructions.mc(filename and case important)
-- Run the command ```python main.py``` on windows or ```python3 main.py``` on mac or linux.
+- Enter your machine code in a file with an appropriate file name.
+- Run the command ```python main.py <path to instruction file>``` on windows or ```python3 main.py <path to instruction file>``` on mac or linux.
 - Meaningful messages from the simulator will be displayed on the terminal.
 - Register and memory outputs will be stored in RegisterDump.mc and MemoryDump.mc respectively.
 
