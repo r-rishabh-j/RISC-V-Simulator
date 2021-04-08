@@ -28,7 +28,7 @@ Vishawam Datta	2019CSB1305<br/>
 
 **Steps to run via command line interface:**
 - Enter your machine code in instructions.mc(filename and case important)
-- Run the command ```python main.py``` on windows or ```python3 main.py``` on mac or linux.
+- Run the command ```python main.py``` in windows and ```python3 main.py``` in mac or linux.
 - Meaningful messages from the simulator will be displayed on the terminal.
 - Register and memory outputs will be stored in RegisterDump.mc and MemoryDump.mc respectively.
 
