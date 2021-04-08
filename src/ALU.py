@@ -107,7 +107,8 @@ class ArithmeticLogicUnit:
     def division(self): # div
         if self.input2 == 0:
             raise Exception("Divide by 0 error")
-        div=self.input1//self.input2 # floor division
+        #div=self.input1//self.input2 # floor division
+        div=int(self.input1/self.input2)
         div=(-(div&MSmask32)+(div&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=div
         self.outputBool=True
@@ -117,7 +118,7 @@ class ArithmeticLogicUnit:
     def remainder(self): # rem
         if self.input2 == 0:
             raise Exception("Divide by 0 error")
-        mod=self.input1%self.input2 # floor division
+        mod=int((abs(self.input1)/self.input1)*(abs(self.input1)%abs(self.input2)))
         mod=(-(mod&MSmask32)+(mod&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=mod
         self.outputBool=True
