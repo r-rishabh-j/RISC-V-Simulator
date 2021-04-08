@@ -4,7 +4,7 @@ CS204 AY 2020-21 Sem2 Project: RISC-V 32I Simulator<br/>
 Language for Source Code: Python</br>
 GUI : PyQt5</br>
 
-**TEAM DETAILS:**<br/>
+**TEAM DETAILS: Group 3**<br/>
 Ayush Verma		2019CSB1147<br/>
 Bhumika			2019CSB1152<br/>
 Keshav Krishna	2019CSB1224<br/>
