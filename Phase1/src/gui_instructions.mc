@@ -1,12 +1,4 @@
-#.data
-#size: .word 5
-#array:
-#.word 10
-#.word 30
-#.word 20
-#.word 0
-#.word 50
-#address: .word 0x10000020
+#data
 0x10000000 0x5
 0x10000004 0xA
 0x10000008 0x1e
@@ -14,6 +6,7 @@
 0x10000010 0x0
 0x10000014 0x32
 0x10000018 0x10000020
+#text
 0x0	0x10000517	#auipc x10 65536	la x10, array
 0x4	0x00450513	#addi x10 x10 4	la x10, array
 0x8	0x10000597	#auipc x11 65536	lw x11, size

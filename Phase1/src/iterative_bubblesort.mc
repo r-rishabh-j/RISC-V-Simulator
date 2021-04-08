@@ -1,3 +1,4 @@
+#data
 0x10000000 0xA
 0x10000004 0x28
 0x10000008 0xf
@@ -20,6 +21,7 @@
 0x1000004C 0x50
 0x10000050 0x5f
 0x10000054 0x5f
+#text
 0x0	0x008000EF	#jal x1 8	jal x1, gradesheet
 0x4	0x09C0006F	#jal x0 156	j EXIT
 0x8	0x10000417	#auipc x8 65536	la x8,quiz
@@ -38,7 +40,7 @@
 0x3c	0x00512023	#sw x5 0(x2)	sw x5, 0(sp)
 0x40	0x00000313	#addi x6 x0 0	li x6, 0 # end condition for inner loop if x6==x9
 0x44	0x04935463	#bge x6 x9 72	bs_loop2: bge x6, x9, bs_loop2_end
-0x48	0xFFC10113  #	ddi x2 x2 -4	addi sp, sp, -4
+0x48	0xFFC10113  	#ddi x2 x2 -4	addi sp, sp, -4
 0x4c	0x00612023	#sw x6 0(x2)	sw x6, 0(sp)
 0x50	0x00830333	#add x6 x6 x8	add x6,x6,x8 #x6 now contains the address of the primary variable
 0x54	0x00430393	#addi x7 x6 4	addi x7,x6,4
