@@ -47,15 +47,15 @@ with open(f"MemoryDump.mc", "w") as fileMem:  # input is dictionary with key as 
         if i in lst:
             fileMem.write(f"{(padhexa(hex(RiscSim.memory.memory_module.memory[i])).upper())[8:]} " )  # if key in dictionary, print its data
         else:
-            fileMem.write("00  ")  # if key not in dictionary, print 00
+            fileMem.write("00 ")  # if key not in dictionary, print 00
         if (i + 1) in lst:
             fileMem.write(f"{(padhexa(hex(RiscSim.memory.memory_module.memory[i + 1])).upper())[8:]} ")
         else:
-            fileMem.write("00  ")
+            fileMem.write("00 ")
         if (i + 2) in lst:
             fileMem.write(f"{(padhexa(hex(RiscSim.memory.memory_module.memory[i + 2])).upper())[8:]} ")
         else:
-            fileMem.write("00  ")
+            fileMem.write("00 ")
         if (i + 3) in lst:
             fileMem.write(f"{(padhexa(hex(RiscSim.memory.memory_module.memory[i + 3])).upper())[8:]} ")
         else:
