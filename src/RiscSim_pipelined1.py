@@ -356,93 +356,16 @@ def RunSim():
         stage = 4
         reg_writeback(stage)
         clock = clock + 1
-
-
+            
 def RunSim_pipelined():
     clock = 1
-    check = (IAGmodule.PC/4)%5
-    if check == 0:
-        while (1):
-            print(f"\n\033[1;96mCycle {clock}\033[0m")
-            stage = 0
-            fetch(stage, check)
-            RunSim_pipelined()
-            stage = 1
-            decode(stage, check)
-            if (control_module0.terminate == 1):
-                return
-            stage = 2
-            execute(stage, check)
-            stage = 3
-            mem_access(stage, check)
-            stage = 4
-            reg_writeback(stage, check)
-            clock = clock + 1
-    elif check == 1:
-        while (1):
-            print(f"\n\033[1;96mCycle {clock}\033[0m")
-            stage = 0
-            fetch(stage, check)
-            RunSim_pipelined()
-            stage = 1
-            decode(stage, check)
-            if (control_module1.terminate == 1):
-                return
-            stage = 2
-            execute(stage, check)
-            stage = 3
-            mem_access(stage, check)
-            stage = 4
-            reg_writeback(stage, check)
-            clock = clock + 1
-    elif check == 2:
-        while (1):
-            print(f"\n\033[1;96mCycle {clock}\033[0m")
-            stage = 0
-            fetch(stage, check)
-            RunSim_pipelined()
-            stage = 1
-            decode(stage, check)
-            if (control_module0.terminate == 1):
-                return
-            stage = 2
-            execute(stage, check)
-            stage = 3
-            mem_access(stage, check)
-            stage = 4
-            reg_writeback(stage, check)
-            clock = clock + 1
-    elif check == 3:
-        while (1):
-            print(f"\n\033[1;96mCycle {clock}\033[0m")
-            stage = 0
-            fetch(stage, check)
-            RunSim_pipelined()
-            stage = 1
-            decode(stage, check)
-            if (control_module0.terminate == 1):
-                return
-            stage = 2
-            execute(stage, check)
-            stage = 3
-            mem_access(stage, check)
-            stage = 4
-            reg_writeback(stage, check)
-            clock = clock + 1
-    elif check == 4:
-        while (1):
-            print(f"\n\033[1;96mCycle {clock}\033[0m")
-            stage = 0
-            fetch(stage, check)
-            RunSim_pipelined()
-            stage = 1
-            decode(stage, check)
-            if (control_module0.terminate == 1):
-                return
-            stage = 2
-            execute(stage, check)
-            stage = 3
-            mem_access(stage, check)
-            stage = 4
-            reg_writeback(stage, check)
-            clock = clock + 1
+    check = 0
+    while (1):
+        print(f"\n\033[1;96mCycle {clock}\033[0m")
+        reg_writeback(stage, check)
+        mem_access(stage, check+1)
+        execute(stage, check+2)
+        decode(stage, check+3)
+        fetch(stage, check+4)
+        check = (check + 1)%5
+        
