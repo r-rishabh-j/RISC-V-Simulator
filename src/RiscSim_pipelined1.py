@@ -366,6 +366,7 @@ def RunSim_pipelined():
             print(f"\n\033[1;96mCycle {clock}\033[0m")
             stage = 0
             fetch(stage, check)
+            RunSim_pipelined()
             stage = 1
             decode(stage, check)
             if (control_module0.terminate == 1):
@@ -382,6 +383,7 @@ def RunSim_pipelined():
             print(f"\n\033[1;96mCycle {clock}\033[0m")
             stage = 0
             fetch(stage, check)
+            RunSim_pipelined()
             stage = 1
             decode(stage, check)
             if (control_module1.terminate == 1):
@@ -398,6 +400,7 @@ def RunSim_pipelined():
             print(f"\n\033[1;96mCycle {clock}\033[0m")
             stage = 0
             fetch(stage, check)
+            RunSim_pipelined()
             stage = 1
             decode(stage, check)
             if (control_module0.terminate == 1):
@@ -414,6 +417,7 @@ def RunSim_pipelined():
             print(f"\n\033[1;96mCycle {clock}\033[0m")
             stage = 0
             fetch(stage, check)
+            RunSim_pipelined()
             stage = 1
             decode(stage, check)
             if (control_module0.terminate == 1):
@@ -430,6 +434,7 @@ def RunSim_pipelined():
             print(f"\n\033[1;96mCycle {clock}\033[0m")
             stage = 0
             fetch(stage, check)
+            RunSim_pipelined()
             stage = 1
             decode(stage, check)
             if (control_module0.terminate == 1):
