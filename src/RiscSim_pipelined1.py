@@ -372,13 +372,19 @@ def RunSim_pipelined():
     clock = 1
     check = -4
     while (1):
-        print(f"\n\033[1;96mCycle {clock}\033[0m")
-        reg_writeback(4, check)
-        mem_access(3, check+1)
-        execute(2, check+2)
-        decode(1, check+3)
-        fetch(0, check+4)
-        if check >= 0:
-            check = (check + 1)%5
-        else:
+        if check<0:
+            print(f"\n\033[1;96mCycle {clock}\033[0m")
+            reg_writeback(4, check)
+            mem_access(3, (check + 1))
+            execute(2, (check + 2))
+            decode(1, (check + 3))
+            fetch(0, (check + 4))
             check = check + 1
+        else:
+            print(f"\n\033[1;96mCycle {clock}\033[0m")
+            reg_writeback(4, check)
+            mem_access(3, (check+1)%5)
+            execute(2, (check+2)%5)
+            decode(1, (check+3)%5)
+            fetch(0, (check+4)%5)
+            check += (check + 1)%5
