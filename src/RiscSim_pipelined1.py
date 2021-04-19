@@ -379,6 +379,6 @@ def RunSim_pipelined():
         decode(1, check+3)
         fetch(0, check+4)
         if check >= 0:
-            check += (check + 1)%5
+            check = (check + 1)%5
         else:
             check = check + 1
