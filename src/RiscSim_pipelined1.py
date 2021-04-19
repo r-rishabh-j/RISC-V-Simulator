@@ -63,6 +63,8 @@ def MuxY(MuxY_select):
 
 ###########Stage functions###############
 def fetch(stage, check):
+    if check<0:
+        return
     if check == 0:
         # control state update function to be called here
         control_module0.controlStateUpdate(stage)
@@ -96,6 +98,8 @@ def fetch(stage, check):
 
 
 def decode(stage, check):
+    if check < 0:
+        return
     if check == 0:
         control_module0.controlStateUpdate(stage)
         global MuxAout
@@ -117,7 +121,7 @@ def decode(stage, check):
         MuxAout = MuxA(control_module0.MuxASelect)  # this will  (based on control)select what would go into 1st input of ALU
         MuxBout = MuxB(control_module0.MuxBSelect)  # this will (based on control) select what would go into 2nd input of ALU
     elif check == 1:
-        control_module.controlStateUpdate(stage)
+        control_module1.controlStateUpdate(stage)
         global MuxAout
         global MuxBout
         control_module1.decode(registers.ReadIR(),
@@ -211,6 +215,8 @@ def decode(stage, check):
 
 
 def execute(stage, check):  # ALU
+    if check < 0:
+        return
     if check == 0:
         control_module0.controlStateUpdate(stage)
         global MuxAout
@@ -284,6 +290,8 @@ def execute(stage, check):  # ALU
 
 
 def mem_access(stage, check):
+    if check < 0:
+        return
     if check == 0:
         control_module0.controlStateUpdate(stage)
         memory.AccessMemory(control_module0.MemRead, control_module0.MemWrite, buffer0.getRZ(), control_module0.BytesToAccess,
@@ -306,6 +314,8 @@ def mem_access(stage, check):
                             buffer4.getRM())  # Sent the value of RZ in MAR and sent the value of RM in MDR along with appropriate control signals , then based on this the data wil
 
 def reg_writeback(stage, check):
+    if check < 0:
+        return
     if check == 0:
         control_module0.controlStateUpdate(stage)
         buffer0.setRY(MuxY(
@@ -356,16 +366,19 @@ def RunSim():
         stage = 4
         reg_writeback(stage)
         clock = clock + 1
-            
+
+
 def RunSim_pipelined():
     clock = 1
-    check = 0
+    check = -4
     while (1):
         print(f"\n\033[1;96mCycle {clock}\033[0m")
-        reg_writeback(stage, check)
-        mem_access(stage, check+1)
-        execute(stage, check+2)
-        decode(stage, check+3)
-        fetch(stage, check+4)
-        check = (check + 1)%5
-        
+        reg_writeback(4, check)
+        mem_access(3, check+1)
+        execute(2, check+2)
+        decode(1, check+3)
+        fetch(0, check+4)
+        if check >= 0:
+            check += (check + 1)%5
+        else:
+            check = check + 1
