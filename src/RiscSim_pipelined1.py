@@ -387,4 +387,4 @@ def RunSim_pipelined():
             execute(2, (check+2)%5)
             decode(1, (check+3)%5)
             fetch(0, (check+4)%5)
-            check += (check + 1)%5
+            check = (check + 1)
