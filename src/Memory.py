@@ -12,12 +12,15 @@ class ProcessorMemoryInterface:
         self.MAR=0 # Memory address register
         self.MDR=0
         self.IRout=0
-        self.memory_module=ByteAddressableMemory()
+        self.text_module=ByteAddressableMemory()
+        self.data_module=ByteAddressableMemory()
 
-    def InitMemory(self,PC_INST): # loads instruction to memory before execution of program
+    def InitMemory(self,PC_INST,DATA): # loads instruction to memory before execution of program
         for addr in PC_INST: # loop over every instruction
-            self.memory_module.WriteValueAtAddress(addr,4,PC_INST[addr])
-        print("\033[92mProgram loaded to memory successfully\033[0m")
+            self.text_module.WriteValueAtAddress(addr,4,PC_INST[addr])
+        for addr in DATA: # loop over every data load
+            self.data_module.WriteValueAtAddress(addr,4,DATA[addr])
+        print("\033[92mProgram and data loaded to memory successfully\033[0m")
 
     def LoadInstruction(self,PC):
         if PC%4!=0: # PC must always be a multiple of 4, word alignment!
@@ -26,7 +29,7 @@ class ProcessorMemoryInterface:
             raise Exception("\033[1;31mPC out of range!!\033[0m")
         self.MAR=PC
         instruction=0 #stores instruction
-        instruction=self.memory_module.GetUnsignedValueAtAddress(self.MAR,4)
+        instruction=self.text_module.GetUnsignedValueAtAddress(self.MAR,4)
         self.IRout=instruction
         self.MDR=instruction
         print(f"\033[93mLoaded instruction from {hex(PC)}\033[0m")
@@ -49,7 +52,7 @@ class ProcessorMemoryInterface:
 
     def ReadMemory(self, base_address:int, no_of_bytes:int):
         self.MAR = base_address
-        self.MDR=self.memory_module.GetSignedValueAtAddress(self.MAR, no_of_bytes)
+        self.MDR=self.data_module.GetSignedValueAtAddress(self.MAR, no_of_bytes)
         print(f"\033[93mRead {no_of_bytes} bytes from {hex(base_address)}\033[0m")
         data=self.MDR
         return data
@@ -57,7 +60,7 @@ class ProcessorMemoryInterface:
     def WriteMemory(self, base_address:int, byte_size:int, RMin:int):   # writes data in RMin to address given by base_address
         self.MAR = base_address # MAR contains the base address to be written to
         self.MDR = RMin # MDR contains data to be written at address given by MAR
-        self.memory_module.WriteValueAtAddress(base_address, byte_size, self.MDR)
+        self.data_module.WriteValueAtAddress(base_address, byte_size, self.MDR)
         print(f"\033[93mWrote {byte_size} bytes at {hex(base_address)}\033[0m")
 
 class ByteAddressableMemory:
