@@ -32,7 +32,7 @@ class Current:
 
         if i2[0] == 3:  # if i2 is load and i3 is store type
             if opcode == 35:
-                if i2[4] == rs2 or i2[4] == rs1:    # if the rs2 or source of data is same as rd in load
+                if i2[4] == rs2:   # if the rs2 or source of data is same as rd in load
                     dependency_i2=10
 
 
@@ -49,8 +49,20 @@ class Current:
 
         if i1[0] == 3:  # if i1 is load and i3 is store type
             if opcode == 35:
-                if i1[4] == rs2 or i1[4] == rs1:    # if the rs2 or source of data is same as rd in load
+                if i1[4] == rs2:    # if the rs2 or source of data is same as rd in load
                     dependency_i1=10
+
+        #case16
+        if i2[0] == 3:  # if i1 is load and i3 is store type
+            if opcode == 35:
+                if i2[4] == rs1:    # if the rs1 is same as rd in load
+                    dependency_i1=16
+
+
+        if i1[0] == 3:  # if i1 is load and i3 is store type
+            if opcode == 35:
+                if i1[4] == rs1:    # if the rs1 is same as rd in load
+                    dependency_i1=16
 
         #odd Cases
         #Case1
