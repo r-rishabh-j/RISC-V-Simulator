@@ -69,7 +69,7 @@ class Current:
                     dependency_i2=1
         if i1[0]==51 or i1[0]==19 or i1[23] or i1[55]:
             if opcode==19:
-                if rs1==i1[4] or:
+                if rs1==i1[4]:
                     dependency_i1=1
 
         #Case 3
