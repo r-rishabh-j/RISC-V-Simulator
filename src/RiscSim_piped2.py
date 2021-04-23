@@ -51,15 +51,16 @@ def MuxY(MuxY_select):
 ###########Stage functions###############
 def fetch(stage):
     # to do here
+    # first, check the operation queue. If empty, then operate. Else, don't operate and pop.
     # fetch the instruction using the value in PC
     # compare it to BTB to check if that is a branch/jump. If it is, update PC to the target.
 
 def decode(stage):
+    # check the operation queue. If empty, then operate. Else, don't operate and pop.
     # decode the instruction first in the IR
-    # check for hazards
-    # maintain a queue,if it is empty decode is in operation, if not then in NOP. Hazrd unit pushes these nops when it detects a suitable hazard.
-    # 
-
+    # check for hazards using the hazard table.
+    # follow steps given in documentation to resolve the hazard by stalling/data forwarding.
+    # if all good, push the decoded the signals into the queues.
 
 def execute(stage): # ALU
     

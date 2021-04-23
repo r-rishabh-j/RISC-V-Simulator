@@ -77,19 +77,26 @@ class ControlModule:
         # self.MuxMASelect  # Present at address input of memory
         # self.MuxMDRSelect  # present at output of memory
         # self.decoder=DecodeModule()
+        #############fetch queue##################
+        self.fetch_operation=deque() # if this queue is empty, then the stage will operate. Else,it won't.
+        #############decode queue##################
+        self.decode_operation=deque(False) # if this queue is empty, then the stage will operate. Else,it won't.
         #############EXECUTE-QUEUE################
         self.exe_opcode=deque([0,0])
         self.exe_funct3=deque([0,0])
         self.exe_funct7=deque([0,0])
         self.exe_ALUOp=deque([0,0])
         self.exe_ALUcontrol=deque([0,0])
+        self.exe_operation=deque([0,0]) # indicates whether the stage has to operate or not.
         #############MEMORY-QUEUE################
         self.mem_MemRead=deque([0,0,0])
         self.mem_MemWrite=deque([0,0,0])
         self.mem_BytesToAccess=deque([0,0,0])
+        self.mem_operation=deque([0,0,0]) # indicates whether the stage has to operate or not.
         #############REGWRITE-QUEUE################
         self.reg_RegWrite=deque([0,0,0,0])
         self.reg_rd=deque([0,0,0,0])
+        self.reg_operation=deque([0,0,0,0]) # indicates whether the stage has to operate or not.
 
     def controlStateUpdate(self, stage): # for stage dependant control signals
         if stage==0:
@@ -335,28 +342,91 @@ class ControlModule:
         self.ControlSignalGenerator()
         self.ALUcontrol = self.ALUcontrolgenerator()
         # enqueue control signals
-        self.execute_control_update()
-        self.memory_control_update()
-        self.register_control_update()
+        # self.execute_control_update()
+        # self.memory_control_update()
+        # self.register_control_update()
 
     ### methods to enqueue control signals for the stages ####
-    def execute_control_update(self):
+    def execute_set_operate(self):
         # enqueue signals generated in variables to appropriate queues
         self.exe_opcode.append(self.opcode)
         self.exe_funct3.append(self.funct3)
         self.exe_funct7.append(self.funct7)
         self.exe_ALUOp.append(self.ALUOp)
         self.exe_ALUcontrol.append(self.ALUcontrol)
-
-    def memory_control_update(self):
+        self.exe_operation.append(True)
+    def memory_set_operate(self):
         self.mem_BytesToAccess.append(self.BytesToAccess)
         self.mem_MemRead.append(self.MemRead)
         self.mem_MemWrite.append(self.MemWrite)
-
-    def register_control_update(self):
+        self.mem_operation.append(True)
+    def register_set_operate(self):
         self.reg_rd.append(self.rd)
-        self.reg_RegWrite(self.RegWrite)
-    ########################################################
+        self.reg_RegWrite.append(self.RegWrite)
+        self.reg_operation.append(True)
+    #######################NOP set#################################
+    def fetch_set_NOP(self):
+        self.fetch_operation.append(False)
+    def decode_set_NOP(self):
+        self.decode_operation.append(False)
+    def execute_set_NOP(self):
+        self.exe_opcode.append(0)
+        self.exe_funct3.append(0)
+        self.exe_funct7.append(0)
+        self.exe_ALUOp.append(0)
+        self.exe_ALUcontrol.append(0)
+        self.exe_operation.append(False)
+    def memory_set_NOP(self):
+        self.mem_BytesToAccess.append(0)
+        self.mem_MemRead.append(0)
+        self.mem_MemWrite.append(0)
+        self.mem_operation.append(False)
+    def register_set_NOP(self):
+        self.reg_rd.append(0)
+        self.reg_RegWrite.append(0)
+        self.reg_operation.append(False)
+    ##########################Deque control signals#####################################
+     # if return value true then operate, else don't
+    def fetch_deque_signal(self) -> bool:
+        if len(self.fetch_operation)==0:
+            return True
+        else:
+            self.fetch_operation.popleft()
+            return False
+    def decode_deque_signal(self) -> bool:
+        if len(self.decode_operation)==0:
+            return True
+        else:
+            self.decode_operation.popleft()
+            return False
+    def execute_deque_signal(self) ->bool:
+        if len(self.exe_operation)==0:
+            return False
+        self.ALUOp=self.exe_ALUOp.popleft()
+        self.ALUcontrol=self.exe_ALUcontrol.popleft()
+        self.opcode=self.exe_opcode.popleft()
+        self.funct3=self.exe_funct3.popleft()
+        self.funct7=self.exe_funct7.popleft()
+        operate=self.exe_operation.popleft()
+        return operate
+
+    def memory_deque_signal(self) ->bool:
+        if len(self.mem_operation)==0:
+            return False
+        self.BytesToAccess=self.mem_BytesToAccess.popleft()
+        self.MemRead=self.mem_MemRead.popleft()
+        self.MemWrite=self.mem_MemWrite.popleft()
+        operate=self.mem_operation.popleft()
+        return operate
+
+    def register_deque_signal(self) ->bool:
+        if len(self.reg_operation)==0:
+            return False
+        self.RegWrite=self.reg_RegWrite.popleft()
+        self.rd=self.reg_rd.popleft()
+        operate=self.reg_operation.popleft()
+        return operate
+    ###################################################################################
 
     def decodeI(self, machine_code):
         inst_list = []
