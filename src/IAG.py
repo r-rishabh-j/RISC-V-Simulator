@@ -51,7 +51,7 @@ class InstructionAddressGenerator:
                 sys.exit()
 
     def BTB_check(self,Inst_PC_Value):  # to check wether a particular control instruction is present in the table or not.
-        if Inst_PC_Value in self.BTB:   # if the instruction is already present in the BTB then 1 is returned else 0  
+        if Inst_PC_Value in self.BTB:   # if the instruction is already present in the BTB then 1 is returned else 0
             return 1
         else :
             return 0

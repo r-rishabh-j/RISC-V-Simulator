@@ -14,8 +14,43 @@ class Current:
         self.current_list.popleft()
         self.current_list.append([-1, -1, -1, -1, -1])
 
-    def check_dependence(self, stage):
+    def check_dependence(self, opcode,funct3,rs1,rs2,rd):
         #add data dependence check via registers
+        i2=self.current_list[-1]   # this will contain the attributes of the function which was just before the current instruction
+        i1=self.current_list[0]   # this will contain the attributes of the function which was
+        dependency_i1=-1
+        dependency_i2=-1
+
+        if i2[0]==3:                # i2 is load and i3 is R type
+            if opcode==51:
+                if rs1 == i2[4] or rs2 == i2[4]:    # if rs1 or rs2 == to the register where value is being loaded
+                    dependency_i2=2                    # In case we have a r type instruction just after load.
+        if i2[0]==3:            # i2 is load and i3 is I type
+            if opcode==19:
+                if rs1==i2[4]:
+                    dependency_i2=2
+
+        if i2[0] == 3:  # if i2 is load and i3 is store type
+            if opcode == 35:
+                if i2[4] == rs2:    # if the rs2 or source of data is same as rd in load
+                    dependency_i2=10
+
+
+
+        if i1[0]==3:                # i1 is load and i3 is R type
+            if opcode==51:
+                if rs1 == i1[4] or rs2 == i1[4]:    # if rs1 or rs2 == to the register where value is being loaded
+                    dependency_i1=2                    # In case we have a r type instruction just after load.
+
+        if i1[0]==3:            # i1 is load and i3 is I type
+            if opcode==19:
+                if rs1==i1[4]:
+                    dependency_i1=2
+
+        if i1[0] == 3:  # if i1 is load and i3 is store type
+            if opcode == 35:
+                if i1[4] == rs2:    # if the rs2 or source of data is same as rd in load
+                    dependency_i1=10
 
 
 
