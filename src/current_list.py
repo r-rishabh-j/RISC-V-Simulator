@@ -55,12 +55,21 @@ class Current:
         #odd Cases
         #Case1
         if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
-            if opcode==51 or opcode==19 or opcode==23 or opcode==55:
+            if opcode==51:
                 if rs1==i2[4] or rs2==i2[4]:
                     dependency_i2=1
         if i1[0]==51 or i1[0]==19 or i1[23] or i1[55]:
-            if opcode==51 or opcode==19 or opcode==23 or opcode==55:
+            if opcode==51:
                 if rs1==i1[4] or rs2==i1[4]:
+                    dependency_i1=1
+        
+        if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
+            if opcode==19:
+                if rs1==i2[4]:
+                    dependency_i2=1
+        if i1[0]==51 or i1[0]==19 or i1[23] or i1[55]:
+            if opcode==19:
+                if rs1==i1[4] or:
                     dependency_i1=1
 
         #Case 3
@@ -107,6 +116,8 @@ class Current:
 
         #Case13:None
         #Case15:None
+
+        return [dependency_i1,dependency_i2]
 
 
     def print_table(self):
