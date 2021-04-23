@@ -1,6 +1,12 @@
 # this is the module which calculates the next PC value based on the input control signals.
 import sys
 
+class BTB_entry:
+    def __init__(self):
+        self.inst_address=0;  # this is the value of the instruction itself
+        self.target_address=0; # this is the value of the target address
+        self.take=0;# this is 1 if the target is to be taken or not
+
 class InstructionAddressGenerator:
     MAX_SIGNED_NUM = 0x7fffffff
     MIN_SIGNED_NUM = -0x80000000
@@ -12,6 +18,8 @@ class InstructionAddressGenerator:
         self.PC=0  #this is the PC register which starts from 0
         self.PC_temp=0 # temp pc which stores PC+4
         self.IAGimmediate=0 # branch offset , this is the immediate value
+        self.BTB=dict() # key as PC and entry is a variable of the class BTB_entry
+
 
 
     def ReadPC(self):
@@ -41,6 +49,19 @@ class InstructionAddressGenerator:
             if self.PC > self.MAX_PC:
                 print("Address is not in range of data segment")
                 sys.exit()
-                
+
+    def BTB_check(self,Inst_PC_Value):  # to check wether a particular control instruction is present in the table or not.
+        if Inst_PC_Value in self.BTB:   # if the instruction is already present in the BTB then 1 is returned else 0  
+            return 1
+        else :
+            return 0
+
+    def BTB_insert(self,Inst_PC_Value,Inst_Target_Value,Take):   # the table would be indexed using PC_value and Take will be 1 if Inst_Target_Value would shoukd be taken or not
+        temp_BTB_entry=BTB_entry()    # temporary object of BTB entry
+        temp_BTB_entry.inst_address=Inst_PC_Value        # assigning the values of this temporary object to be the passed arguments
+        temp_BTB_entry.target_address=Inst_Target_Value
+        temp_BTB_entry.take=Take
+        self.BTB[Inst_PC_Value]=temp_BTB_entry
+
 # at the end of this , if all functions are called sequentially we will have the required value of PC in the register PC
 # here using this function at the end the value of temppc is also supplied to MuxY , which is the step before write back.(only used in case of JAL like instructions)
