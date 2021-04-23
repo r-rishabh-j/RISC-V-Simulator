@@ -52,6 +52,61 @@ class Current:
                 if i1[4] == rs2:    # if the rs2 or source of data is same as rd in load
                     dependency_i1=10
 
+        #odd Cases
+        #Case1
+        if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
+            if opcode==51 or opcode==19 or opcode==23 or opcode==55:
+                if rs1==i2[4] or rs2==i2[4]:
+                    dependency_i2=1
+        if i1[0]==51 or i1[0]==19 or i1[23] or i1[55]:
+            if opcode==51 or opcode==19 or opcode==23 or opcode==55:
+                if rs1==i1[4] or rs2==i1[4]:
+                    dependency_i1=3
+
+        #Case 3
+        if i2[0]==51 or i2[0]==19:
+            if opcode==3:
+                if rs1==i2[4]:
+                    dependency_i2=3
+        if i1[0]==51 or i1[0]==19:
+            if opcode==3:
+                if rs1==i1[4]:
+                    dependency_i1=3
+
+        #Case5
+        if i2[0]==51 or i2[0]==19:
+            if opcode==35:
+                if rs1==i2[4]:
+                    dependency_i2=5
+        if i1[0]==51 or i1[0]==19:
+            if opcode==35:
+                if rs1==i1[4]:
+                    dependency_i1=5
+
+        #Case7
+        if i2[0]==51 or i2[0]==19:
+            if opcode==99:
+                if rs1==i2[4] or rs2==i2[4]:
+                    dependency_i2=7
+        if i1[0]==51 or i1[0]==19:
+            if opcode==99:
+                if rs1==i1[4] or rs2==i1[4]:
+                    dependency_i1=7
+
+        #Case9
+        if i2[0]==3:
+            if opcode==99:
+                if rs1==i2[4] or rs2==i2[4]:
+                    dependency_i2=9
+        if i1[0]==3:
+            if opcode==99:
+                if rs1==i1[4] or rs2==i1[4]:
+                    dependency_i1=9
+
+        #Case11
+
+        #Case13:None
+        #Case15:None
 
 
     def print_table(self):
