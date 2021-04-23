@@ -78,18 +78,18 @@ class ControlModule:
         # self.MuxMDRSelect  # present at output of memory
         # self.decoder=DecodeModule()
         #############EXECUTE-QUEUE################
-        self.exe_opcode=deque()
-        self.exe_funct3=deque()
-        self.exe_funct7=deque()
+        self.exe_opcode=deque([0,0])
+        self.exe_funct3=deque([0,0])
+        self.exe_funct7=deque([0,0])
         self.exe_ALUOp=deque([0,0])
-        self.exe_ALUcontrol=deque()
+        self.exe_ALUcontrol=deque([0,0])
         #############MEMORY-QUEUE################
         self.mem_MemRead=deque([0,0,0])
         self.mem_MemWrite=deque([0,0,0])
         self.mem_BytesToAccess=deque([0,0,0])
         #############REGWRITE-QUEUE################
         self.reg_RegWrite=deque([0,0,0,0])
-        self.reg_rd=deque()
+        self.reg_rd=deque([0,0,0,0])
 
     def controlStateUpdate(self, stage): # for stage dependant control signals
         if stage==0:
@@ -337,7 +337,7 @@ class ControlModule:
         # enqueue control signals
         self.execute_control_update()
         self.memory_control_update()
-        self.register_control_update
+        self.register_control_update()
 
     ### methods to enqueue control signals for the stages ####
     def execute_control_update(self):
