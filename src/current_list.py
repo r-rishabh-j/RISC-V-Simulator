@@ -73,21 +73,21 @@ class Current:
                     dependency_i1=1
 
         #Case 3
-        if i2[0]==51 or i2[0]==19:
+        if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
             if opcode==3:
                 if rs1==i2[4]:
                     dependency_i2=3
-        if i1[0]==51 or i1[0]==19:
+        if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==3:
                 if rs1==i1[4]:
                     dependency_i1=3
 
         #Case5
-        if i2[0]==51 or i2[0]==19:
+        if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
             if opcode==35:
                 if rs1==i2[4] or rs2==i2[4]:
                     dependency_i2=5
-        if i1[0]==51 or i1[0]==19:
+        if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==35:
                 if rs1==i1[4] or rs2==i1[4]:
                     dependency_i1=5
