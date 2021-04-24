@@ -205,7 +205,7 @@ class Current:
                 if i1==902:
                     i1_forwarding=52
 
-            return  [i1_forwarding,i2_forwarding]
+                return  [i1_forwarding,i2_forwarding]
 
 
         # case 10 , checking dependancy with i2
@@ -213,7 +213,7 @@ class Current:
             # from i2 to both rs2 and rs1
             if i2==1003:
                 i2_forwarding=23
-            return [i1_forwarding,i2_forwarding]
+                return [i1_forwarding,i2_forwarding]
 
             # from i2 to rs2
             if i2==1002:
