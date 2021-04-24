@@ -51,11 +51,14 @@ def MuxY(MuxY_select):
 ###########Stage functions###############
 def fetch(stage):
     # to do here
-    # first, check the operation queue. If empty, then operate. Else, don't operate and pop.
+    # if terminate==1, return
+    # operation queue will be used in the buffer update stage, not here.
     # fetch the instruction using the value in PC
     # compare it to BTB to check if that is a branch/jump. If it is, update PC to the target.
+    # remember to enqueue the PC into the decode_PC_queue
 
 def decode(stage):
+    # if terminate==1, return
     # check the operation queue. If empty, then operate. Else, don't operate and pop.
     # decode the instruction first in the IR
     # check for hazards using the hazard table.
@@ -63,13 +66,20 @@ def decode(stage):
     # if all good, push the decoded the signals into the queues.
 
 def execute(stage): # ALU
+    # dequeue from the control signals. Check if we need to operate or not
     
 
 def mem_access(stage):
+    # dequeue from the control signals. Check if we need to operate or not
+
    
 def reg_writeback(stage):
-    
+    # dequeue from the control signals. Check if we need to operate or not
+
+def buffer_update():
 
 def RunSim():
-    
-
+    clock=1
+    while(True):
+        # run the stages here, preferably in reverse order.
+        # update the buffers in the end
