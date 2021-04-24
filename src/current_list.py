@@ -14,7 +14,239 @@ class Current:
         self.current_list.popleft()
         self.current_list.append([-1, -1, -1, -1, -1])
 
-    def check_dependence(self, opcode,funct3,rs1,rs2,rd):
+
+    def data_forwarding(self,i1,i2):     # to determine the type of forwarding and stalling
+        i2_forwarding=-1
+        i1_forwarding=-1
+
+
+        #first dealing with all cases of i2 and i3 dependence if these does not exist, then only going to i1
+        #Case 1 , dependancy with i2
+            if i2== 103:
+                i2_forwarding=33
+                return [i1_forwarding,i2_forwarding]
+
+            # i2 to rs1, then the possible cases of rs2
+            if i2 == 101:
+                i2_forwarding=31
+
+                # Case 1 with i1 to rs2
+                if i1 == 102:
+                    i1_forwarding=22
+                # Case 2 with i1 to rs2
+                if i1 == 202:
+                    i1_forwarding=12
+
+                return [i1_forwarding,i2_forwarding]
+
+            # i2 to rs2 , then the possible cases of rs1
+            if i2 == 102:
+                i2_forwarding = 32
+
+                # Case 1 with i1 to rs1
+                if i1 == 101:
+                    i1_forwarding = 21
+                # Case 2 with i1 to rs1
+                if i1 == 201:
+                    i1_forwarding = 11
+
+                return [i1_forwarding, i2_forwarding]
+
+            # in case only rs1 is present and no rs2
+            if i2==1:
+                i2_forwarding=31
+                return [i1_forwarding,i2_forwarding]
+
+        # case 2 , dependency with i2
+
+            # from i2 to both rs1 and rs2
+            if i2==203:
+                i2_forwarding=23
+                return [i1_forwarding,i2_forwarding]
+
+            # from i2 to rs1
+            if i2==201:
+                i2_forwarding=21
+                # Case 1 with i1 to rs2
+                if i1 == 102:
+                    i1_forwarding = 22
+                # Case 2 with i1 to rs2
+                if i1 == 202:
+                    i1_forwarding = 12
+
+                return [i1_forwarding, i2_forwarding]
+
+            # i2 to rs2
+            if i2==202:
+                i2_forwarding=22
+
+                # Case 1 with i1 to rs1
+                if i1 == 101:
+                    i1_forwarding = 21
+                # Case 2 with i1 to rs1
+                if i1 == 201:
+                    i1_forwarding = 11
+
+                return [i1_forwarding, i2_forwarding]
+
+            # in case only rs1 is present ,in I type instrux:-
+            # forwarding to i2 rd to rs1 and no forwards from i1
+            if i2==2:
+                i2_forwarding=21
+
+                return [i1_forwarding, i2_forwarding]
+
+        #case 3, dependency with i2:-
+
+            # here only forwarding to rs1 is possible : -
+            if i2==3:
+                i2_forwarding=31
+                return [i1_forwarding,i2_forwarding]
+
+        #case 5 , dependency with i2:-
+
+            # here rd of i2 is both rs1 and rs2 : -
+            if i2==503:
+                i2_forwarding=33
+                return  [i1_forwarding,i2_forwarding]
+
+            # here rd of i2 is related to rs1
+            if i2==501:
+                i2_forwarding=31
+
+                #Case 5 if i1 is related to rs2
+                if i1==502:
+                    i1_forwarding=12
+
+                #case 10 here always i1 is related to rs2
+                if i1==102:
+                    i1_forwarding=12
+                return  [i1_forwarding,i2_forwarding]
+
+
+            # here rd of i2 is related to rs2
+            if i2==502:
+                i2_forwarding=32
+
+                # Case 5 if i1 is related to rs1
+                if i1==501:
+                    i1_forwarding=11
+
+                # Case 10 if i1 is related to rs1
+                if i1==101:
+                    i1_forwarding=11
+
+                return  [i1_forwarding,i2_forwarding]
+
+        #Case 7 , checking dependency with i2:-
+
+            #rd of i2 is related to both rs1 and rs2
+            if i2==703:
+                i2_forwarding=63
+                return [i1_forwarding,i2_forwarding]
+
+            # rd of i2 is related to rs1
+            if i2==701:
+                i2_forwarding=61
+
+                # case 7 , i1 to rs2
+                if i1==702:
+                    i1_forwarding=72
+
+                # case 9 , i1 to rs2
+                if i1==902:
+                    i1_forwarding=52
+                return [i1_forwarding, i2_forwarding]
+
+            # rd of i2 is related to rs2
+            if i2 == 702:
+                i2_forwarding=62
+
+                # case 7 , i1 to rs1
+                if i1==701:
+                    i1_forwarding=71
+
+                # case 9 , i1 to rs1
+                if i1==901:
+                    i1_forwarding=51
+
+                return [i1_forwarding,i2_forwarding]
+
+        # Case 9 ,checking dependancy with i2:-
+
+            #rd of i2 is related to both rs1 and rs2
+            if i2==903:
+                i2_forwarding=43
+                return [i1_forwarding,i2_forwarding]
+
+            #rd of i2 is related to rs2
+            if i2==902:
+                i2_forwarding=42
+
+                #case 7 rd of i1 is related to rs1
+                if i1==701:
+                    i1_forwarding=71
+
+                #case 9 rd of i1 is related to rs1
+                if i1==901:
+                    i1_forwarding=51
+
+                return [i1_forwarding,i2_forwarding]
+
+            #rd of i1 is related to rs1
+            if i2==901:
+                i2_forwarding=41
+
+                #case 7 rd of i1 is related to rs2
+                if i1==702:
+                    i1_forwarding=72
+
+                #case 9 rd of i1 is related to rs2
+                if i1==902:
+                    i1_forwarding=52
+
+            return  [i1_forwarding,i2_forwarding]
+
+
+        # case 10 , checking dependancy with i2
+
+            # from i2 to both rs2 and rs1
+            if i2==1003:
+                i2_forwarding=23
+            return [i1_forwarding,i2_forwarding]
+
+            # from i2 to rs2
+            if i2==1002:
+                i2_forwarding=0
+
+                #case 10 from i1 to rs1
+                if i1==1001:
+                    i1_forwarding=11
+
+                # case 5 from i1 to rs1
+                if i1==501:
+                    i1_forwarding=11
+                return [i1_forwarding,i2_forwarding]
+
+            # from i2 to rs1
+            if i2==1001:
+                i2_forwarding =21
+
+                #case 10 from i1 to rs2
+                if i1==1002:
+                   i1_forwarding =12
+
+                # case 5 from i1 to rs2
+                if i1==502:
+                    i1_forwarding=12
+
+                return [i1_forwarding,i2_forwarding]
+
+
+
+
+
+def check_dependence(self, opcode,funct3,rs1,rs2,rd):
         #add data dependence check via registers
         i2=self.current_list[-1]   # this will contain the attributes of the function which was just before the current instruction
         i1=self.current_list[0]   # this will contain the attributes of the function which was
