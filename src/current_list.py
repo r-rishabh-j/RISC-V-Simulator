@@ -268,8 +268,12 @@ def check_dependence(self, opcode,funct3,rs1,rs2,rd):
 
         if i2[0] == 3:  # if i2 is load and i3 is store type
             if opcode == 35:
-                if i2[4] == rs2:   # if the rs2 or source of data is same as rd in load
-                    dependency_i2=10
+                if i2[4] == rs2 and i2[4]==rs1:   # if the rs2 or source of data is same as rd in load
+                    dependency_i2=1003
+                elif i2[4]==rs1:   # if the rs2 or source of data is same as rd in load
+                    dependency_i2=1001
+                elif i2[4] == rs2:   # if the rs2 or source of data is same as rd in load
+                    dependency_i2=1002
 
 
 
@@ -289,20 +293,14 @@ def check_dependence(self, opcode,funct3,rs1,rs2,rd):
 
         if i1[0] == 3:  # if i1 is load and i3 is store type
             if opcode == 35:
-                if i1[4] == rs2:    # if the rs2 or source of data is same as rd in load
-                    dependency_i1=10
+                if i1[4] == rs2 and i1[4]==rs1:    # if the rs2 or source of data is same as rd in load
+                    dependency_i1=1003
+                elif i1[4]==rs1:    # if the rs2 or source of data is same as rd in load
+                    dependency_i1=1001
+                elif i1[4] == rs2:    # if the rs2 or source of data is same as rd in load
+                    dependency_i1=1002
 
-        #case16
-        if i2[0] == 3:  # if i1 is load and i3 is store type
-            if opcode == 35:
-                if i2[4] == rs1:    # if the rs1 is same as rd in load
-                    dependency_i1=16
-
-
-        if i1[0] == 3:  # if i1 is load and i3 is store type
-            if opcode == 35:
-                if i1[4] == rs1:    # if the rs1 is same as rd in load
-                    dependency_i1=16
+        
 
         #odd Cases
         #Case1
@@ -346,12 +344,20 @@ def check_dependence(self, opcode,funct3,rs1,rs2,rd):
         #Case5
         if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
             if opcode==35:
-                if rs1==i2[4] or rs2==i2[4]:
-                    dependency_i2=5
+                if rs1==i2[4] and rs2==i2[4]:
+                    dependency_i2=503
+                elif rs1==i2[4]:
+                    dependency_i2=501
+                elif rs2==i2[4]:
+                    dependency_i2=502
         if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==35:
-                if rs1==i1[4] or rs2==i1[4]:
-                    dependency_i1=5
+                if rs1==i1[4] and rs2==i1[4]:
+                    dependency_i1=503
+                elif rs1==i1[4]:
+                    dependency_i1=501
+                elif rs2==i1[4]:
+                    dependency_i1=502
 
         #Case7
         if i2[0]==51 or i2[0]==19:
