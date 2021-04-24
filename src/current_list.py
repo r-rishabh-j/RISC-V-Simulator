@@ -57,7 +57,7 @@ class Current:
             i2_forwarding=31
             return [i1_forwarding,i2_forwarding]
 
-    # case 2 , dependency with i2
+        # case 2 , dependency with i2
 
         # from i2 to both rs1 and rs2
         if i2==203:
@@ -96,14 +96,14 @@ class Current:
 
             return [i1_forwarding, i2_forwarding]
 
-    #case 3, dependency with i2:-
+     #case 3, dependency with i2:-
 
         # here only forwarding to rs1 is possible : -
         if i2==3:
             i2_forwarding=31
             return [i1_forwarding,i2_forwarding]
 
-    #case 5 , dependency with i2:-
+        #case 5 , dependency with i2:-
 
         # here rd of i2 is both rs1 and rs2 : -
         if i2==503:
@@ -138,7 +138,7 @@ class Current:
 
             return  [i1_forwarding,i2_forwarding]
 
-    #Case 7 , checking dependency with i2:-
+        #Case 7 , checking dependency with i2:-
 
         #rd of i2 is related to both rs1 and rs2
         if i2==703:
@@ -172,7 +172,7 @@ class Current:
 
             return [i1_forwarding,i2_forwarding]
 
-    # Case 9 ,checking dependancy with i2:-
+        # Case 9 ,checking dependancy with i2:-
 
         #rd of i2 is related to both rs1 and rs2
         if i2==903:
@@ -208,7 +208,7 @@ class Current:
             return  [i1_forwarding,i2_forwarding]
 
 
-    # case 10 , checking dependancy with i2
+        # case 10 , checking dependancy with i2
 
         # from i2 to both rs2 and rs1
         if i2==1003:
@@ -245,89 +245,89 @@ class Current:
 
 
 
-    # dealing with cases when there is dependence between i1 and i3 only
-    # Case 1
-    if i1==103:
-        i1_forwarding=13
-        return [i1_forwarding,i2_forwarding]
-    if i1==102:
-        i1_forwarding=12
-        return [i1_forwarding,i2_forwarding]
-    if i1==101:
-        i1_forwarding=11
-        return [i1_forwarding,i2_forwarding]
-    if i1==1:
-        i1_forwarding=11
-        return [i1_forwarding,i2_forwarding]
+        # dealing with cases when there is dependence between i1 and i3 only
+        # Case 1
+        if i1==103:
+            i1_forwarding=13
+            return [i1_forwarding,i2_forwarding]
+        if i1==102:
+            i1_forwarding=12
+            return [i1_forwarding,i2_forwarding]
+        if i1==101:
+            i1_forwarding=11
+            return [i1_forwarding,i2_forwarding]
+        if i1==1:
+            i1_forwarding=11
+            return [i1_forwarding,i2_forwarding]
 
-    #Case 2
-    if i1==203:
-        i1_forwarding=13
-        return [i1_forwarding,i2_forwarding]
-    if i1==202:
-        i1_forwarding=12
-        return [i1_forwarding,i2_forwarding]
-    if i1==201:
-        i1_forwarding=11
-        return [i1_forwarding,i2_forwarding]
-    if i1==2:
-        i1_forwarding=11
-        return [i1_forwarding,i2_forwarding]
+        #Case 2
+        if i1==203:
+            i1_forwarding=13
+            return [i1_forwarding,i2_forwarding]
+        if i1==202:
+            i1_forwarding=12
+            return [i1_forwarding,i2_forwarding]
+        if i1==201:
+            i1_forwarding=11
+            return [i1_forwarding,i2_forwarding]
+        if i1==2:
+            i1_forwarding=11
+            return [i1_forwarding,i2_forwarding]
 
-    #Case 3
-    if i1==3:
-        i1_forwarding=11
-        return [i1_forwarding,i2_forwarding]
+        #Case 3
+        if i1==3:
+            i1_forwarding=11
+            return [i1_forwarding,i2_forwarding]
 
-    #Case 4: None
+        #Case 4: None
 
-    #Case 5
-    if i1==503:
-        i1_forwarding=13
-        return [i1_forwarding,i2_forwarding]
-    if i1==502:
-        i1_forwarding=12
-        return [i1_forwarding,i2_forwarding]
-    if i1==501:
-        i1_forwarding=11
-        return [i1_forwarding,i2_forwarding]
+        #Case 5
+        if i1==503:
+            i1_forwarding=13
+            return [i1_forwarding,i2_forwarding]
+        if i1==502:
+            i1_forwarding=12
+            return [i1_forwarding,i2_forwarding]
+        if i1==501:
+            i1_forwarding=11
+            return [i1_forwarding,i2_forwarding]
 
-    #Case 6 : None
-    
-    #Case 7
-    if i1==703:
-        i1_forwarding=73
-        return [i1_forwarding,i2_forwarding]
-    if i1==702:
-        i1_forwarding=72
-        return [i1_forwarding,i2_forwarding]
-    if i1==701:
-        i1_forwarding=71
-        return [i1_forwarding,i2_forwarding]
-    
-    # Case 8: None
+        #Case 6 : None
+        
+        #Case 7
+        if i1==703:
+            i1_forwarding=73
+            return [i1_forwarding,i2_forwarding]
+        if i1==702:
+            i1_forwarding=72
+            return [i1_forwarding,i2_forwarding]
+        if i1==701:
+            i1_forwarding=71
+            return [i1_forwarding,i2_forwarding]
+        
+        # Case 8: None
 
-    #Case 9
-    if i1==903:
-        i1_forwarding=53
-        return [i1_forwarding,i2_forwarding]
-    if i1==902:
-        i1_forwarding=52
-        return [i1_forwarding,i2_forwarding]
-    if i1==901:
-        i1_forwarding=51
-        return [i1_forwarding,i2_forwarding]
-    
-    #Case 10
-    if i1==1003:
-        i1_forwarding=13
-        return [i1_forwarding,i2_forwarding]
-    if i1==1002:
-        i1_forwarding=12
-        return [i1_forwarding,i2_forwarding]
-    if i1==1001:
-        i1_forwarding=11
-        return [i1_forwarding,i2_forwarding]
+        #Case 9
+        if i1==903:
+            i1_forwarding=53
+            return [i1_forwarding,i2_forwarding]
+        if i1==902:
+            i1_forwarding=52
+            return [i1_forwarding,i2_forwarding]
+        if i1==901:
+            i1_forwarding=51
+            return [i1_forwarding,i2_forwarding]
+        
+        #Case 10
+        if i1==1003:
+            i1_forwarding=13
+            return [i1_forwarding,i2_forwarding]
+        if i1==1002:
+            i1_forwarding=12
+            return [i1_forwarding,i2_forwarding]
+        if i1==1001:
+            i1_forwarding=11
+            return [i1_forwarding,i2_forwarding]
 
 
 def check_dependence(self, opcode,funct3,rs1,rs2,rd):
