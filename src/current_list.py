@@ -162,10 +162,10 @@ class Current:
         #Case13:None
         #Case15:None
 
-        if i1[4]==0:  # rd of i1 is x0
-            dependency_i1=0 
-        if i2[4]==0:  # rd of i2 is x0
-            dependency_i2=0
+        if i1[4]==0:  # rd of i1 is x0 i.e. no dependency
+            dependency_i1=-1 
+        if i2[4]==0:  # rd of i2 is x0 i.e. no dependency
+            dependency_i2=-1
         return [dependency_i1,dependency_i2]
 
 
