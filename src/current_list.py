@@ -241,9 +241,93 @@ class Current:
                 i1_forwarding=12
 
             return [i1_forwarding,i2_forwarding]
+    
 
 
 
+    # dealing with cases when there is dependence between i1 and i3 only
+    # Case 1
+    if i1==103:
+        i1_forwarding=13
+        return [i1_forwarding,i2_forwarding]
+    if i1==102:
+        i1_forwarding=12
+        return [i1_forwarding,i2_forwarding]
+    if i1==101:
+        i1_forwarding=11
+        return [i1_forwarding,i2_forwarding]
+    if i1==1:
+        i1_forwarding=11
+        return [i1_forwarding,i2_forwarding]
+
+    #Case 2
+    if i1==203:
+        i1_forwarding=13
+        return [i1_forwarding,i2_forwarding]
+    if i1==202:
+        i1_forwarding=12
+        return [i1_forwarding,i2_forwarding]
+    if i1==201:
+        i1_forwarding=11
+        return [i1_forwarding,i2_forwarding]
+    if i1==2:
+        i1_forwarding=11
+        return [i1_forwarding,i2_forwarding]
+
+    #Case 3
+    if i1==3:
+        i1_forwarding=11
+        return [i1_forwarding,i2_forwarding]
+
+    #Case 4: None
+
+    #Case 5
+    if i1==503:
+        i1_forwarding=13
+        return [i1_forwarding,i2_forwarding]
+    if i1==502:
+        i1_forwarding=12
+        return [i1_forwarding,i2_forwarding]
+    if i1==501:
+        i1_forwarding=11
+        return [i1_forwarding,i2_forwarding]
+
+    #Case 6 : None
+    
+    #Case 7
+    if i1==703:
+        i1_forwarding=73
+        return [i1_forwarding,i2_forwarding]
+    if i1==702:
+        i1_forwarding=72
+        return [i1_forwarding,i2_forwarding]
+    if i1==701:
+        i1_forwarding=71
+        return [i1_forwarding,i2_forwarding]
+    
+    # Case 8: None
+
+    #Case 9
+    if i1==903:
+        i1_forwarding=53
+        return [i1_forwarding,i2_forwarding]
+    if i1==902:
+        i1_forwarding=52
+        return [i1_forwarding,i2_forwarding]
+    if i1==901:
+        i1_forwarding=51
+        return [i1_forwarding,i2_forwarding]
+    
+    #Case 10
+    if i1==1003:
+        i1_forwarding=13
+        return [i1_forwarding,i2_forwarding]
+    if i1==1002:
+        i1_forwarding=12
+        return [i1_forwarding,i2_forwarding]
+    if i1==1001:
+        i1_forwarding=11
+        return [i1_forwarding,i2_forwarding]
 
 
 def check_dependence(self, opcode,funct3,rs1,rs2,rd):
