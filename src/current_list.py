@@ -21,7 +21,7 @@ class Current:
 
 
         #first dealing with all cases of i2 and i3 dependence if these does not exist, then only going to i1
-        #Case 1 , dependancy with i2
+    #Case 1 , dependancy with i2
         if i2== 103:
             i2_forwarding=33
             return [i1_forwarding,i2_forwarding]
@@ -103,7 +103,7 @@ class Current:
             i2_forwarding=31
             return [i1_forwarding,i2_forwarding]
 
-        #case 5 , dependency with i2:-
+    #case 5 , dependency with i2:-
 
         # here rd of i2 is both rs1 and rs2 : -
         if i2==503:
@@ -138,7 +138,7 @@ class Current:
 
             return  [i1_forwarding,i2_forwarding]
 
-        #Case 7 , checking dependency with i2:-
+    #Case 7 , checking dependency with i2:-
 
         #rd of i2 is related to both rs1 and rs2
         if i2==703:
@@ -172,7 +172,7 @@ class Current:
 
             return [i1_forwarding,i2_forwarding]
 
-        # Case 9 ,checking dependancy with i2:-
+    # Case 9 ,checking dependancy with i2:-
 
         #rd of i2 is related to both rs1 and rs2
         if i2==903:
@@ -208,7 +208,7 @@ class Current:
             return  [i1_forwarding,i2_forwarding]
 
 
-        # case 10 , checking dependancy with i2
+    # case 10 , checking dependancy with i2
 
         # from i2 to both rs2 and rs1
         if i2==1003:
@@ -330,7 +330,7 @@ class Current:
             return [i1_forwarding,i2_forwarding]
 
 
-def check_dependence(self, opcode,funct3,rs1,rs2,rd):
+    def check_dependence(self, opcode,funct3,rs1,rs2,rd):
         #add data dependence check via registers
         i2=self.current_list[-1]   # this will contain the attributes of the function which was just before the current instruction
         i1=self.current_list[0]   # this will contain the attributes of the function which was
