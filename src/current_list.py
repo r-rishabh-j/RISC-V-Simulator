@@ -21,7 +21,7 @@ class Current:
 
 
         #first dealing with all cases of i2 and i3 dependence if these does not exist, then only going to i1
-    #Case 1 , dependancy with i2
+        # #Case 1 , dependancy with i2
         if i2== 103:
             i2_forwarding=33
             return [i1_forwarding,i2_forwarding]
@@ -95,15 +95,13 @@ class Current:
             i2_forwarding=21
 
             return [i1_forwarding, i2_forwarding]
-
-     #case 3, dependency with i2:-
+        #case 3, dependency with i2:-
 
         # here only forwarding to rs1 is possible : -
         if i2==3:
             i2_forwarding=31
             return [i1_forwarding,i2_forwarding]
-
-    #case 5 , dependency with i2:-
+        #case 5 , dependency with i2:-
 
         # here rd of i2 is both rs1 and rs2 : -
         if i2==503:
@@ -137,8 +135,8 @@ class Current:
                 i1_forwarding=11
 
             return  [i1_forwarding,i2_forwarding]
-
-    #Case 7 , checking dependency with i2:-
+        
+        #Case 7 , checking dependency with i2:-
 
         #rd of i2 is related to both rs1 and rs2
         if i2==703:
@@ -171,8 +169,8 @@ class Current:
                 i1_forwarding=51
 
             return [i1_forwarding,i2_forwarding]
-
-    # Case 9 ,checking dependancy with i2:-
+            
+        # Case 9 ,checking dependancy with i2:-
 
         #rd of i2 is related to both rs1 and rs2
         if i2==903:
@@ -206,9 +204,8 @@ class Current:
                 i1_forwarding=52
 
             return  [i1_forwarding,i2_forwarding]
-
-
-    # case 10 , checking dependancy with i2
+            
+        # case 10 , checking dependancy with i2
 
         # from i2 to both rs2 and rs1
         if i2==1003:
@@ -329,6 +326,58 @@ class Current:
             i1_forwarding=11
             return [i1_forwarding,i2_forwarding]
 
+        return [-1,-1] # if no case matches
+
+    def data_stalling(self,i1,i2):
+
+        stall=-1
+
+        #Case1
+        if i1==103 or i1==102 or i1==101 or i1==1:
+            stall=1
+            return stall
+        
+        #Case2
+        if i1==203 or i1==202 or i1==201 or i1==2:
+            stall=1
+            return stall
+
+        #Case3
+        if i1==3:
+            stall=1
+            return stall
+
+        #Case4:None
+
+        #Case5
+        if i1==503 or i1==502 or i1==501:
+            stall=1
+            return stall
+
+
+        #Case6:None
+
+        #Case7
+        if i1==703 or i1==702 or i1==701:
+            stall=1
+            return stall
+        
+        #Case8:None
+
+        #Case9
+        if i1==903 or i1==902 or i1==901:
+            stall=1
+            return stall
+
+        #Case10
+        if i1==1003 or i1==1002 or i1==1001:
+            stall=1
+            return stall
+
+        #Case11,12,13,14,15:None
+
+        return -1 #if no case matches return stall=-1
+            
 
     def check_dependence(self, opcode,funct3,rs1,rs2,rd):
         #add data dependence check via registers
