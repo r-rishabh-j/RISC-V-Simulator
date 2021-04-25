@@ -21,7 +21,7 @@ class Current:
 
 
         #first dealing with all cases of i2 and i3 dependence if these does not exist, then only going to i1
-        # #Case 1 , dependancy with i2
+        # Case 1 , dependancy with i2
         if i2== 103:
             i2_forwarding=33
             return [i1_forwarding,i2_forwarding]
@@ -332,6 +332,44 @@ class Current:
 
         stall=-1
 
+        # dependency with i2
+        # Case1
+        if i2 == 103 or i2 == 101 or i2 == 102 or i2 == 1:
+            stall = 2
+            return stall
+
+        # case2
+        if i2 == 203 or i2 == 202 or i2 == 201 or i2 == 2:
+            stall = 2
+            return stall
+
+        # case3
+        if i2 == 3:
+            stall = 2
+            return stall
+
+        # case5
+        if i2 == 5:
+            stall = 2
+            return stall
+
+        # case7
+        if i2 == 701 or i2 == 702 or i2 == 703:
+            stall = 2
+            return stall
+
+        # case9
+        if i2 == 901 or i2 == 903 or i2 == 902:
+            stall = 2
+            return stall
+
+        # case10
+        if i2 == 1001 or i2 == 1002 or i2 == 1003:
+            stall = 2
+            return stall
+
+
+        # dependency with i1:-
         #Case1
         if i1==103 or i1==102 or i1==101 or i1==1:
             stall=1
@@ -375,6 +413,9 @@ class Current:
             return stall
 
         #Case11,12,13,14,15:None
+
+
+
 
         return -1 #if no case matches return stall=-1
             
@@ -538,6 +579,20 @@ class Current:
         if i2[4]==0:  # rd of i2 is x0 i.e. no dependency
             dependency_i2=-1
         return [dependency_i1,dependency_i2]
+
+
+    def decision_maker(self,opcode,funct3,rs1,rs2,rd,forwarding_knob):    # if forwarding_knob is 1 then forwarding is on
+
+        dependencies=self.check_dependence(opcode,funct3,rs1,rs2,rd)
+
+        if forwarding_knob == 1:
+            ret_value=self.data_forwarding(dependencies[0],dependencies[1])
+            return ret_value
+
+        if forwarding_knob == 0:
+            ret_value=self.data_stalling(dependencies[0],dependencies[1])
+            return ret_value
+            
 
 
     def print_table(self):
