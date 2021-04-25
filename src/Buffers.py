@@ -12,6 +12,7 @@ class Buffers:
         self.RM = 0
         self.RMtemp = 0
         self.RY = 0
+        self.IRbuffer=0 # to store output of fetch stage and used to update actual IR at the end of cycle
         self.Fetch_output_PC_temp = 0 # used to store the value of PC to be updated at the end of cycle
         self.Decode_output_PC_temp = 0 # used to store the correct value of PC at branch misprediction
         self.Decode_input_PC=0  # used to store the PC of the instruction in decode
