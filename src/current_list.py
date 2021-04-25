@@ -349,7 +349,7 @@ class Current:
             return stall
 
         # case5
-        if i2 == 5:
+        if i2 == 503 or i2==501 or i2==502:
             stall = 2
             return stall
 
