@@ -83,9 +83,9 @@ class ControlModule:
         #############fetch queue##################
         self.fetch_operation=deque() # if this queue is empty, then the stage will operate. Else,it won't.
         #############decode queue##################
-        self.branch_predictor_decision_queue=deque([False])
+        #self.branch_predictor_decision_queue=deque([False])
         self.decode_operation=deque([False]) # if this queue is empty, then the stage will operate. Else,it won't.
-        self.decode_PC_queue=deque([0])
+        #self.decode_PC_queue=deque([0])
         #############EXECUTE-QUEUE################
         self.exe_opcode=deque([0,0])
         self.exe_funct3=deque([0,0])
@@ -420,8 +420,8 @@ class ControlModule:
             self.fetch_operation.popleft()
             return False
     def decode_deque_signal(self) -> bool:
-        self.instruction_in_decode_PC=self.decode_PC_queue.popleft() # store the incoming PC in current_PC and access it in the decode stage for branch mispredictions
-        self.branch_prediction=self.branch_predictor_decision_queue.popleft()
+        #self.instruction_in_decode_PC=self.decode_PC_queue.popleft() # store the incoming PC in current_PC and access it in the decode stage for branch mispredictions
+        #self.branch_prediction=self.branch_predictor_decision_queue.popleft()
         if len(self.decode_operation)==0: # if the operation queue is empty, then operate.
             return True
         else:

@@ -12,8 +12,10 @@ class Buffers:
         self.RM = 0
         self.RMtemp = 0
         self.RY = 0
-		self.Fetch_PC_temp = 0
-		self.Decode_PC_temp = 0
+        self.Fetch_output_PC_temp = 0 # used to store the value of PC to be updated at the end of cycle
+        self.Decode_output_PC_temp = 0 # used to store the correct value of PC at branch misprediction
+        self.Decode_input_PC=0  # used to store the PC of the instruction in decode
+        self.Decode_input_branch_prediction=False # used to store the branch prediction output for next cycle
 
     def getR1(self):
         return self.R1
@@ -80,7 +82,7 @@ class Buffers:
     def setRY(self, val, control_RY):
         if control_RY:
             self.R1 = val
-	def setFetch_PC_temp(self, val):
-		self.Fetch_PC_temp = val
-	def setDecode_PC_temp(self, val):
-		self.Decode_PC_temp = val
+	def setFetch_output_PC_temp(self, val):
+		self.Fetch_output_PC_temp = val
+	def setDecode_output_PC_temp(self, val):
+		self.Decode_output_PC_temp = val
