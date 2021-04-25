@@ -73,6 +73,7 @@ class ControlModule:
         self.branch_prediction=False # output of fetch stage re regarding branch prediction is stored here
         self.branch_misprediction=False # boolean to send control signal for branch misprediction, needs to be manually set to zero after end of cycle
         self.RM_placeholder=0
+        self.MtoEcode=-1
         # 0- RZ
         # 1- MDR
         # 2- Return address from PC # PC has to be incremented in fetch stage itself
@@ -430,7 +431,7 @@ class ControlModule:
         if len(self.decode_operation)==0: # if the operation queue is empty, then operate.
             return True
         else:
-            self.decode_operation.popleft()
+            self.MtoEcode=self.decode_operation.popleft()
             return False
     def execute_deque_signal(self) ->bool:
         if len(self.exe_operation)==0:
