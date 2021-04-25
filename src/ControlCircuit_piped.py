@@ -72,6 +72,7 @@ class ControlModule:
         self.instruction_in_decode_PC=0 # used to  store dequed value from decode PC queue
         self.branch_prediction=False # output of fetch stage re regarding branch prediction is stored here
         self.branch_misprediction=False # boolean to send control signal for branch misprediction, needs to be manually set to zero after end of cycle
+        self.RM_placeholder=0
         # 0- RZ
         # 1- MDR
         # 2- Return address from PC # PC has to be incremented in fetch stage itself
@@ -98,6 +99,8 @@ class ControlModule:
         self.mem_MemWrite=deque([0,0,0])
         self.mem_BytesToAccess=deque([0,0,0])
         self.mem_MuxYSelect=deque([0,0,0])
+        self.mem_RMqueue=deque([0,0,0])
+        self.mem_ForwardingQueue() # if empty, do nothing. Else, pop and perform forwarding operation.
         self.mem_operation=deque([0,0,0]) # indicates whether the stage has to operate or not.
         #############REGWRITE-QUEUE################
         self.reg_RegWrite=deque([0,0,0,0])
@@ -384,6 +387,7 @@ class ControlModule:
         self.mem_MemRead.append(self.MemRead)
         self.mem_MemWrite.append(self.MemWrite)
         self.mem_MuxYSelect.append(self.MuxYSelect)
+        self.mem_RMqueue.append(self.RM_placeholder)
         self.mem_operation.append(True)
     def register_set_operate(self):
         self.reg_rd.append(self.rd)
@@ -406,6 +410,7 @@ class ControlModule:
         self.mem_MemRead.append(0)
         self.mem_MemWrite.append(0)
         self.mem_MuxYSelect.append(0)
+        self.mem_RMqueue.append(0)
         self.mem_operation.append(False)
     def register_set_NOP(self):
         self.reg_rd.append(0)
@@ -444,6 +449,7 @@ class ControlModule:
         self.BytesToAccess=self.mem_BytesToAccess.popleft()
         self.MemRead=self.mem_MemRead.popleft()
         self.MemWrite=self.mem_MemWrite.popleft()
+        self.RM_placeholder=self.mem_RMqueue.popleft()
         operate=self.mem_operation.popleft()
         return operate
 
