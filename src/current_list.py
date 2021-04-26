@@ -238,6 +238,17 @@ class Current:
                 i1_forwarding=12
 
             return [i1_forwarding,i2_forwarding]
+
+        #case 15, dependency with i2:-
+
+        # here only forwarding to rs1 is possible : -
+        if i2==15:
+            i2_forwarding=61
+            return [i1_forwarding,i2_forwarding]
+
+        if i2==16:
+            i2_forwarding=41
+            return [i1_forwarding,i2_forwarding]
     
 
 
@@ -326,6 +337,17 @@ class Current:
             i1_forwarding=11
             return [i1_forwarding,i2_forwarding]
 
+
+        #Case 15
+        if i1==15:
+            i1_forwarding=71
+            return [i1_forwarding,i2_forwarding]
+
+        #Case 16
+        if i1==16:
+            i1_forwarding=51
+            return [i1_forwarding,i2_forwarding]
+
         return [-1,-1] # if no case matches
 
     def data_stalling(self,i1,i2):
@@ -365,6 +387,16 @@ class Current:
 
         # case10
         if i2 == 1001 or i2 == 1002 or i2 == 1003:
+            stall = 2
+            return stall
+
+        #case15
+        if i2 == 15:
+            stall = 1
+            return stall
+
+        #case16
+        if i2 == 16:
             stall = 2
             return stall
 
@@ -412,7 +444,17 @@ class Current:
             stall=1
             return stall
 
-        #Case11,12,13,14,15:None
+        #Case11,12,13,14
+
+        #Case15
+        if i1==15:
+            stall=-1
+            return stall
+
+        #Case16
+        if i1==16:
+            stall=1
+            return stall
 
 
 
@@ -572,7 +614,27 @@ class Current:
         #Case11
 
         #Case13:None
-        #Case15:None
+        #Case15:
+        if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
+            if opcode==103:
+                if rs1==i2[4]:
+                    dependency_i2=15
+        if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
+            if opcode==103:
+                if rs1==i1[4]:
+                    dependency_i1=15
+
+
+        #Case16:
+        if i2[0]==3:
+            if opcode==103:
+                if rs1==i2[4]:
+                    dependency_i2=16
+        if i1[0]==3:
+            if opcode==103:
+                if rs1==i1[4]:
+                    dependency_i1=16
+    
 
         if i1[4]==0:  # rd of i1 is x0 i.e. no dependency
             dependency_i1=-1 
