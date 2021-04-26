@@ -46,10 +46,10 @@ class Buffers:
         return self.RMtemp
     def getRY(self):
         return self.RY
-	def getFetch_PC_temp(self):
-		return self.Fetch_PC_temp
-	def getDecode_PC_temp(self):
-		return self.Decode_PC_temp
+    def getFetch_PC_temp(self):
+    	return self.Fetch_PC_temp
+    def getDecode_PC_temp(self):
+	    return self.Decode_PC_temp
 
     def setR1(self, val, control_R1):
         if control_R1:
@@ -87,7 +87,7 @@ class Buffers:
     def setRY(self, val, control_RY):
         if control_RY:
             self.R1 = val
-	def setFetch_output_PC_temp(self, val):
-		self.Fetch_output_PC_temp = val
-	def setDecode_output_PC_temp(self, val):
-		self.Decode_output_PC_temp = val
+    def setFetch_output_PC_temp(self, val):
+	    self.Fetch_output_PC_temp = val
+    def setDecode_output_PC_temp(self, val):
+        self.Decode_output_PC_temp = val

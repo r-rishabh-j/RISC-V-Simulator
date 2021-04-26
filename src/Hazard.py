@@ -11,3 +11,5 @@ class HazardUnit:
     def data_hazard(self):
         
     def control_hazard(self):
+
+

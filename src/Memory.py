@@ -12,6 +12,7 @@ class ProcessorMemoryInterface:
         self.MAR=0 # Memory address register
         self.MDR=0
         self.IRout=0
+        self.take_from_rm=False
         self.text_module=ByteAddressableMemory()
         self.data_module=ByteAddressableMemory()
 
