@@ -397,7 +397,7 @@ class HazardUnit:
 
         #case15
         if i2 == 15:
-            stall = 1
+            stall = 2
             return stall
 
         #case16
@@ -453,7 +453,7 @@ class HazardUnit:
 
         #Case15
         if i1==15:
-            stall=-1
+            stall=1
             return stall
 
         #Case16
