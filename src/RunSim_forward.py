@@ -39,6 +39,7 @@ class ControlBooleans:
         self.fetch_stall=False
         self.execute_stall=False
         self.branch_prediction=False
+        self.global_terminate=True
 
 forward_bool = ControlBooleans()
 
@@ -51,6 +52,7 @@ def fetch(stage):
         return
     # operation queue will be used in the buffer update stage, not here.
     # fetch the instruction using the value in PC
+    forward_bool.global_terminate=False
     buffer.IRbuffer=memory.LoadInstruction(IAGmodule.PC) # update IR buffer
     forward_bool.branch_prediction=IAGmodule.BTB_check(IAGmodule.PC)# update branch prediction
     target_obj=-1
@@ -67,9 +69,12 @@ def decode(stage):
     # check the operation queue. If empty, then operate. Else, don't operate and pop.
     if(control_module.terminate):
           return
+    forward_bool.global_terminate=False
     mtod=False
     if not (control_module.decode_deque_signal()):
         # decode stage is inactive. Perform other tasks
+        if control_module.MtoEcode==0:
+            return
         if control_module.MtoEcode==-2:
             forward_bool.fetch_stall=False
             forward_bool.decode_stall=True
@@ -96,7 +101,7 @@ def decode(stage):
     # decode the instruction first in the IR
     control_module.decode(registers.ReadIR(),IAGmodule.PC)
     # check for hazards using the hazard table.
-    hazard_code=hazard_module.check_dependance() # tentative !!
+    hazard_code=hazard_module.decision_maker(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd, 1) # 1 for forwarding
     # if hazard, perform corrective measures here and return. Do not execute further code
     to_return=False
     if hazard_code[0]!=-1 or hazard_code[0]!=-1: # data hazard!
@@ -207,16 +212,16 @@ def decode(stage):
                 forward_bool.fetch_stall=True
                 to_return=True
             elif hazard_code[1]==71:
-                buffers.R1bool=True
-                buffers.RAtemp=buffers.RZ
+                buffer.R1bool=True
+                buffer.RAtemp=buffer.RZ
             elif hazard_code[1]==72:
-                buffers.R2bool=True
-                buffers.RBtemp=buffers.RZ
+                buffer.R2bool=True
+                buffer.RBtemp=buffer.RZ
             elif hazard_code[1]==73:
-                buffers.R1bool=True
-                buffers.RAtemp=buffers.RZ
-                buffers.R2bool=True
-                buffers.RBtemp=buffers.RZ
+                buffer.R1bool=True
+                buffer.RAtemp=buffer.RZ
+                buffer.R2bool=True
+                buffer.RBtemp=buffer.RZ
             
         if hazard_code[0]!=-1:
             if hazard_code[0]==0:
@@ -322,33 +327,34 @@ def decode(stage):
                 forward_bool.fetch_stall=True
                 to_return=True
             elif hazard_code[0]==71:
-                buffers.R1bool=True
-                buffers.RAtemp=buffers.RZ
+                buffer.R1bool=True
+                buffer.RAtemp=buffer.RZ
             elif hazard_code[0]==72:
-                buffers.R2bool=True
-                buffers.RBtemp=buffers.RZ
+                buffer.R2bool=True
+                buffer.RBtemp=buffer.RZ
             elif hazard_code[0]==73:
-                buffers.R1bool=True
-                buffers.RAtemp=buffers.RZ
-                buffers.R2bool=True
-                buffers.RBtemp=buffers.RZ
+                buffer.R1bool=True
+                buffer.RAtemp=buffer.RZ
+                buffer.R2bool=True
+                buffer.RBtemp=buffer.RZ
     # check for branch misprediction here, use Decode_input_branch_prediction
     # read the registers or PC or forwarded value here and update RA and RB with those values. Use control signals for MuxA and MuxB to set them!!!!
+
     MuxAout=0
     MuxBout=0
     if buffer.R2bool==True:
         MuxBout=buffer.R2
         buffer.R2bool=False
-    elif MuxB_select==0:
+    elif control_module.MuxBSelect==0:
         MuxBout=registers.ReadGpRegisters(control_module.rs2)
-    elif MuxB_select==1:
+    elif control_module.MuxBSelect==1:
         MuxBout=control_module.imm
     if buffer.R1bool==True:
         MuxBout=buffer.R1
         buffer.R1bool=False
-    elif MuxA_select==0:
+    elif control_module.MuxASelect==0:
         MuxAout=registers.ReadGpRegisters(control_module.rs1)
-    elif MuxA_select==1:
+    elif control_module.MuxASelect==1:
         MuxAout=buffer.Decode_input_PC
     # code for executing ALU for branch misprediction here.
     # if not control_module.jump:
@@ -404,9 +410,10 @@ def execute(stage): # ALU
     if not control_module.execute_deque_signal(): # this function returns False if memory is in NOP. Also, all control_module.ALUop, etc are updated to 0 in case of NOP, or correct value if OP
         # perform other tasks and return
         return
+    forward_bool.global_terminate=False
     # can use control_module.ALUop etc directly to use as arguments to ALU.
     ALUmodule.ALUexecute(control_module.ALUOp, control_module.ALUcontrol,buffer.getRA(), buffer.getRB())
-    buffer.setRZtemp(ALUmodule.output32)	#simple execution
+    buffer.RZtemp=ALUmodule.output32	#simple execution
     #add this code at the end of cycle
     #if(EtoE){
       #buffer.set
@@ -418,6 +425,7 @@ def mem_access(stage):
     if not control_module.memory_deque_signal(): # this function returns False if memory is in NOP. Also, all control_module.MemRead, etc are updated to 0 in case of NOP, or correct value if O
       # perform other tasks and return
         return
+    forward_bool.global_terminate=False
     # acess memory and update temp memory buffers (RM_temp)
     # check forwarding
     if memory.take_from_rm:
@@ -425,7 +433,7 @@ def mem_access(stage):
         # memory.AccessMemory(control_module.MemRead, control_module.MemWrite, buffer.getRZ(), control_module.BytesToAccess, memory.MDR) # why RMtemp? RM is updated at the end of cycle
         memory.take_from_mdr=False
     memory.AccessMemory(control_module.MemRead, control_module.MemWrite, buffer.getRZ(), control_module.BytesToAccess, control_module.RM_placeholder) # why RMtemp? RM is updated at the end of cycle
-    if len(control_module.mem_ForwardQueue) != 0:
+    if len(control_module.mem_ForwardingQueue) != 0:
       # check forwarding code
       # if MtoE
         control_module.MtoEcode=control_module.mem_ForwardQueue.popleft() # m to m forwarding
@@ -450,7 +458,7 @@ def mem_access(stage):
     elif control_module.MuxYSelect == 1:
         buffer.RYtemp = memory.MDR
     elif control_module.MuxYSelect == 2:
-        buffer.RYtemp = buffers.Fetch_output_PC_temp+4 # contains PC+4 #PC Buffer use karun ? ya IAG module ka PC 
+        buffer.RYtemp = buffer.Fetch_output_PC_temp+4 # contains PC+4 #PC Buffer use karun ? ya IAG module ka PC 
     # 
 
 def reg_writeback(stage):
@@ -458,6 +466,7 @@ def reg_writeback(stage):
     if not control_module.register_deque_signal(): # this function returns False if reg_write_back is in NOP. Also, all control_module.ALUop, etc are updated to 0 in case of NOP, or correct value if OP
         # perform other tasks and return
         return
+    forward_bool.global_terminate=False
     registers.WriteGpRegisters(control_module.rd, control_module.RegWrite, buffer.getRY())
 
 def buffer_update():
@@ -473,14 +482,14 @@ def buffer_update():
         if not control_module.branch_misprediction:
             IAGmodule.PC=buffer.Fetch_output_PC_temp
     if not forward_bool.decode_stall:
-        buffer.setRA(buffer.getRAtemp)
-        buffer.setRB(buffer.getRBtemp)
+        buffer.setRA(buffer.getRAtemp,1)
+        buffer.setRB(buffer.getRBtemp,1)
         if control_module.branch_misprediction:
             # IAGmodule.PC=buffer.Decode_output_PC_temp
             IAGmodule.PC=IAGmodule.PC_buffer
         #decode ke konse buffer hain aur?
     if not forward_bool.execute_stall: 
-        buffer.setRZ(buffer.getRZtemp)	#RZ update
+        buffer.RZ=buffer.RZtemp	#RZ update
         #buffer.setRM(buffer.getRMtemp)
         # buffer.RA=buffer.RAtemp
         # buffer.RB=buffer.RBtemp
@@ -533,7 +542,16 @@ def buffer_update():
       
 def RunSim():
     clock=1
-    #while(True):
+    while(True):
+        forward_bool.global_terminate=True
+        reg_writeback(4)
+        mem_access(3)
+        execute(2)
+        decode(1)
+        fetch(0)
+        buffer_update()
+        if forward_bool.global_terminate:
+            return
         # run the stages here, preferably in reverse order.
         # update the buffers in the endclass ControlBooleans:
 #   	def __init__(self):

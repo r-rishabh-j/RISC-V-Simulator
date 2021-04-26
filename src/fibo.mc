@@ -1,5 +1,7 @@
 #fibonacci
+~data
 0x10000000 0x5
+~text
 0x0	0x10000597	#auipc x11 65536	lw x11,N
 0x4	0x0005A583	#lw x11 0(x11)	lw x11,N
 0x8	0x00300293	#addi x5 x0 3	li x5,3 #fib(n<3, 1 or 2)==1
