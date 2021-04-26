@@ -122,8 +122,8 @@ def decode(stage):
         control_module.memory_set_NOP()
         control_module.register_set_NOP()
         return
-
-	control_module.execute_set_operate()
+        
+    control_module.execute_set_operate()
     control_module.memory_set_operate()
     control_module.register_set_operate()
 
