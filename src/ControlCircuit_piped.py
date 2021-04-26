@@ -73,6 +73,7 @@ class ControlModule:
         self.branch_prediction=False # output of fetch stage re regarding branch prediction is stored here
         self.branch_misprediction=False # boolean to send control signal for branch misprediction, needs to be manually set to zero after end of cycle
         self.RM_placeholder=0
+        self.RA_placeholder=0
         self.MtoEcode=-1
         # 0- RZ
         # 1- MDR
@@ -101,6 +102,7 @@ class ControlModule:
         self.mem_BytesToAccess=deque([0,0,0])
         self.mem_MuxYSelect=deque([0,0,0])
         self.mem_RMqueue=deque([0,0,0])
+        self.mem_RAqueue=deque([0,0,0])
         self.mem_ForwardingQueue() # if empty, do nothing. Else, pop and perform forwarding operation.
         self.mem_operation=deque([0,0,0]) # indicates whether the stage has to operate or not.
         #############REGWRITE-QUEUE################
@@ -389,6 +391,7 @@ class ControlModule:
         self.mem_MemWrite.append(self.MemWrite)
         self.mem_MuxYSelect.append(self.MuxYSelect)
         self.mem_RMqueue.append(self.RM_placeholder)
+        self.mem_RAqueue.append(self.RA_placeholder)
         self.mem_operation.append(True)
     def register_set_operate(self):
         self.reg_rd.append(self.rd)
@@ -412,6 +415,7 @@ class ControlModule:
         self.mem_MemWrite.append(0)
         self.mem_MuxYSelect.append(0)
         self.mem_RMqueue.append(0)
+        self.mem_RAqueue.append(0)
         self.mem_operation.append(False)
     def register_set_NOP(self):
         self.reg_rd.append(0)

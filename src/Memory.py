@@ -31,7 +31,7 @@ class ProcessorMemoryInterface:
         instruction=0 #stores instruction
         instruction=self.text_module.GetUnsignedValueAtAddress(self.MAR,4)
         self.IRout=instruction
-        self.MDR=instruction
+        #self.MDR=instruction
         print(f"\033[93mLoaded instruction from {hex(PC)}\033[0m")
         return instruction
 
