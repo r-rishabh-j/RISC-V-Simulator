@@ -22,18 +22,18 @@ hazard_unit=HazardUnit()
 #current = Current()	#how to use hazard table??	hazard_unit.curent
 
 class ControlBooleans:
-  	def __init__(self):
-          self.decode_stall=False
-          self.fetch_stall=False
-          self.execute_stall=False
-          self.branch_prediction=False
-
+    def __init__(self):
+        self.decode_stall=False
+        self.fetch_stall=False
+        self.execute_stall=False
+        self.branch_prediction=False
+    
     forward_bool=ControlBooleans()
     # Muxes
     MuxAout=0 # input 1 of ALU
     MuxBout=0 # input 2 of ALU
     MuxYout=0 # output of MuxY
-
+    
     def MuxY(MuxY_select):
         global MuxYout
         if MuxY_select==0:
@@ -71,7 +71,7 @@ class ControlBooleans:
     def decode(stage):
         # if terminate==1, return
         if control_module.terminate:
-        return
+            return
         if not (control_module.decode_deque_signal()):
             #decode stalled
         # check the operation queue. If empty, then operate. Else, don't operate and pop.
