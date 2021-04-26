@@ -34,7 +34,7 @@ with open(f"RegisterDump.mc", "w") as fileReg:
             fileReg.write(hex(reg).upper().replace('X', 'x'))
         fileReg.write("\n")
 
-# dumping memory
+#dumping memory
 with open(f"MemoryDump.mc", "w") as fileMem:  # input is dictionary with key as address and value as data
     lst = []  # stores keys present in dictionary
     temp_lst = []  # stores base address
@@ -65,6 +65,8 @@ with open(f"MemoryDump.mc", "w") as fileMem:  # input is dictionary with key as 
         else:
             fileMem.write("00  ")
         fileMem.write("\n")  # new line
+    lst = []  # stores keys present in dictionary
+    temp_lst = []
     for key in RunSim_forward.memory.text_module.memory:
         lst.append(key)
     lst.sort()

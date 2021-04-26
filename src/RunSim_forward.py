@@ -44,7 +44,7 @@ class ControlBooleans:
 forward_bool = ControlBooleans()
 
 
-def fetch(stage):
+def fetch(stage,clock):
     # to do here
     # if terminate==1, return
     control_module.controlStateUpdate(0)
@@ -59,12 +59,13 @@ def fetch(stage):
     if forward_bool.branch_prediction:
         target_obj=IAGmodule.BTB[IAGmodule.PC]
         buffer.Fetch_output_PC_temp=target_obj.target_address
+        print(f"Branch prediction.{buffer.Fetch_output_PC_temp} predicted")
     else:
         buffer.Fetch_output_PC_temp=IAGmodule.PC+4
     # compare it to BTB to check if that is a branch/jump. If it is, update PC to the target.
     
 
-def decode(stage):
+def decode(stage,clock):
     # if terminate==1, return
     # check the operation queue. If empty, then operate. Else, don't operate and pop.
     if(control_module.terminate):
@@ -85,9 +86,9 @@ def decode(stage):
             mtod=True
           #	return # M to D stall
         if control_module.MtoEcode==21:
-              forward_bool.execute_stall=True
-              forward_bool.MtoEtoRA=True
-              return
+            forward_bool.execute_stall=True
+            forward_bool.MtoEtoRA=True
+            return
         if control_module.MtoEcode==22:
             forward_bool.execute_stall=True
             forward_bool.MtoEtoRB=True
@@ -100,17 +101,21 @@ def decode(stage):
     
     # decode the instruction first in the IR
     control_module.decode(registers.ReadIR(),IAGmodule.PC)
+    if control_module.terminate:
+        return
     # check for hazards using the hazard table.
     hazard_code=hazard_module.decision_maker(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd, 1) # 1 for forwarding
     # if hazard, perform corrective measures here and return. Do not execute further code
     to_return=False
-    if hazard_code[0]!=-1 or hazard_code[0]!=-1: # data hazard!
+    if hazard_code[1]!=-1 or hazard_code[0]!=-1: # data hazard!
+        print(f"Hazard-{buffer.Decode_input_PC}")
         # code here for data hazard
         # first handling hazard[0] then hazard[1]
         if hazard_code[1]!=-1:
             if hazard_code[1]==0:
                 control_module.mem_ForwardingQueue.append(0) # set boolean to true in memory module
             elif hazard_code[1]==11:
+                print("MtoEtoRA found")
                 forward_bool.MtoEtoRA=True
             elif hazard_code[1]==12:
                 forward_bool.MtoEtoRB=True
@@ -162,10 +167,13 @@ def decode(stage):
                 control_module.register_set_operate()
 
             elif hazard_code[1]==31:
-                    forward_bool.EtoEtoRA=True
+                print("EtoEtoRA found")
+                forward_bool.EtoEtoRA=True
             elif hazard_code[1]==32:
+                print("EtoEtoRB found")
                 forward_bool.EtoEtoRB=True
             elif hazard_code[1]==33:
+                print("EtoEtoRB RA found")
                 forward_bool.EtoEtoRA=True
                 forward_bool.EtoEtoRB=True
             elif hazard_code[1]==41:
@@ -227,6 +235,7 @@ def decode(stage):
             if hazard_code[0]==0:
                 control_module.mem_ForwardingQueue.append(0) # set boolean to true in memory module
             elif hazard_code[0]==11:
+                print("MtoEtoRA found")
                 forward_bool.MtoEtoRA=True
             elif hazard_code[0]==12:
                 forward_bool.MtoEtoRB=True
@@ -362,23 +371,36 @@ def decode(stage):
     buffer.RBtemp=MuxBout
     buffer.RMtemp=registers.ReadGpRegisters(control_module.rs2)
     control_module.RM_placeholder=buffer.RMtemp
+    control_module.RA_placeholder=buffer.Decode_input_PC+4 # return address
     if mtod or to_return:
         return
     ALUmodule.outputBool=0
-    if control_module.jump or control_module.branch:
+    if control_module.branch:
         ALUmodule.ALUexecute(control_module.ALUOp, control_module.ALUcontrol, buffer.RAtemp, buffer.RBtemp)
+    IAGmodule.PC_buffer=buffer.Decode_input_PC
     control_module.branching_controlUpdate(ALUmodule.outputBool)
     IAGmodule.PCset(buffer.RAtemp, control_module.MuxPCSelect)
     IAGmodule.SetBranchOffset(control_module.imm)
     IAGmodule.PCUpdate(control_module.MuxINCSelect) # value in PC_buffer
+    print(f"\t\t\tiag pc buffer {hex(IAGmodule.PC_buffer)}")
     #buffer.Decode_output_PC_temp=IAGmodule.PC_buffer
     # use branch prediction from the buffer
-    control_module.RA_placeholder=buffer.Decode_input_PC+4 # return address
-    control_module.branch_misprediction=buffer.Decode_input_branch_prediction^(control_module.jump or control_module.branch)
+    print(f"RAtemp-{buffer.RAtemp} RBtemp-{buffer.RBtemp} RA-{buffer.RA} RB-{buffer.RB}")
+    print(f"\t\t\tRA placeholder- {control_module.RA_placeholder}")
+    control_module.branch_misprediction=buffer.Decode_input_branch_prediction^(control_module.jump or (control_module.branch and ALUmodule.outputBool))
+
+    if buffer.Decode_input_branch_prediction==0 and (control_module.jump or control_module.branch):
+        print(f"BTB entry created. {IAGmodule.PC_buffer}")
+        IAGmodule.BTB_insert(buffer.Decode_input_PC,IAGmodule.PC_buffer,1)
+    # if control_module.branch and not ALU.outputBool:
+    #     print("BTB entry created")
+    #     IAGmodule.BTB_insert(buffer.Decode_input_PC,IAGmodule.PC_buffer,1)
     if control_module.branch_misprediction: 
         # code here for handling branch misprediction
-        if control_module.jump or control_module.branch:
-            IAGmodule.BTB_insert(buffer.Decode_input_PC,IAGmodule.PC_buffer,1)
+        print("Misprediction")
+        # if control_module.jump or control_module.branch:
+        #     print("BTB entry created")
+        #     IAGmodule.BTB_insert(buffer.Decode_input_PC,IAGmodule.PC_buffer,1)
         control_module.decode_operation.append(-2) # -2 is the code to indicate a branch misprediction and the decode unit does not have to operate
         #buffer.Decode_output_PC_temp=buffer.Decode_input_PC+4 # set the accurate target PC
         # if control_module.jump:
@@ -387,6 +409,7 @@ def decode(stage):
             
         # else: # in this case, branch was T but the truth was NT
         #     buffer.Decode_output_PC_temp=buffer.Decode_input_PC+4
+        #print(f"\t\t\tiag pc buffer{hex(IAGmodule.PC_buffer)}")
         buffer.Decode_output_PC_temp=IAGmodule.PC_buffer
         control_module.execute_set_operate()
         control_module.memory_set_operate()
@@ -404,7 +427,7 @@ def decode(stage):
     control_module.memory_set_operate()
     control_module.register_set_operate()
 #MUXA, MUXB functionality needs to be implemented w/o the muxes!!!
-def execute(stage): # ALU
+def execute(stage,clock): # ALU
     # dequeue from the control signals. Check if we need to operate or not
     #False == NOP, 
     if not control_module.execute_deque_signal(): # this function returns False if memory is in NOP. Also, all control_module.ALUop, etc are updated to 0 in case of NOP, or correct value if OP
@@ -412,15 +435,17 @@ def execute(stage): # ALU
         return
     forward_bool.global_terminate=False
     # can use control_module.ALUop etc directly to use as arguments to ALU.
+    print(f"ALUcontrol-{control_module.ALUcontrol} ALUop-{control_module.ALUOp}")
     ALUmodule.ALUexecute(control_module.ALUOp, control_module.ALUcontrol,buffer.getRA(), buffer.getRB())
     buffer.RZtemp=ALUmodule.output32	#simple execution
+    print(f"clock- {clock} RZtemp-{buffer.RZtemp} ALUoutput-{ALUmodule.output32}")
     #add this code at the end of cycle
     #if(EtoE){
       #buffer.set
     #}  
     
     
-def mem_access(stage):
+def mem_access(stage,clock):
     # dequeue from the control signals. Check if we need to operate or not
     if not control_module.memory_deque_signal(): # this function returns False if memory is in NOP. Also, all control_module.MemRead, etc are updated to 0 in case of NOP, or correct value if O
       # perform other tasks and return
@@ -433,6 +458,7 @@ def mem_access(stage):
         # memory.AccessMemory(control_module.MemRead, control_module.MemWrite, buffer.getRZ(), control_module.BytesToAccess, memory.MDR) # why RMtemp? RM is updated at the end of cycle
         memory.take_from_mdr=False
     memory.AccessMemory(control_module.MemRead, control_module.MemWrite, buffer.getRZ(), control_module.BytesToAccess, control_module.RM_placeholder) # why RMtemp? RM is updated at the end of cycle
+    print(f"Memory MDR- {memory.MDR} Memory MAR- {memory.MAR}")
     if len(control_module.mem_ForwardingQueue) != 0:
       # check forwarding code
       # if MtoE
@@ -452,16 +478,20 @@ def mem_access(stage):
     
       # make MtoEToRA or MtoEtoRB true on the basis of encoding received
       # if MtoM
-    # set RYtemp according to values and MuxY control 
+    # set RYtemp according to values and MuxY control
+    print(f"MuxYSelect {control_module.MuxYSelect}") 
     if control_module.MuxYSelect == 0:
+        print("rz to ry")
         buffer.RYtemp = buffer.getRZ()
     elif control_module.MuxYSelect == 1:
+        print(f"MDR to RY {memory.MDR}")
         buffer.RYtemp = memory.MDR
     elif control_module.MuxYSelect == 2:
-        buffer.RYtemp = buffer.Fetch_output_PC_temp+4 # contains PC+4 #PC Buffer use karun ? ya IAG module ka PC 
+        print(f"\t\tRY set to RA!!!!!!!!!!!!!!!!!!!!!! {control_module.RA_placeholder}")
+        buffer.RYtemp = control_module.RA_placeholder # contains PC+4 #PC Buffer use karun ? ya IAG module ka PC 
     # 
 
-def reg_writeback(stage):
+def reg_writeback(stage,clock):
     # dequeue from the control signals. Check if we need to operate or not
     if not control_module.register_deque_signal(): # this function returns False if reg_write_back is in NOP. Also, all control_module.ALUop, etc are updated to 0 in case of NOP, or correct value if OP
         # perform other tasks and return
@@ -482,8 +512,11 @@ def buffer_update():
         if not control_module.branch_misprediction:
             IAGmodule.PC=buffer.Fetch_output_PC_temp
     if not forward_bool.decode_stall:
-        buffer.setRA(buffer.getRAtemp,1)
-        buffer.setRB(buffer.getRBtemp,1)
+        # buffer.setRA(buffer.RAtemp,1)
+        # buffer.setRB(buffer.RBtemp,1)
+        buffer.RA=buffer.RAtemp
+        buffer.RB=buffer.RBtemp
+
         if control_module.branch_misprediction:
             # IAGmodule.PC=buffer.Decode_output_PC_temp
             IAGmodule.PC=IAGmodule.PC_buffer
@@ -497,32 +530,43 @@ def buffer_update():
     buffer.RY=buffer.RYtemp
       #forward data in priority
     if forward_bool.MtoM:
-        buffer.setRM(buffer.MDR, True) # RM is updated to MDR of memory in case of M to M forwarding
+        
+        #buffer.setRM(buffer.MDR, True) # RM is updated to MDR of memory in case of M to M forwarding
+        #buffer.RM=memory.MDR
+        buffer.RM=buffer.RY
         forward_bool.MtoM = False
       
     if forward_bool.MtoEtoRA:	#MDR to RA
-        buffer.setRA(buffer.MDR, True) 
+        #buffer.setRA(buffer.MDR, True) 
+        buffer.RA=buffer.RY
         forward_bool.MtoEtoRA = False
         
     if forward_bool.MtoEtoRB:	#MDR to RB
-        buffer.setRB(buffer.MDR, True) 
+        #buffer.setRB(buffer.MDR, True) 
+        #buffer.RB=memory.MDR
+        buffer.RB=buffer.RY
         forward_bool.MtoEtoRB = False
         
     if forward_bool.EtoEtoRA:	#RZ to RA(rs1)
-        buffer.setRA(buffer.getRZ, True)
+        print("E to E to RA")
+        #buffer.setRA(buffer.getRZ, True)
+        buffer.RA=buffer.RZ
         forward_bool.EtoEtoRA = False
         
     if forward_bool.EtoEtoRB:	#RZ to RB(rs2)
-        buffer.setRB(buffer.getRZ, True)
+        #buffer.setRB(buffer.getRZ, True)
+        buffer.RB=buffer.RZ
         forward_bool.EtoEtoRB = False
       
     if forward_bool.EtoDtoR1:
-        buffer.setR1(buffer.getRZ, True)
+        #buffer.setR1(buffer.getRZ, True)
+        buffer.R1=buffer.RZ
         buffer.R1bool=True
         forward_bool.EtoEtoR1 = False
           
     if forward_bool.EtoDtoR2:
-        buffer.setR2(buffer.getRZ, True)
+        #buffer.setR2(buffer.getRZ, True)
+        buffer.R2=buffer.RZ
         buffer.R2bool=True
         forward_bool.EtoEtoR2 = False
           
@@ -538,18 +582,23 @@ def buffer_update():
 
     #if not forward_bool.execute_stall:
     forward_bool.execute_stall = False
+    print(f"RZ update, temp-{buffer.RZtemp}, RZ-{buffer.RZ}")
+    print(f"buff update- RAtemp-{buffer.RAtemp} RBtemp-{buffer.RBtemp} RA-{buffer.RA} RB-{buffer.RB}")
       
       
 def RunSim():
     clock=1
     while(True):
+        print(f"clock-{clock}")
         forward_bool.global_terminate=True
-        reg_writeback(4)
-        mem_access(3)
-        execute(2)
-        decode(1)
-        fetch(0)
+        reg_writeback(4, clock)
+        mem_access(3,clock)
+        execute(2,clock)
+        decode(1,clock)
+        fetch(0,clock)
         buffer_update()
+        print(f"PC{(IAGmodule.PC)} IR {hex(registers.IR)} RZ {buffer.RZ} RY {buffer.RY}\n\n")
+        clock=clock+1
         if forward_bool.global_terminate:
             return
         # run the stages here, preferably in reverse order.

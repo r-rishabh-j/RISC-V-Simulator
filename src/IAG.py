@@ -45,6 +45,7 @@ class InstructionAddressGenerator:
             self.PC_buffer+=4
         elif MuxINCSelect==1:  # in case mux select is 1 then add immediate / offset to PC
             self.PC_buffer+=self.IAGimmediate
+            print(f"IAG!!!!!!!!!!!!!!!!!!!!!!!!!!!! {self.PC_buffer} {self.IAGimmediate}")
             if self.PC_buffer > self.MAX_PC:
                 print("Address is not in range of data segment")
                 sys.exit()

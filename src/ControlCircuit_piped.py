@@ -455,6 +455,8 @@ class ControlModule:
         self.MemRead=self.mem_MemRead.popleft()
         self.MemWrite=self.mem_MemWrite.popleft()
         self.RM_placeholder=self.mem_RMqueue.popleft()
+        self.RA_placeholder=self.mem_RAqueue.popleft()
+        self.MuxYSelect=self.mem_MuxYSelect.popleft()
         operate=self.mem_operation.popleft()
         return operate
 

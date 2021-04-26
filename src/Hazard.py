@@ -654,10 +654,12 @@ class HazardUnit:
 
         if forwarding_knob == 1:
             ret_value=self.data_forwarding(dependencies[0],dependencies[1])
+            print(f"\t\thazard- decision {ret_value}")
             return ret_value
 
         if forwarding_knob == 0:
             ret_value=self.data_stalling(dependencies[0],dependencies[1])
+            print(f"\t\thazard- decision {ret_value}")
             return ret_value
             
 

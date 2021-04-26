@@ -10,6 +10,7 @@ class ProcessorMemoryInterface:
     MAX_PC = 0x7ffffffc
     def __init__(self):
         self.MAR=0 # Memory address register
+        self.MAR_pc=0
         self.MDR=0
         self.IRout=0
         self.take_from_rm=False
@@ -28,12 +29,12 @@ class ProcessorMemoryInterface:
             raise Exception("\033[1;31mInstruction not word aligned\033[0m")
         elif PC<self.MIN_UNSIGNED_NUM or PC>self.MAX_PC: # PC should be in a valid range
             raise Exception("\033[1;31mPC out of range!!\033[0m")
-        self.MAR=PC
+        self.MAR_pc=PC
         instruction=0 #stores instruction
-        instruction=self.text_module.GetUnsignedValueAtAddress(self.MAR,4)
+        instruction=self.text_module.GetUnsignedValueAtAddress(self.MAR_pc,4)
         self.IRout=instruction
         #self.MDR=instruction
-        print(f"\033[93mLoaded instruction from {hex(PC)}\033[0m")
+        print(f"\033[93mLoaded instruction from {hex(PC)} {hex(instruction)}\033[0m")
         return instruction
 
     # If MEM_read==true, ReadMemory is called.
