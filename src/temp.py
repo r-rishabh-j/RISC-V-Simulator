@@ -472,7 +472,6 @@ def buffer_update():
         buffer.Decode_input_PC=IAGmodule.PC
         if not control_module.branch_misprediction:
             IAGmodule.PC=buffer.Fetch_output_PC_temp
-        #fetch ke konse buffer hain? 
     if not forward_bool.decode_stall:
         buffer.setRA(buffer.getRAtemp)
         buffer.setRB(buffer.getRBtemp)
@@ -482,11 +481,11 @@ def buffer_update():
         #decode ke konse buffer hain aur?
     if not forward_bool.execute_stall: 
         buffer.setRZ(buffer.getRZtemp)	#RZ update
-        buffer.setRM(buffer.getRMtemp)
+        #buffer.setRM(buffer.getRMtemp)
         # buffer.RA=buffer.RAtemp
         # buffer.RB=buffer.RBtemp
         #RY temp toh nahi hai na kuchh?
-
+    buffer.RY=buffer.RYtemp
       #forward data in priority
     if forward_bool.MtoM:
         buffer.setRM(buffer.MDR, True) # RM is updated to MDR of memory in case of M to M forwarding
