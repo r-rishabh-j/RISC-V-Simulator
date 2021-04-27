@@ -101,8 +101,8 @@ class ControlModule:
         self.mem_MemWrite=deque([0,0,0])
         self.mem_BytesToAccess=deque([0,0,0])
         self.mem_MuxYSelect=deque([0,0,0])
-        self.mem_RMqueue=deque([0,0,0])
-        self.mem_RAqueue=deque([0,0,0])
+        self.mem_RMqueue=deque([0,0,0]) #
+        self.mem_RAqueue=deque([0,0,0]) #
         self.mem_ForwardingQueue=deque() # if empty, do nothing. Else, pop and perform forwarding operation.
         self.mem_operation=deque([0,0,0]) # indicates whether the stage has to operate or not.
         #############REGWRITE-QUEUE################
