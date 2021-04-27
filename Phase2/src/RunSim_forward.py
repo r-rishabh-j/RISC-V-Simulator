@@ -50,8 +50,6 @@ def fetch(stage,clock):
     control_module.controlStateUpdate(0)
     if(control_module.terminate):
         return
-    if not control_module.fetch_deque_signal():
-        return
     # operation queue will be used in the buffer update stage, not here.
     # fetch the instruction using the value in PC
     forward_bool.global_terminate=False
@@ -61,7 +59,7 @@ def fetch(stage,clock):
     if forward_bool.branch_prediction:
         target_obj=IAGmodule.BTB[IAGmodule.PC]
         buffer.Fetch_output_PC_temp=target_obj.target_address
-        print(f"Fetch- Branch prediction.{buffer.Fetch_output_PC_temp} predicted")
+        print(f"Branch prediction.{buffer.Fetch_output_PC_temp} predicted")
     else:
         buffer.Fetch_output_PC_temp=IAGmodule.PC+4
     # compare it to BTB to check if that is a branch/jump. If it is, update PC to the target.
@@ -77,9 +75,8 @@ def decode(stage,clock):
     if not (control_module.decode_deque_signal()):
         # decode stage is inactive. Perform other tasks
         if control_module.MtoEcode==0:
-            forward_bool.decode_stall=True
             return
-        if control_module.MtoEcode==-2: # branch misprediction
+        if control_module.MtoEcode==-2:
             forward_bool.fetch_stall=False
             forward_bool.decode_stall=True
             return
@@ -103,8 +100,7 @@ def decode(stage,clock):
             return
     
     # decode the instruction first in the IR
-    #control_module.decode(registers.ReadIR(),IAGmodule.PC)
-    control_module.decode(registers.ReadIR(),buffer.Decode_input_PC)
+    control_module.decode(registers.ReadIR(),IAGmodule.PC)
     if control_module.terminate:
         return
     # check for hazards using the hazard table.
@@ -414,7 +410,6 @@ def decode(stage,clock):
         # else: # in this case, branch was T but the truth was NT
         #     buffer.Decode_output_PC_temp=buffer.Decode_input_PC+4
         #print(f"\t\t\tiag pc buffer{hex(IAGmodule.PC_buffer)}")
-        hazard_module.add_inst(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd)
         buffer.Decode_output_PC_temp=IAGmodule.PC_buffer
         control_module.execute_set_operate()
         control_module.memory_set_operate()
@@ -467,7 +462,7 @@ def mem_access(stage,clock):
     if len(control_module.mem_ForwardingQueue) != 0:
       # check forwarding code
       # if MtoE
-        control_module.MtoEcode=control_module.mem_ForwardingQueue.popleft() # m to m forwarding
+        control_module.MtoEcode=control_module.mem_ForwardQueue.popleft() # m to m forwarding
         if control_module.MtoEcode==0:
             forward_bool.MtoM = True
             memory.take_from_rm=True
