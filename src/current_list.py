@@ -341,91 +341,87 @@ class HazardUnit:
             stall = 2
             return stall
 
-        # case5
-        if i2 == 503 or i2==501 or i2==502:
-            stall = 2
-            return stall
-
-        # case7
-        if i2 == 701 or i2 == 702 or i2 == 703:
-            stall = 2
-            return stall
+        
 
         # case9
-        if i2 == 901 or i2 == 903 or i2 == 902:
+        if i2 == 9:
             stall = 2
             return stall
 
-        # case10
-        if i2 == 1001 or i2 == 1002 or i2 == 1003:
+
+        #case13
+        if i2 == 13:
             stall = 2
             return stall
 
-        #case15
-        if i2 == 15:
+
+
+        #case17
+        if i2 == 1703 or i2==1702 or i2==1701:
             stall = 2
             return stall
 
-        #case16
-        if i2 == 16:
+        #case18
+        if i2 == 1803 or i2==1802 or i2==1801:
+            stall = 2
+            return stall
+
+
+
+        #case19
+        if i2 == 19:
             stall = 2
             return stall
 
 
         # dependency with i1:-
-        #Case1
-        if i1==103 or i1==102 or i1==101 or i1==1:
-            stall=1
+        # Case1
+        if i1 == 103 or i1 == 101 or i1 == 102 or i1 == 1:
+            stall = 1
             return stall
+
+        # case2
+        if i1 == 203 or i1 == 202 or i1 == 201 or i1 == 2:
+            stall = 1
+            return stall
+
+        # case3
+        if i1 == 3:
+            stall = 1
+            return stall
+
         
-        #Case2
-        if i1==203 or i1==202 or i1==201 or i1==2:
-            stall=1
-            return stall
 
-        #Case3
-        if i1==3:
-            stall=1
-            return stall
-
-        #Case4:None
-
-        #Case5
-        if i1==503 or i1==502 or i1==501:
-            stall=1
+        # case9
+        if i1 == 9:
+            stall = 1
             return stall
 
 
-        #Case6:None
-
-        #Case7
-        if i1==703 or i1==702 or i1==701:
-            stall=1
-            return stall
-        
-        #Case8:None
-
-        #Case9
-        if i1==903 or i1==902 or i1==901:
-            stall=1
+        #case13
+        if i1 == 13:
+            stall = 1
             return stall
 
-        #Case10
-        if i1==1003 or i1==1002 or i1==1001:
-            stall=1
+
+
+        #case17
+        if i1 == 1703 or i1==1702 or i1==1701:
+            stall = 1
             return stall
 
-        #Case11,12,13,14
-
-        #Case15
-        if i1==15:
-            stall=1
+        #case18
+        if i1 == 1803 or i1==1802 or i1==1801:
+            stall = 1
             return stall
 
-        #Case16
-        if i1==16:
-            stall=1
+
+
+        #case19
+        if i1 == 19:
+            stall = 1
             return stall
+
 
 
 
@@ -583,11 +579,11 @@ class HazardUnit:
 
 
         #Case19
-        if i2[0]==3:
+        if i2[0]==3 or i2[0]==111 or i2[0]==103:
             if opcode==3:
                 if rs1==i2[4]:
                     dependency_i2=19
-        if i1[0]==3:
+        if i1[0]==3 or i1[0]==111 or i1[0]==103:
             if opcode==3:
                 if rs1==i1[4]:
                     dependency_i1=19
