@@ -474,7 +474,9 @@ class HazardUnit:
         dependency_i1=-1
         dependency_i2=-1
 
-        if i2[0]==3:                # i2 is load and i3 is R type
+
+        #Case2:
+        if i2[0]==3 or i2[0]==111 or i2[0]==103:                
             if opcode==51:
                 if rs1 == i2[4] and rs2 == i2[4]:    # if rs1 or rs2 == to the register where value is being loaded
                     dependency_i2=203
@@ -482,23 +484,16 @@ class HazardUnit:
                     dependency_i2=201
                 elif rs2 == i2[4]:    # if rs1 or rs2 == to the register where value is being loaded
                     dependency_i2=202                   # In case we have a r type instruction just after load.
-        if i2[0]==3:            # i2 is load and i3 is I type
+        if i2[0]==3 or i2[0]==111 or i2[0]==103:            # i2 is load and i3 is I type
             if opcode==19:
                 if rs1==i2[4]:
                     dependency_i2=2
 
-        if i2[0] == 3:  # if i2 is load and i3 is store type
-            if opcode == 35:
-                if i2[4] == rs2 and i2[4]==rs1:   # if the rs2 or source of data is same as rd in load
-                    dependency_i2=1003
-                elif i2[4]==rs1:   # if the rs2 or source of data is same as rd in load
-                    dependency_i2=1001
-                elif i2[4] == rs2:   # if the rs2 or source of data is same as rd in load
-                    dependency_i2=1002
+       
 
 
 
-        if i1[0]==3:                # i1 is load and i3 is R type
+        if i1[0]==3 or i1[0]==103 or i1[0]==111:                # i1 is load and i3 is R type
             if opcode==51:
                 if rs1 == i1[4] and rs2 == i1[4]:    # if rs1 or rs2 == to the register where value is being loaded
                     dependency_i1=203
@@ -507,19 +502,12 @@ class HazardUnit:
                 elif rs2 == i1[4]:    # if rs1 or rs2 == to the register where value is being loaded
                     dependency_i1=202                   # In case we have a r type instruction just after load.
 
-        if i1[0]==3:            # i1 is load and i3 is I type
+        if i1[0]==3 or i1[0]==103 or i1[0]==111:            # i1 is load and i3 is I type
             if opcode==19:
                 if rs1==i1[4]:
                     dependency_i1=2
 
-        if i1[0] == 3:  # if i1 is load and i3 is store type
-            if opcode == 35:
-                if i1[4] == rs2 and i1[4]==rs1:    # if the rs2 or source of data is same as rd in load
-                    dependency_i1=1003
-                elif i1[4]==rs1:    # if the rs2 or source of data is same as rd in load
-                    dependency_i1=1001
-                elif i1[4] == rs2:    # if the rs2 or source of data is same as rd in load
-                    dependency_i1=1002
+        
 
         
 
@@ -534,7 +522,7 @@ class HazardUnit:
                 elif rs2==i2[4]:
                     dependency_i2=102
                 
-        if i1[0]==51 or i1[0]==19 or i2[0]==23 or i2[0]==55:
+        if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==51:
                 if rs1==i1[4] and rs2==i1[4]:
                     dependency_i1=103
@@ -547,7 +535,7 @@ class HazardUnit:
             if opcode==19:
                 if rs1==i2[4]:
                     dependency_i2=1
-        if i1[0]==51 or i1[0]==19 or i2[0]==23 or i2[0]==55:
+        if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==19:
                 if rs1==i1[4]:
                     dependency_i1=1
@@ -562,83 +550,73 @@ class HazardUnit:
                 if rs1==i1[4]:
                     dependency_i1=3
 
-        #Case5
-        if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
-            if opcode==35:
-                if rs1==i2[4] and rs2==i2[4]:
-                    dependency_i2=503
-                elif rs1==i2[4]:
-                    dependency_i2=501
-                elif rs2==i2[4]:
-                    dependency_i2=502
-        if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
-            if opcode==35:
-                if rs1==i1[4] and rs2==i1[4]:
-                    dependency_i1=503
-                elif rs1==i1[4]:
-                    dependency_i1=501
-                elif rs2==i1[4]:
-                    dependency_i1=502
 
-        #Case7
-        if i2[0]==51 or i2[0]==19:
-            if opcode==99:
-                if rs1==i2[4] and rs2==i2[4]:
-                    dependency_i2=703
-                elif rs1==i2[4]:
-                    dependency_i2=701
-                elif rs2==i2[4]:
-                    dependency_i2=702
-        if i1[0]==51 or i1[0]==19:
-            if opcode==99:
-                if rs1==i1[4] and rs2==i1[4]:
-                    dependency_i1=703
-                elif rs1==i1[4]:
-                    dependency_i1=701
-                elif rs2==i1[4]:
-                    dependency_i1=702
+        
 
         #Case9
-        if i2[0]==3:
+        if i2[0]==3 or i2[0]==103 or i2[0]==111 or i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
             if opcode==99:
-                if rs1==i2[4] and rs2==i2[4]:
-                    dependency_i2=903
-                elif rs1==i2[4]:
-                    dependency_i2=901
-                elif rs2==i2[4]:
-                    dependency_i2=902
-        if i1[0]==3:
+                if rs1==i2[4] or rs2==i2[4]:
+                    dependency_i2=9
+        if i1[0]==3 or i1[0]==103 or i1[0]==111 or i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==99:
-                if rs1==i1[4] and rs2==i1[4]:
-                    dependency_i1=903
-                elif rs1==i1[4]:
-                    dependency_i1=901
-                elif rs2==i1[4]:
-                    dependency_i1=902
+                if rs1==i1[4] or rs2==i1[4]:
+                    dependency_i1=9
 
-        #Case11
+        
 
-        #Case13:None
-        #Case15:
+        #Case13:
+        if i2[0]==3 or i2[0]==103 or i2[0]==111 or i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
+            if opcode==103:
+                if rs1==i2[4] or rs2==i2[4]:
+                    dependency_i2=13
+        if i1[0]==3 or i1[0]==103 or i1[0]==111 or i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
+            if opcode==111:
+                if rs1==i1[4] or rs2==i1[4]:
+                    dependency_i1=13
+
+
+        #Case17:
         if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
-            if opcode==103:
-                if rs1==i2[4]:
-                    dependency_i2=15
+            if opcode==35:
+                if rs1==i2[4] and rs2==i2[4]:
+                    dependency_i2=1703
+                elif rs1==i2[4]:
+                    dependency_i2=1701
+                elif rs2==i2[4]:
+                    dependency_i2=1702
+                
         if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
-            if opcode==103:
-                if rs1==i1[4]:
-                    dependency_i1=15
+            if opcode==35:
+                if rs1==i1[4] and rs2==i1[4]:
+                    dependency_i1=1703
+                elif rs1==i1[4]:
+                    dependency_i1=1701
+                elif rs2==i1[4]:
+                    dependency_i1=1702
+        
+
+        #Case18:
+        if i2[0]==3 or i2[0]==103 or i2[0]==111:
+            if opcode==35:
+                if rs1==i2[4] and rs2==i2[4]:
+                    dependency_i2=1803
+                elif rs1==i2[4]:
+                    dependency_i2=1801
+                elif rs2==i2[4]:
+                    dependency_i2=1802
+                
+        if i1[0]==3 or i1[0]==103 or i1[0]==111:
+            if opcode==35:
+                if rs1==i1[4] and rs2==i1[4]:
+                    dependency_i1=1803
+                elif rs1==i1[4]:
+                    dependency_i1=1801
+                elif rs2==i1[4]:
+                    dependency_i1=1802
 
 
-        #Case16:
-        if i2[0]==3:
-            if opcode==103:
-                if rs1==i2[4]:
-                    dependency_i2=16
-        if i1[0]==3:
-            if opcode==103:
-                if rs1==i1[4]:
-                    dependency_i1=16
+       
     
 
         if i1[4]==0:  # rd of i1 is x0 i.e. no dependency
@@ -658,6 +636,7 @@ class HazardUnit:
             return ret_value
 
         if forwarding_knob == 0:
+            print(f"dependencies- {dependencies[0]} {dependencies[1]}")
             ret_value=self.data_stalling(dependencies[0],dependencies[1])
             print(f"\t\thazard- decision {ret_value}")
             return ret_value
