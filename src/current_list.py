@@ -106,156 +106,123 @@ class HazardUnit:
         if i2==3:
             i2_forwarding=31
             return [i1_forwarding,i2_forwarding]
-        #case 5 , dependency with i2:-
-
-        # here rd of i2 is both rs1 and rs2 : -
-        if i2==503:
-            i2_forwarding=33
-            return  [i1_forwarding,i2_forwarding]
-
-        # here rd of i2 is related to rs1
-        if i2==501:
-            i2_forwarding=31
-
-            #Case 5 if i1 is related to rs2
-            if i1==502:
-                i1_forwarding=12
-
-            #case 10 here always i1 is related to rs2
-            if i1==102:
-                i1_forwarding=12
-            return  [i1_forwarding,i2_forwarding]
 
 
-        # here rd of i2 is related to rs2
-        if i2==502:
-            i2_forwarding=32
-
-            # Case 5 if i1 is related to rs1
-            if i1==501:
-                i1_forwarding=11
-
-            # Case 10 if i1 is related to rs1
-            if i1==101:
-                i1_forwarding=11
-
-            return  [i1_forwarding,i2_forwarding]
-        
-        #Case 7 , checking dependency with i2:-
-
-        #rd of i2 is related to both rs1 and rs2
-        if i2==703:
-            i2_forwarding=63
-            return [i1_forwarding,i2_forwarding]
-
-        # rd of i2 is related to rs1
-        if i2==701:
-            i2_forwarding=61
-
-            # case 7 , i1 to rs2
-            if i1==702:
-                i1_forwarding=72
-
-            # case 9 , i1 to rs2
-            if i1==902:
-                i1_forwarding=52
-            return [i1_forwarding, i2_forwarding]
-
-        # rd of i2 is related to rs2
-        if i2 == 702:
-            i2_forwarding=62
-
-            # case 7 , i1 to rs1
-            if i1==701:
-                i1_forwarding=71
-
-            # case 9 , i1 to rs1
-            if i1==901:
-                i1_forwarding=51
-
-            return [i1_forwarding,i2_forwarding]
-            
         # Case 9 ,checking dependancy with i2:-
 
-        #rd of i2 is related to both rs1 and rs2
-        if i2==903:
-            i2_forwarding=43
+        if i2==9:
+            i2_forwarding=505
+            i1_forwarding=-1
             return [i1_forwarding,i2_forwarding]
 
-        #rd of i2 is related to rs2
-        if i2==902:
-            i2_forwarding=42
+        # case 13 , checking dependancy with i2:-
+        if i2==13:
+            i2_forwarding = 505
+            i1_forwarding = -1
+            return [i1_forwarding, i2_forwarding]
 
-            #case 7 rd of i1 is related to rs1
-            if i1==701:
-                i1_forwarding=71
+        # case 17 , checking dependance with i2:-
+        # if i2 is going to rs1:-
+        if i2==1701:
 
-            #case 9 rd of i1 is related to rs1
-            if i1==901:
-                i1_forwarding=51
+            # only dependant on i2 and not i1 (or i2 is given prefrence)
+            if i1==-1 or i1==1701 or i1==1801:
+                i2_forwarding=31
 
-            return [i1_forwarding,i2_forwarding]
+            # case 17
+            # i1 to rs2 and i1 is R type
+            if i1==1702:
+                i1_forwarding=404
+                i2_forwarding=-1
 
-        #rd of i2 is related to rs1
-        if i2==901:
-            i2_forwarding=41
-
-            #case 7 rd of i1 is related to rs2
-            if i1==702:
-                i1_forwarding=72
-
-            #case 9 rd of i1 is related to rs2
-            if i1==902:
-                i1_forwarding=52
-
-            return  [i1_forwarding,i2_forwarding]
-            
-        # case 10 , checking dependancy with i2
-
-        # from i2 to both rs2 and rs1
-        if i2==1003:
-            i2_forwarding=23
-            return [i1_forwarding,i2_forwarding]
-
-        # from i2 to rs2
-        if i2==1002:
-            i2_forwarding=0
-
-            #case 10 from i1 to rs1
-            if i1==1001:
-                i1_forwarding=11
-
-            # case 5 from i1 to rs1
-            if i1==501:
-                i1_forwarding=11
-            return [i1_forwarding,i2_forwarding]
-
-        # from i2 to rs1
-        if i2==1001:
-            i2_forwarding =21
-
-            #case 10 from i1 to rs2
-            if i1==1002:
-               i1_forwarding =12
-
-            # case 5 from i1 to rs2
-            if i1==502:
-                i1_forwarding=12
+            #case 18
+            # i1 to rs2 and i1 is lw/jalr/jal type:-
+            if i1==1802:
+                i1_forwarding = 404
+                i2_forwarding = -1
 
             return [i1_forwarding,i2_forwarding]
 
-        #case 15, dependency with i2:-
+        # if i2 is going to rs2:-
+        if i2 == 1702:
 
-        # here only forwarding to rs1 is possible : -
-        if i2==15:
-            i2_forwarding=61
+            # only dependant on i2 and not i1 (or i2 is given prefrence)
+            if i1==-1 or i1==1702 or i1==1802:
+                i2_forwarding=0
+
+            #case 17
+            # from i1 to rs1 and i1 is R type
+            if i1==1701:
+                i1_forwarding=-1
+                i2_forwarding=505
+
+            #case 18
+            # from i1 to rs2 and i1 is lw/jal/jalr type
+            if i1==1801:
+                i1_forwarding = -1
+                i2_forwarding = 505
+
             return [i1_forwarding,i2_forwarding]
 
-        if i2==16:
-            i2_forwarding=41
-            return [i1_forwarding,i2_forwarding]
-    
+        # if i2 is going to both rs1 and rs2:-
+        if i2==1703:
+            i1_forwarding=-1
+            i2_forwarding=310
+            return [i1_forwarding, i2_forwarding]
 
+        #case 18:
+        #if i2 is going to rs1:-
+        if i2==1801:
+
+            # only dependant on i2 and not i1 (or i2 is given prefrence)
+            if i1 == -1 or i1 == 1701 or i1 == 1801:
+                i2_forwarding = 21
+
+            #case 17:
+            # i1 to rs2:- i1 is R type
+            if i1 == 1702:
+                i2_forwarding = -1
+                i1_forwarding=404
+
+            #case 18:
+            # i1 to rs2 , i1 is lw / jal /jalr
+            if i1 == 1802:
+                i2_forwarding = -1
+                i1_forwarding = 404
+
+            return [i1_forwarding,i2_forwarding]
+
+        # if i2 is going to rs2
+        if i2 == 1802:
+
+            # only dependant on i2 and not i1 (or i2 is given prefrence)
+            if i1 == -1 or i1 == 1702 or i1 == 1802:
+                i2_forwarding = 0
+
+            #case 17:
+            #i1 to rs1 , i1 is R type :-
+            if i1==1701:
+                i1_forwarding=-1
+                i2_forwarding=505
+
+            #case 18:
+            #i1 to rs2 , i1 is lw/jal/jalr type: -
+            if i1==1801:
+                i1_forwarding=-1
+                i2_forwarding=505
+
+            return [i1_forwarding,i2_forwarding]
+
+        # if i2 is going to both rs1 and rs2 : -
+        if i2 == 1803:
+            i1_forwarding = -1
+            i2_forwarding = 505
+            return [i1_forwarding, i2_forwarding]
+
+        # case 19
+        if i2 == 19:
+            i2_forwarding=21
+            return [i1_forwarding,i2_forwarding]
 
 
         # dealing with cases when there is dependence between i1 and i3 only
@@ -294,64 +261,63 @@ class HazardUnit:
 
         #Case 4: None
 
-        #Case 5
-        if i1==503:
-            i1_forwarding=13
-            return [i1_forwarding,i2_forwarding]
-        if i1==502:
-            i1_forwarding=12
-            return [i1_forwarding,i2_forwarding]
-        if i1==501:
-            i1_forwarding=11
-            return [i1_forwarding,i2_forwarding]
+
 
         #Case 6 : None
         
-        #Case 7
-        if i1==703:
-            i1_forwarding=73
-            return [i1_forwarding,i2_forwarding]
-        if i1==702:
-            i1_forwarding=72
-            return [i1_forwarding,i2_forwarding]
-        if i1==701:
-            i1_forwarding=71
-            return [i1_forwarding,i2_forwarding]
-        
+
         # Case 8: None
 
         #Case 9
-        if i1==903:
-            i1_forwarding=53
-            return [i1_forwarding,i2_forwarding]
-        if i1==902:
-            i1_forwarding=52
-            return [i1_forwarding,i2_forwarding]
-        if i1==901:
-            i1_forwarding=51
-            return [i1_forwarding,i2_forwarding]
+        if i1 == 9:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
         
-        #Case 10
-        if i1==1003:
-            i1_forwarding=13
-            return [i1_forwarding,i2_forwarding]
-        if i1==1002:
-            i1_forwarding=12
-            return [i1_forwarding,i2_forwarding]
-        if i1==1001:
+
+        #Case 13
+        if i1==13:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        #Case 17
+        if i1==1701:
+            i2_forwarding=-1
+            i1_forwarding=11
+            return [i1_forwarding, i2_forwarding]
+
+        if i1==1702:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        if i1==1703:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        # case 18
+        if i1==1801:
+            i2_forwarding = -1
+            i1_forwarding = 11
+            return [i1_forwarding, i2_forwarding]
+
+        if i1==1802:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        if i1==1803:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        #case 19:
+        if i1 == 19:
             i1_forwarding=11
             return [i1_forwarding,i2_forwarding]
 
-
-        #Case 15
-        if i1==15:
-            i1_forwarding=71
-            return [i1_forwarding,i2_forwarding]
-
-        #Case 16
-        if i1==16:
-            i1_forwarding=51
-            return [i1_forwarding,i2_forwarding]
 
         return [-1,-1] # if no case matches
 
