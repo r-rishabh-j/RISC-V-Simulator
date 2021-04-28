@@ -1,7 +1,12 @@
-#in transit instructions
+# 3 types of stalls- decode stall, fetch stall and execute stall
+# RAW data hazards-
+# Case1- between D and 
+
+    #in transit instructions
 from collections import deque
 
-class Current:
+# class Current:
+class HazardUnit:
     def __init__(self):
         self.current_list = deque([[-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1]])
 
@@ -649,10 +654,12 @@ class Current:
 
         if forwarding_knob == 1:
             ret_value=self.data_forwarding(dependencies[0],dependencies[1])
+            print(f"\t\thazard- decision {ret_value}")
             return ret_value
 
         if forwarding_knob == 0:
             ret_value=self.data_stalling(dependencies[0],dependencies[1])
+            print(f"\t\thazard- decision {ret_value}")
             return ret_value
             
 
@@ -667,3 +674,5 @@ class Current:
 #current.print_table()
 #current.add_null()
 #current.print_table()
+
+
