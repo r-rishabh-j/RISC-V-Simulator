@@ -534,7 +534,7 @@ class HazardUnit:
                 elif rs2==i2[4]:
                     dependency_i2=102
                 
-        if i1[0]==51 or i1[0]==19 or i2[0]==23 or i2[0]==55:
+        if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==51:
                 if rs1==i1[4] and rs2==i1[4]:
                     dependency_i1=103
@@ -547,7 +547,7 @@ class HazardUnit:
             if opcode==19:
                 if rs1==i2[4]:
                     dependency_i2=1
-        if i1[0]==51 or i1[0]==19 or i2[0]==23 or i2[0]==55:
+        if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==19:
                 if rs1==i1[4]:
                     dependency_i1=1
@@ -658,6 +658,7 @@ class HazardUnit:
             return ret_value
 
         if forwarding_knob == 0:
+            print(f"dependencies- {dependencies[0]} {dependencies[1]}")
             ret_value=self.data_stalling(dependencies[0],dependencies[1])
             print(f"\t\thazard- decision {ret_value}")
             return ret_value

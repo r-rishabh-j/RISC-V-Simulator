@@ -30,8 +30,8 @@ class ControlBooleans:
     def __init__(self):
         self.MtoEtoRA=False # booleans to indicate data forwarding in the end of the same cycle, then set it to false
         self.MtoEtoRB=False
-        self.EtoDtoR1=False
-        self.EtoDtoR2=False
+        self.EtoDtoR1=False # remove
+        self.EtoDtoR2=False # remove
         self.EtoEtoRA=False
         self.EtoEtoRB=False
         self.MtoM=False # this is always to MDR(rs2)
@@ -208,6 +208,8 @@ def decode(stage,clock):
                 # stall code MtoD, handle similar to that done in stalling case
                 forward_bool.decode_stall=True
                 forward_bool.fetch_stall=True
+            
+            #E to D cases, to be replaced by D stall
             elif hazard_code[1]==61:
                 forward_bool.EtoDtoR1=True
                 forward_bool.decode_stall=True
@@ -324,6 +326,8 @@ def decode(stage,clock):
                 # stall code MtoD, handle similar to that done in stalling case
                 forward_bool.decode_stall=True
                 forward_bool.fetch_stall=True
+
+            #E to D cases, to be replaced by D stall
             elif hazard_code[0]==61:
                 forward_bool.EtoDtoR1=True
                 forward_bool.decode_stall=True
@@ -356,14 +360,14 @@ def decode(stage,clock):
 
     MuxAout=0
     MuxBout=0
-    if buffer.R2bool==True:
+    if buffer.R2bool==True: # to be removed
         MuxBout=buffer.R2
         buffer.R2bool=False
     elif control_module.MuxBSelect==0:
         MuxBout=registers.ReadGpRegisters(control_module.rs2)
     elif control_module.MuxBSelect==1:
         MuxBout=control_module.imm
-    if buffer.R1bool==True:
+    if buffer.R1bool==True: # to be removed
         MuxBout=buffer.R1
         buffer.R1bool=False
     elif control_module.MuxASelect==0:
@@ -567,12 +571,13 @@ def buffer_update():
         buffer.RB=buffer.RZ
         forward_bool.EtoEtoRB = False
       
+    # to be removed
     if forward_bool.EtoDtoR1:
         #buffer.setR1(buffer.getRZ, True)
         buffer.R1=buffer.RZ
         buffer.R1bool=True
         forward_bool.EtoEtoR1 = False
-          
+    # to be removed
     if forward_bool.EtoDtoR2:
         #buffer.setR2(buffer.getRZ, True)
         buffer.R2=buffer.RZ

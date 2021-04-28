@@ -283,7 +283,6 @@ class ControlModule:
         self.opcode = (machine_code & 0x7f)
         # print(opcode, temp)
         if self.opcode == 17:
-            print("\033[1;92m\nProgram Terminated Successfully\033[0m")
             self.terminate=1
             return
         elif self.opcode in I:
@@ -370,7 +369,7 @@ class ControlModule:
     
     def RAW_stall_pipeline(self): # both for D-E and D-M
         # confusion about fetch stall, better option is to not update IR itself.
-        self.fetch_set_NOP()
+        #self.fetch_set_NOP()
         self.execute_set_NOP()
         self.memory_set_NOP()
         self.register_set_NOP()

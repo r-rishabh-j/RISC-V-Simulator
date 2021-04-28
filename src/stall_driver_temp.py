@@ -2,7 +2,7 @@
 # this file contains code for the simulator. Contains the ALU
 from Registers import Registers as reg # contains 32 GP registers and IR
 from Memory import ProcessorMemoryInterface# processor memory interface
-from ControlCircuit import ControlModule # generates control signals
+from ControlCircuit_piped import ControlModule # generates control signals
 from IAG import InstructionAddressGenerator
 from ALU import ArithmeticLogicUnit
 from Buffers import Buffers
@@ -27,69 +27,80 @@ class ControlBooleans:
         self.fetch_stall=False
         self.execute_stall=False
         self.branch_prediction=False
+        self.global_terminate=True
     
-    forward_bool=ControlBooleans()
+forward_bool=ControlBooleans()
     # Muxes
-    MuxAout=0 # input 1 of ALU
-    MuxBout=0 # input 2 of ALU
-    MuxYout=0 # output of MuxY
+    # MuxAout=0 # input 1 of ALU
+    # MuxBout=0 # input 2 of ALU
+    # MuxYout=0 # output of MuxY
     
-    def MuxY(MuxY_select):
-        global MuxYout
-        if MuxY_select==0:
-            MuxYout=buffer.getRZ()
-        elif MuxY_select==1:
-            MuxYout=memory.MDR
-        elif MuxY_select==2:
-            MuxYout=IAGmodule.PC_temp
-        return MuxYout
+    # def MuxY(MuxY_select):
+    #     global MuxYout
+    #     if MuxY_select==0:
+    #         MuxYout=buffer.getRZ()
+    #     elif MuxY_select==1:
+    #         MuxYout=memory.MDR
+    #     elif MuxY_select==2:
+    #         MuxYout=IAGmodule.PC_temp
+    #     return MuxYout
 
 ###########Stage functions###############
-    def fetch(stage):
+def fetch(stage):
         # to do here
         # if terminate==1, return
         # operation queue will be used in the buffer update stage, not here.
         # fetch the instruction using the value in PC
         # compare it to BTB to check if that is a branch/jump. If it is, update PC to the target.
         # remember to enqueue the PC into the decode_PC_queue
-
-        control_module.controlStateUpdate(0)
-        if(control_module.terminate):
-            return
+    control_module.controlStateUpdate(0)
+    if(control_module.terminate):
+        return
+    if not control_module.fetch_deque_signal():
+        return
         # operation queue will be used in the buffer update stage, not here.
         # fetch the instruction using the value in PC
-        buffer.IRbuffer=memory.LoadInstruction(IAGmodule.PC) # update IR buffer
-        forward_bool.branch_prediction=IAGmodule.BTB_check(IAGmodule.PC)# update branch prediction
-        target_obj=-1
-        if forward_bool.branch_prediction:
-            target_obj=IAGmodule.BTB[IAGmodule.PC]
-            buffer.Fetch_output_PC_temp=target_obj.target_address
-        else:
-            buffer.Fetch_output_PC_temp=IAGmodule.PC+4
+    forward_bool.global_terminate=False
+    buffer.IRbuffer=memory.LoadInstruction(IAGmodule.PC) # update IR buffer
+    forward_bool.branch_prediction=IAGmodule.BTB_check(IAGmodule.PC)# update branch prediction
+    target_obj=-1
+    if forward_bool.branch_prediction:
+        target_obj=IAGmodule.BTB[IAGmodule.PC]
+        buffer.Fetch_output_PC_temp=target_obj.target_address
+        print(f"Fetch- Branch prediction.{buffer.Fetch_output_PC_temp} predicted")
+    else:
+        buffer.Fetch_output_PC_temp=IAGmodule.PC+4
         # compare it to BTB to check if that is a branch/jump. If it is, update PC to the target.
 
-    def decode(stage):
+def decode(stage):
         # if terminate==1, return
-        if control_module.terminate:
-            return
-        if not (control_module.decode_deque_signal()):
+    if control_module.terminate:
+        return
+    if not (control_module.decode_deque_signal()):
+        return
             #decode stalled
         # check the operation queue. If empty, then operate. Else, don't operate and pop.
 
         # decode the instruction first in the IR
-        control_module.decode(registers.ReadIR(),IAGmodule.PC)
+    forward_bool.global_terminate=False
+    control_module.decode(registers.ReadIR(),IAGmodule.PC)
         # check for hazards(in this case stalls) using the hazard table.
-        if hazard_unit.current.decision_maker(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd, 0) != -1:	#requires stall, forwarding kno is turned off, replace 0 with knob signal
+    data_hazard=hazard_unit.decision_maker(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd, 0) 	#requires stall, forwarding kno is turned off, replace 0 with knob signal
             #write stalling code
-            forward_bool.decode_stall = True
-            return
+    if data_hazard!=-1: # data hazard handled
+        forward_bool.decode_stall = True
+        forward_bool.fetch_stall=True
+        control_module.execute_set_NOP()
+        control_module.memory_set_NOP()
+        control_module.register_set_NOP()
+        return
         # follow steps given in documentation to resolve the hazard by stalling/data forwarding.
         # if all good, push the decoded the signals into the queues.
-        ALUmodule.ALUexecute(control_module.ALUOp, control_module.ALUcontrol, buffer.RA, buffer.RB)	#comparator for branch
-        control_module.branching_controlUpdate(ALUmodule.outputBool)
-        IAGmodule.PCset(buffer.RA, control_module.MuxPCSelect)
-        IAGmodule.SetBranchOffset(control_module.imm)
-        IAGmodule.PCUpdate(control_module.MuxINCSelect)
+    ALUmodule.ALUexecute(control_module.ALUOp, control_module.ALUcontrol, buffer.RA, buffer.RB)	#comparator for branch
+    control_module.branching_controlUpdate(ALUmodule.outputBool)
+    IAGmodule.PCset(buffer.RA, control_module.MuxPCSelect)
+    IAGmodule.SetBranchOffset(control_module.imm)
+    IAGmodule.PCUpdate(control_module.MuxINCSelect)
 
         if control_module.branch_misprediction:
             # code here for handling branch misprediction
@@ -118,6 +129,7 @@ class ControlBooleans:
         # dequeue from the control signals. Check if we need to operate or not
         if not control_module.execute_deque_signal():
             # return code
+        forward_bool.global_terminate=False
         ALUmodule.ALUexecute(control_module.ALUOp, control_module.ALUcontrol,buffer.getRA, buffer.getRB)   # This will perform the required Arithmetic / logical operation
         # this will put the value obtained from ALU after execution  in RZ buffer
         #buffers.RZtemp=ALUmodule.output32
@@ -127,12 +139,16 @@ class ControlBooleans:
         # dequeue from the control signals. Check if we need to operate or not
         if not control_module.memory_deque_signal():
             # return code
+
+        forward_bool.global_terminate=False
+        
         control_module.controlStateUpdate(stage)
         memory.AccessMemory(control_module.MemRead,control_module.MemWrite,buffer.getRZtemp(),control_module.BytesToAccess,buffer.getRMtemp())
     def reg_writeback(stage):
 
         if not control_module.register_deque_signal():
             # return code
+        forward_bool.global_terminate=False
         buffer.RYtemp=MuxY(control_module.MuxYSelect)    # sets the value of RY buffer as the output of MuxY which will be selected based on control signals
         registers.WriteGpRegisters(control_module.rd,control_module.RegWrite,buffer.getRYtemp())  # This will simply write back to the registers based on the control signal
 
@@ -168,8 +184,20 @@ class ControlBooleans:
         #if not forward_bool.execute_stall:
         #forward_bool.execute_stall = False
 
-    def RunSim():
-        clock=1
-        while(True):
+def RunSim():
+    clock=1
+    while(True):
             # run the stages here, preferably in reverse order.
             # update the buffers in the end
+        print(f"Clock Cycle-{clock}")
+        forward_bool.global_terminate=True
+        reg_writeback(4, clock)
+        mem_access(3,clock)
+        execute(2,clock)
+        decode(1,clock)
+        fetch(0,clock)
+        buffer_update()
+        print(f"PC{(IAGmodule.PC)} IR {hex(registers.IR)} RZ {buffer.RZ} RY {buffer.RY}\n###########################################\n")
+        clock=clock+1
+        if forward_bool.global_terminate:
+            return

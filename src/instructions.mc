@@ -1,9 +1,19 @@
+~data
+0x10000000 1
+0x10000004 1
+0x10000008 3
+0x1000000C 4
 ~text
-0x0	0x00C000EF	#jal x1 12	jal x1,l1
-0x4	0x00500293	#addi x5 x0 5	l2: addi x5,x0,5
-0x8	0x0100026F	##jal x4 16	jal x4 exit
+0x0	0x10000537	#lui x10 65536	li x10,0x10000000
+0x4	0x00050513	#addi x10 x10 0	li x10,0x10000000
+0x8	0x00000033	#add x0 x0 x0	add x0,x0,x0
 0xc	0x00000033	#add x0 x0 x0	add x0,x0,x0
-0x10	0x00000033	#add x0 x0 x0	add x0,x0,x0
-0x14	0x00008367	#jalr x6 x1 0	jalr x6, x1, 0
-0x18	0x00000033	#add x0 x0 x0	exit: add x0,x0,x0
-0x1C 0x11
+0x10	0x00052283	#lw x5 0(x10)	lw x5, 0(x10)
+0x14	0x00452303	#lw x6 4(x10)	lw x6, 4(x10)
+0x18	0x00852383	#lw x7 8(x10)	lw x7, 8(x10)
+0x1c	0x00C52403	#lw x8 12(x10)	lw x8, 12(x10)
+0x20	0x00629663	#bne x5 x6 12	bne x5, x6, path2
+0x24	0x008384B3	#add x9 x7 x8	add x9, x7, x8
+0x28	0x00000463	#beq x0 x0 8	beq x0, x0, exit
+0x2c	0x408384B3	#sub x9 x7 x8	sub x9, x7, x8
+0x30 0x11
