@@ -530,11 +530,11 @@ class HazardUnit:
         #Case13:
         if i2[0]==3 or i2[0]==103 or i2[0]==111 or i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
             if opcode==103:
-                if rs1==i2[4] or rs2==i2[4]:
+                if rs1==i2[4]:
                     dependency_i2=13
         if i1[0]==3 or i1[0]==103 or i1[0]==111 or i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==111:
-                if rs1==i1[4] or rs2==i1[4]:
+                if rs1==i1[4]:
                     dependency_i1=13
 
 
