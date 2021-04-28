@@ -616,6 +616,17 @@ class HazardUnit:
                     dependency_i1=1802
 
 
+        #Case19
+        if i2[0]==3:
+            if opcode==3:
+                if rs1==i2[4]:
+                    dependency_i2=19
+        if i1[0]==3:
+            if opcode==3:
+                if rs1==i1[4]:
+                    dependency_i1=19
+
+
        
     
 
