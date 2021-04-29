@@ -11,9 +11,21 @@ MachineCodeParser.parser(sys.argv[1]) # supply input file name
 #     print(hex(key),hex(MachineCodeParser.PC_INST[key]))
 
 #program load
-RunSim_forward.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA)
 #Run the simulator
-RunSim_forward.RunSim()
+print_reg_file=int(input("Printing the register file at the end of each cycle, 1 for ON, 0 for OFF: "))
+if print_reg_file not in [0,1]:
+    print("Wrong knob")
+    sys.exit()
+print_buff_file=int(input("Printing the pipeline buffer at the end of each cycle, 1 for ON, 0 for OFF: "))
+if print_reg_file not in [0,1]:
+    print("Wrong knob")
+    sys.exit()
+# print_nth_buff=int(input("Specific instruction: 0 for off, instruction for on: "))
+# if print_nth_buff<0:
+#     print("Wrong knob")
+#     sys.exit()
+RunSim_forward.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA)
+RunSim_forward.RunSim(reg_print=print_reg_file, buffprint=print_buff_file)
 
 ####################################################file dumping############################################################
 #fileReg=open("RegisterDump.mc",'w')

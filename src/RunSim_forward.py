@@ -197,6 +197,7 @@ def decode(stage,clock):
                 control_module.register_set_NOP()
                 forward_bool.decode_stall=True
                 forward_bool.fetch_stall=True
+                forward_bool.data_stall+=1
                 to_return=True
             elif hazard_code[0]==505:
                 print("Decode stall")
@@ -205,6 +206,7 @@ def decode(stage,clock):
                 control_module.register_set_NOP()
                 forward_bool.decode_stall=True
                 forward_bool.fetch_stall=True
+                forward_bool.data_stall+=1
                 to_return=True
             elif hazard_code[0]==310:
                 control_module.mem_ForwardingQueue.append(0) # set boolean to true in memory module
@@ -457,7 +459,7 @@ def buffer_update():
     # print(f"RZ update, temp-{buffer.RZtemp}, RZ-{buffer.RZ}")
     # print(f"buff update- RAtemp-{buffer.RAtemp} RBtemp-{buffer.RBtemp} RA-{buffer.RA} RB-{buffer.RB}")
     # print(f"execute queue- aluop {control_module.exe_ALUOp} aluc {control_module.ALUcontrol} opcode {control_module.exe_opcode}")      
-def RunSim(reg_print=1, buffprint=1, part_inst=-1):
+def RunSim(reg_print=1, buffprint=1):
     clock=1
     while(True):
         print(f"\n\033[1;96mCycle {clock}\033[0m")
@@ -465,12 +467,12 @@ def RunSim(reg_print=1, buffprint=1, part_inst=-1):
         reg_writeback(4, clock)
         mem_access(3,clock)
         execute(2,clock)
+        print("Hazard Table:")
+        hazard_module.print_table()
         decode(1,clock)
         fetch(0,clock)
         buffer_update()
         #print(f"PC{(IAGmodule.PC)} IR {hex(registers.IR)} RZ {buffer.RZ} RY {buffer.RY}\n###########################################\n")
-        print("Hazard Table:")
-        hazard_module.print_table()
 
         if reg_print==1:
             print("Register file: ")

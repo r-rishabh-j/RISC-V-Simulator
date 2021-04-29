@@ -255,7 +255,7 @@ def buffer_update():
     #print(f"RZ update, temp-{buffer.RZtemp}, RZ-{buffer.RZ}")
     #print(f"buff update- RAtemp-{buffer.RAtemp} RBtemp-{buffer.RBtemp} RA-{buffer.RA} RB-{buffer.RB}")
 
-def RunSim(reg_print=1, buffprint=1, part_inst=-1):
+def RunSim(reg_print=1, buffprint=1):
     clock=1
     while(True):
             # run the stages here, preferably in reverse order.
@@ -265,11 +265,11 @@ def RunSim(reg_print=1, buffprint=1, part_inst=-1):
         reg_writeback(4, clock)
         mem_access(3,clock)
         execute(2,clock)
+        print("Hazard Table:")
+        hazard_module.print_table()
         decode(1,clock)
         fetch(0,clock)
         buffer_update()
-        print("Hazard Table:")
-        hazard_module.print_table()
         if reg_print==1:
             print("Register file: ")
             for i in range(32):
