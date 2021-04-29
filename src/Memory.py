@@ -33,7 +33,6 @@ class ProcessorMemoryInterface:
         instruction=0 #stores instruction
         instruction=self.text_module.GetUnsignedValueAtAddress(self.MAR_pc,4)
         self.IRout=instruction
-        #self.MDR=instruction
         print(f"\033[93mLoaded instruction from {hex(PC)} {hex(instruction)}\033[0m")
         return instruction
 
@@ -55,7 +54,7 @@ class ProcessorMemoryInterface:
     def ReadMemory(self, base_address:int, no_of_bytes:int):
         self.MAR = base_address
         self.MDR=self.data_module.GetSignedValueAtAddress(self.MAR, no_of_bytes)
-        print(f"\033[93mRead {no_of_bytes} bytes from {hex(base_address)}\033[0m")
+        print(f"\033[93mRead {no_of_bytes} bytes from {hex(base_address)}, value= {self.MDR}\033[0m")
         data=self.MDR
         return data
 
@@ -63,7 +62,7 @@ class ProcessorMemoryInterface:
         self.MAR = base_address # MAR contains the base address to be written to
         self.MDR = RMin # MDR contains data to be written at address given by MAR
         self.data_module.WriteValueAtAddress(base_address, byte_size, self.MDR)
-        print(f"\033[93mWrote {byte_size} bytes at {hex(base_address)}\033[0m")
+        print(f"\033[93mWrote {byte_size} bytes at {hex(base_address)}, value={RMin}\033[0m")
 
 class ByteAddressableMemory:
     MAX_SIGNED_NUM=0x7fffffff

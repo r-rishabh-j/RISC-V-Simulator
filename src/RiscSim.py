@@ -3,9 +3,9 @@
 from Registers import Registers as reg # contains 32 GP registers and IR
 from Memory import ProcessorMemoryInterface# processor memory interface
 from ControlCircuit import ControlModule # generates control signals
-from IAG import InstructionAddressGenerator
+from IAG import InstructionAddressGenerator_non_pipelined
 from ALU import ArithmeticLogicUnit
-from Buffers import Buffers
+from Buffers import Buffers_np
 
 MAX_SIGNED_NUM=0x7fffffff
 MIN_SIGNED_NUM=-0x80000000
@@ -15,8 +15,8 @@ registers=reg() # register object
 memory=ProcessorMemoryInterface()
 control_module=ControlModule()
 ALUmodule=ArithmeticLogicUnit()
-IAGmodule=InstructionAddressGenerator()
-buffer=Buffers()
+IAGmodule=InstructionAddressGenerator_non_pipelined()
+buffer=Buffers_np()
 
 # Muxes
 MuxAout=0 # input 1 of ALU
@@ -50,8 +50,8 @@ def MuxY(MuxY_select):
 def fetch(stage):
     # control state update function to be called here
     control_module.controlStateUpdate(stage)
-    memory.LoadInstruction(IAGmodule.PC)  # this will fetch the instruction and put it in MDR
-    registers.WriteIR(memory.MDR,control_module.IRwrite)  # This loads the Instruction from MDR to IR
+    instruction=memory.LoadInstruction(IAGmodule.PC)  # this will fetch the instruction and put it in MDR
+    registers.WriteIR(instruction,control_module.IRwrite)  # This loads the Instruction from MDR to IR
     IAGmodule.PCTempUpdate()  # this will do PC temp = PC + 4
 
 def decode(stage):
@@ -95,7 +95,7 @@ def reg_writeback(stage):
     registers.WriteGpRegisters(control_module.rd,control_module.RegWrite,buffer.getRY())  # This will simply write back to the registers based on the control signal
 
 
-def RunSim():
+def RunSim(reg_print=1, buffprint=1, part_inst=-1):
     #loop
     clock=1
     while(1):

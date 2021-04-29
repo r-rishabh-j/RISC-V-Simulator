@@ -390,6 +390,7 @@ class ControlModule:
         self.mem_MemWrite.append(self.MemWrite)
         self.mem_MuxYSelect.append(self.MuxYSelect)
         self.mem_RMqueue.append(self.RM_placeholder)
+        #print(f"pushed- MuxYsel {self.MuxYSelect} RA- {self.RA_placeholder}")
         self.mem_RAqueue.append(self.RA_placeholder)
         self.mem_operation.append(True)
     def register_set_operate(self):
@@ -456,6 +457,7 @@ class ControlModule:
         self.RM_placeholder=self.mem_RMqueue.popleft()
         self.RA_placeholder=self.mem_RAqueue.popleft()
         self.MuxYSelect=self.mem_MuxYSelect.popleft()
+        #print(f"deque- MuxYsel {self.MuxYSelect} RA- {self.RA_placeholder}")
         operate=self.mem_operation.popleft()
         return operate
 

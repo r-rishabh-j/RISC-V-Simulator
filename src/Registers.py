@@ -30,7 +30,7 @@ class Registers:
         elif(WriteVal>=2**31 or WriteVal<-2**31):
             raise Exception("\033[1;31mWriteValue out of range!\033[0m")
         self.reg[RegNumber]=WriteVal
-        print(f"\033[94mWritten {WriteVal} in x{RegNumber}\033[0m")
+        print(f"\033[94mWritten {hex(WriteVal)} in x{RegNumber}\033[0m")
 
     def ReadGpRegisters(self, RegNumber):
         if(RegNumber<0 or RegNumber>31):
@@ -40,5 +40,5 @@ class Registers:
         elif(RegNumber==0):
             return 0
         val=self.reg[RegNumber]
-        print(f"\033[94mRead {val} from x{RegNumber}\033[0m")
+        print(f"\033[94mRead {hex(val)} from x{RegNumber}\033[0m")
         return val

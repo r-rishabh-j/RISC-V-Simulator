@@ -106,156 +106,123 @@ class HazardUnit:
         if i2==3:
             i2_forwarding=31
             return [i1_forwarding,i2_forwarding]
-        #case 5 , dependency with i2:-
-
-        # here rd of i2 is both rs1 and rs2 : -
-        if i2==503:
-            i2_forwarding=33
-            return  [i1_forwarding,i2_forwarding]
-
-        # here rd of i2 is related to rs1
-        if i2==501:
-            i2_forwarding=31
-
-            #Case 5 if i1 is related to rs2
-            if i1==502:
-                i1_forwarding=12
-
-            #case 10 here always i1 is related to rs2
-            if i1==102:
-                i1_forwarding=12
-            return  [i1_forwarding,i2_forwarding]
 
 
-        # here rd of i2 is related to rs2
-        if i2==502:
-            i2_forwarding=32
-
-            # Case 5 if i1 is related to rs1
-            if i1==501:
-                i1_forwarding=11
-
-            # Case 10 if i1 is related to rs1
-            if i1==101:
-                i1_forwarding=11
-
-            return  [i1_forwarding,i2_forwarding]
-        
-        #Case 7 , checking dependency with i2:-
-
-        #rd of i2 is related to both rs1 and rs2
-        if i2==703:
-            i2_forwarding=63
-            return [i1_forwarding,i2_forwarding]
-
-        # rd of i2 is related to rs1
-        if i2==701:
-            i2_forwarding=61
-
-            # case 7 , i1 to rs2
-            if i1==702:
-                i1_forwarding=72
-
-            # case 9 , i1 to rs2
-            if i1==902:
-                i1_forwarding=52
-            return [i1_forwarding, i2_forwarding]
-
-        # rd of i2 is related to rs2
-        if i2 == 702:
-            i2_forwarding=62
-
-            # case 7 , i1 to rs1
-            if i1==701:
-                i1_forwarding=71
-
-            # case 9 , i1 to rs1
-            if i1==901:
-                i1_forwarding=51
-
-            return [i1_forwarding,i2_forwarding]
-            
         # Case 9 ,checking dependancy with i2:-
 
-        #rd of i2 is related to both rs1 and rs2
-        if i2==903:
-            i2_forwarding=43
+        if i2==9:
+            i2_forwarding=505
+            i1_forwarding=-1
             return [i1_forwarding,i2_forwarding]
 
-        #rd of i2 is related to rs2
-        if i2==902:
-            i2_forwarding=42
+        # case 13 , checking dependancy with i2:-
+        if i2==13:
+            i2_forwarding = 505
+            i1_forwarding = -1
+            return [i1_forwarding, i2_forwarding]
 
-            #case 7 rd of i1 is related to rs1
-            if i1==701:
-                i1_forwarding=71
+        # case 17 , checking dependance with i2:-
+        # if i2 is going to rs1:-
+        if i2==1701:
 
-            #case 9 rd of i1 is related to rs1
-            if i1==901:
-                i1_forwarding=51
+            # only dependant on i2 and not i1 (or i2 is given prefrence)
+            if i1==-1 or i1==1701 or i1==1801:
+                i2_forwarding=31
 
-            return [i1_forwarding,i2_forwarding]
+            # case 17
+            # i1 to rs2 and i1 is R type
+            if i1==1702:
+                i1_forwarding=404
+                i2_forwarding=-1
 
-        #rd of i2 is related to rs1
-        if i2==901:
-            i2_forwarding=41
-
-            #case 7 rd of i1 is related to rs2
-            if i1==702:
-                i1_forwarding=72
-
-            #case 9 rd of i1 is related to rs2
-            if i1==902:
-                i1_forwarding=52
-
-            return  [i1_forwarding,i2_forwarding]
-            
-        # case 10 , checking dependancy with i2
-
-        # from i2 to both rs2 and rs1
-        if i2==1003:
-            i2_forwarding=23
-            return [i1_forwarding,i2_forwarding]
-
-        # from i2 to rs2
-        if i2==1002:
-            i2_forwarding=0
-
-            #case 10 from i1 to rs1
-            if i1==1001:
-                i1_forwarding=11
-
-            # case 5 from i1 to rs1
-            if i1==501:
-                i1_forwarding=11
-            return [i1_forwarding,i2_forwarding]
-
-        # from i2 to rs1
-        if i2==1001:
-            i2_forwarding =21
-
-            #case 10 from i1 to rs2
-            if i1==1002:
-               i1_forwarding =12
-
-            # case 5 from i1 to rs2
-            if i1==502:
-                i1_forwarding=12
+            #case 18
+            # i1 to rs2 and i1 is lw/jalr/jal type:-
+            if i1==1802:
+                i1_forwarding = 404
+                i2_forwarding = -1
 
             return [i1_forwarding,i2_forwarding]
 
-        #case 15, dependency with i2:-
+        # if i2 is going to rs2:-
+        if i2 == 1702:
 
-        # here only forwarding to rs1 is possible : -
-        if i2==15:
-            i2_forwarding=61
+            # only dependant on i2 and not i1 (or i2 is given prefrence)
+            if i1==-1 or i1==1702 or i1==1802:
+                i2_forwarding=0
+
+            #case 17
+            # from i1 to rs1 and i1 is R type
+            if i1==1701:
+                i1_forwarding=-1
+                i2_forwarding=505
+
+            #case 18
+            # from i1 to rs2 and i1 is lw/jal/jalr type
+            if i1==1801:
+                i1_forwarding = -1
+                i2_forwarding = 505
+
             return [i1_forwarding,i2_forwarding]
 
-        if i2==16:
-            i2_forwarding=41
-            return [i1_forwarding,i2_forwarding]
-    
+        # if i2 is going to both rs1 and rs2:-
+        if i2==1703:
+            i1_forwarding=-1
+            i2_forwarding=310
+            return [i1_forwarding, i2_forwarding]
 
+        #case 18:
+        #if i2 is going to rs1:-
+        if i2==1801:
+
+            # only dependant on i2 and not i1 (or i2 is given prefrence)
+            if i1 == -1 or i1 == 1701 or i1 == 1801:
+                i2_forwarding = 21
+
+            #case 17:
+            # i1 to rs2:- i1 is R type
+            if i1 == 1702:
+                i2_forwarding = -1
+                i1_forwarding=404
+
+            #case 18:
+            # i1 to rs2 , i1 is lw / jal /jalr
+            if i1 == 1802:
+                i2_forwarding = -1
+                i1_forwarding = 404
+
+            return [i1_forwarding,i2_forwarding]
+
+        # if i2 is going to rs2
+        if i2 == 1802:
+
+            # only dependant on i2 and not i1 (or i2 is given prefrence)
+            if i1 == -1 or i1 == 1702 or i1 == 1802:
+                i2_forwarding = 0
+
+            #case 17:
+            #i1 to rs1 , i1 is R type :-
+            if i1==1701:
+                i1_forwarding=-1
+                i2_forwarding=505
+
+            #case 18:
+            #i1 to rs2 , i1 is lw/jal/jalr type: -
+            if i1==1801:
+                i1_forwarding=-1
+                i2_forwarding=505
+
+            return [i1_forwarding,i2_forwarding]
+
+        # if i2 is going to both rs1 and rs2 : -
+        if i2 == 1803:
+            i1_forwarding = -1
+            i2_forwarding = 505
+            return [i1_forwarding, i2_forwarding]
+
+        # case 19
+        if i2 == 19:
+            i2_forwarding=21
+            return [i1_forwarding,i2_forwarding]
 
 
         # dealing with cases when there is dependence between i1 and i3 only
@@ -294,64 +261,63 @@ class HazardUnit:
 
         #Case 4: None
 
-        #Case 5
-        if i1==503:
-            i1_forwarding=13
-            return [i1_forwarding,i2_forwarding]
-        if i1==502:
-            i1_forwarding=12
-            return [i1_forwarding,i2_forwarding]
-        if i1==501:
-            i1_forwarding=11
-            return [i1_forwarding,i2_forwarding]
+
 
         #Case 6 : None
         
-        #Case 7
-        if i1==703:
-            i1_forwarding=73
-            return [i1_forwarding,i2_forwarding]
-        if i1==702:
-            i1_forwarding=72
-            return [i1_forwarding,i2_forwarding]
-        if i1==701:
-            i1_forwarding=71
-            return [i1_forwarding,i2_forwarding]
-        
+
         # Case 8: None
 
         #Case 9
-        if i1==903:
-            i1_forwarding=53
-            return [i1_forwarding,i2_forwarding]
-        if i1==902:
-            i1_forwarding=52
-            return [i1_forwarding,i2_forwarding]
-        if i1==901:
-            i1_forwarding=51
-            return [i1_forwarding,i2_forwarding]
+        if i1 == 9:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
         
-        #Case 10
-        if i1==1003:
-            i1_forwarding=13
-            return [i1_forwarding,i2_forwarding]
-        if i1==1002:
-            i1_forwarding=12
-            return [i1_forwarding,i2_forwarding]
-        if i1==1001:
+
+        #Case 13
+        if i1==13:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        #Case 17
+        if i1==1701:
+            i2_forwarding=-1
+            i1_forwarding=11
+            return [i1_forwarding, i2_forwarding]
+
+        if i1==1702:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        if i1==1703:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        # case 18
+        if i1==1801:
+            i2_forwarding = -1
+            i1_forwarding = 11
+            return [i1_forwarding, i2_forwarding]
+
+        if i1==1802:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        if i1==1803:
+            i2_forwarding = -1
+            i1_forwarding = 404
+            return [i1_forwarding, i2_forwarding]
+
+        #case 19:
+        if i1 == 19:
             i1_forwarding=11
             return [i1_forwarding,i2_forwarding]
 
-
-        #Case 15
-        if i1==15:
-            i1_forwarding=71
-            return [i1_forwarding,i2_forwarding]
-
-        #Case 16
-        if i1==16:
-            i1_forwarding=51
-            return [i1_forwarding,i2_forwarding]
 
         return [-1,-1] # if no case matches
 
@@ -375,91 +341,87 @@ class HazardUnit:
             stall = 2
             return stall
 
-        # case5
-        if i2 == 503 or i2==501 or i2==502:
-            stall = 2
-            return stall
-
-        # case7
-        if i2 == 701 or i2 == 702 or i2 == 703:
-            stall = 2
-            return stall
+        
 
         # case9
-        if i2 == 901 or i2 == 903 or i2 == 902:
+        if i2 == 9:
             stall = 2
             return stall
 
-        # case10
-        if i2 == 1001 or i2 == 1002 or i2 == 1003:
+
+        #case13
+        if i2 == 13:
             stall = 2
             return stall
 
-        #case15
-        if i2 == 15:
+
+
+        #case17
+        if i2 == 1703 or i2==1702 or i2==1701:
             stall = 2
             return stall
 
-        #case16
-        if i2 == 16:
+        #case18
+        if i2 == 1803 or i2==1802 or i2==1801:
+            stall = 2
+            return stall
+
+
+
+        #case19
+        if i2 == 19:
             stall = 2
             return stall
 
 
         # dependency with i1:-
-        #Case1
-        if i1==103 or i1==102 or i1==101 or i1==1:
-            stall=1
+        # Case1
+        if i1 == 103 or i1 == 101 or i1 == 102 or i1 == 1:
+            stall = 1
             return stall
+
+        # case2
+        if i1 == 203 or i1 == 202 or i1 == 201 or i1 == 2:
+            stall = 1
+            return stall
+
+        # case3
+        if i1 == 3:
+            stall = 1
+            return stall
+
         
-        #Case2
-        if i1==203 or i1==202 or i1==201 or i1==2:
-            stall=1
-            return stall
 
-        #Case3
-        if i1==3:
-            stall=1
-            return stall
-
-        #Case4:None
-
-        #Case5
-        if i1==503 or i1==502 or i1==501:
-            stall=1
+        # case9
+        if i1 == 9:
+            stall = 1
             return stall
 
 
-        #Case6:None
-
-        #Case7
-        if i1==703 or i1==702 or i1==701:
-            stall=1
-            return stall
-        
-        #Case8:None
-
-        #Case9
-        if i1==903 or i1==902 or i1==901:
-            stall=1
+        #case13
+        if i1 == 13:
+            stall = 1
             return stall
 
-        #Case10
-        if i1==1003 or i1==1002 or i1==1001:
-            stall=1
+
+
+        #case17
+        if i1 == 1703 or i1==1702 or i1==1701:
+            stall = 1
             return stall
 
-        #Case11,12,13,14
-
-        #Case15
-        if i1==15:
-            stall=1
+        #case18
+        if i1 == 1803 or i1==1802 or i1==1801:
+            stall = 1
             return stall
 
-        #Case16
-        if i1==16:
-            stall=1
+
+
+        #case19
+        if i1 == 19:
+            stall = 1
             return stall
+
 
 
 
@@ -474,7 +436,9 @@ class HazardUnit:
         dependency_i1=-1
         dependency_i2=-1
 
-        if i2[0]==3:                # i2 is load and i3 is R type
+
+        #Case2:
+        if i2[0]==3 or i2[0]==111 or i2[0]==103:                
             if opcode==51:
                 if rs1 == i2[4] and rs2 == i2[4]:    # if rs1 or rs2 == to the register where value is being loaded
                     dependency_i2=203
@@ -482,23 +446,16 @@ class HazardUnit:
                     dependency_i2=201
                 elif rs2 == i2[4]:    # if rs1 or rs2 == to the register where value is being loaded
                     dependency_i2=202                   # In case we have a r type instruction just after load.
-        if i2[0]==3:            # i2 is load and i3 is I type
+        if i2[0]==3 or i2[0]==111 or i2[0]==103:            # i2 is load and i3 is I type
             if opcode==19:
                 if rs1==i2[4]:
                     dependency_i2=2
 
-        if i2[0] == 3:  # if i2 is load and i3 is store type
-            if opcode == 35:
-                if i2[4] == rs2 and i2[4]==rs1:   # if the rs2 or source of data is same as rd in load
-                    dependency_i2=1003
-                elif i2[4]==rs1:   # if the rs2 or source of data is same as rd in load
-                    dependency_i2=1001
-                elif i2[4] == rs2:   # if the rs2 or source of data is same as rd in load
-                    dependency_i2=1002
+       
 
 
 
-        if i1[0]==3:                # i1 is load and i3 is R type
+        if i1[0]==3 or i1[0]==103 or i1[0]==111:                # i1 is load and i3 is R type
             if opcode==51:
                 if rs1 == i1[4] and rs2 == i1[4]:    # if rs1 or rs2 == to the register where value is being loaded
                     dependency_i1=203
@@ -507,19 +464,12 @@ class HazardUnit:
                 elif rs2 == i1[4]:    # if rs1 or rs2 == to the register where value is being loaded
                     dependency_i1=202                   # In case we have a r type instruction just after load.
 
-        if i1[0]==3:            # i1 is load and i3 is I type
+        if i1[0]==3 or i1[0]==103 or i1[0]==111:            # i1 is load and i3 is I type
             if opcode==19:
                 if rs1==i1[4]:
                     dependency_i1=2
 
-        if i1[0] == 3:  # if i1 is load and i3 is store type
-            if opcode == 35:
-                if i1[4] == rs2 and i1[4]==rs1:    # if the rs2 or source of data is same as rd in load
-                    dependency_i1=1003
-                elif i1[4]==rs1:    # if the rs2 or source of data is same as rd in load
-                    dependency_i1=1001
-                elif i1[4] == rs2:    # if the rs2 or source of data is same as rd in load
-                    dependency_i1=1002
+        
 
         
 
@@ -562,83 +512,84 @@ class HazardUnit:
                 if rs1==i1[4]:
                     dependency_i1=3
 
-        #Case5
-        if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
-            if opcode==35:
-                if rs1==i2[4] and rs2==i2[4]:
-                    dependency_i2=503
-                elif rs1==i2[4]:
-                    dependency_i2=501
-                elif rs2==i2[4]:
-                    dependency_i2=502
-        if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
-            if opcode==35:
-                if rs1==i1[4] and rs2==i1[4]:
-                    dependency_i1=503
-                elif rs1==i1[4]:
-                    dependency_i1=501
-                elif rs2==i1[4]:
-                    dependency_i1=502
 
-        #Case7
-        if i2[0]==51 or i2[0]==19:
-            if opcode==99:
-                if rs1==i2[4] and rs2==i2[4]:
-                    dependency_i2=703
-                elif rs1==i2[4]:
-                    dependency_i2=701
-                elif rs2==i2[4]:
-                    dependency_i2=702
-        if i1[0]==51 or i1[0]==19:
-            if opcode==99:
-                if rs1==i1[4] and rs2==i1[4]:
-                    dependency_i1=703
-                elif rs1==i1[4]:
-                    dependency_i1=701
-                elif rs2==i1[4]:
-                    dependency_i1=702
+        
 
         #Case9
-        if i2[0]==3:
+        if i2[0]==3 or i2[0]==103 or i2[0]==111 or i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
             if opcode==99:
-                if rs1==i2[4] and rs2==i2[4]:
-                    dependency_i2=903
-                elif rs1==i2[4]:
-                    dependency_i2=901
-                elif rs2==i2[4]:
-                    dependency_i2=902
-        if i1[0]==3:
+                if rs1==i2[4] or rs2==i2[4]:
+                    dependency_i2=9
+        if i1[0]==3 or i1[0]==103 or i1[0]==111 or i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==99:
-                if rs1==i1[4] and rs2==i1[4]:
-                    dependency_i1=903
-                elif rs1==i1[4]:
-                    dependency_i1=901
-                elif rs2==i1[4]:
-                    dependency_i1=902
+                if rs1==i1[4] or rs2==i1[4]:
+                    dependency_i1=9
 
-        #Case11
+        
 
-        #Case13:None
-        #Case15:
+        #Case13:
+        if i2[0]==3 or i2[0]==103 or i2[0]==111 or i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
+            if opcode==103:
+                if rs1==i2[4]:
+                    dependency_i2=13
+        if i1[0]==3 or i1[0]==103 or i1[0]==111 or i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
+            if opcode==103:
+                if rs1==i1[4]:
+                    dependency_i1=13
+
+
+        #Case17:
         if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
-            if opcode==103:
-                if rs1==i2[4]:
-                    dependency_i2=15
+            if opcode==35:
+                if rs1==i2[4] and rs2==i2[4]:
+                    dependency_i2=1703
+                elif rs1==i2[4]:
+                    dependency_i2=1701
+                elif rs2==i2[4]:
+                    dependency_i2=1702
+                
         if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
-            if opcode==103:
-                if rs1==i1[4]:
-                    dependency_i1=15
+            if opcode==35:
+                if rs1==i1[4] and rs2==i1[4]:
+                    dependency_i1=1703
+                elif rs1==i1[4]:
+                    dependency_i1=1701
+                elif rs2==i1[4]:
+                    dependency_i1=1702
+        
+
+        #Case18:
+        if i2[0]==3 or i2[0]==103 or i2[0]==111:
+            if opcode==35:
+                if rs1==i2[4] and rs2==i2[4]:
+                    dependency_i2=1803
+                elif rs1==i2[4]:
+                    dependency_i2=1801
+                elif rs2==i2[4]:
+                    dependency_i2=1802
+                
+        if i1[0]==3 or i1[0]==103 or i1[0]==111:
+            if opcode==35:
+                if rs1==i1[4] and rs2==i1[4]:
+                    dependency_i1=1803
+                elif rs1==i1[4]:
+                    dependency_i1=1801
+                elif rs2==i1[4]:
+                    dependency_i1=1802
 
 
-        #Case16:
-        if i2[0]==3:
-            if opcode==103:
+        #Case19
+        if i2[0]==3 or i2[0]==111 or i2[0]==103:
+            if opcode==3:
                 if rs1==i2[4]:
-                    dependency_i2=16
-        if i1[0]==3:
-            if opcode==103:
+                    dependency_i2=19
+        if i1[0]==3 or i1[0]==111 or i1[0]==103:
+            if opcode==3:
                 if rs1==i1[4]:
-                    dependency_i1=16
+                    dependency_i1=19
+
+
+       
     
 
         if i1[4]==0:  # rd of i1 is x0 i.e. no dependency
@@ -654,13 +605,13 @@ class HazardUnit:
 
         if forwarding_knob == 1:
             ret_value=self.data_forwarding(dependencies[0],dependencies[1])
-            print(f"\t\thazard- decision {ret_value}")
+            print(f"Data Hazard code: {ret_value}")
             return ret_value
 
         if forwarding_knob == 0:
-            print(f"dependencies- {dependencies[0]} {dependencies[1]}")
+            #print(f"dependencies- {dependencies[0]} {dependencies[1]}")
             ret_value=self.data_stalling(dependencies[0],dependencies[1])
-            print(f"\t\thazard- decision {ret_value}")
+            print(f"Data Hazard code: {ret_value}")
             return ret_value
             
 
