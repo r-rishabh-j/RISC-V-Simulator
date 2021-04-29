@@ -1,6 +1,6 @@
 # 3 types of stalls- decode stall, fetch stall and execute stall
 # RAW data hazards-
-# Case1- between D and 
+# Case1- between D and
 
     #in transit instructions
 from collections import deque
@@ -9,6 +9,7 @@ from collections import deque
 class HazardUnit:
     def __init__(self):
         self.current_list = deque([[-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1]])
+        self.inst_table = deque()
 
     def add_inst(self, opcode, funct3, rs1, rs2, rd):
         self.current_list.popleft()
@@ -264,7 +265,7 @@ class HazardUnit:
 
 
         #Case 6 : None
-        
+
 
         # Case 8: None
 
@@ -273,7 +274,7 @@ class HazardUnit:
             i2_forwarding = -1
             i1_forwarding = 404
             return [i1_forwarding, i2_forwarding]
-        
+
 
         #Case 13
         if i1==13:
@@ -341,7 +342,7 @@ class HazardUnit:
             stall = 2
             return stall
 
-        
+
 
         # case9
         if i2 == 9:
@@ -390,7 +391,7 @@ class HazardUnit:
             stall = 1
             return stall
 
-        
+
 
         # case9
         if i1 == 9:
@@ -427,7 +428,7 @@ class HazardUnit:
 
 
         return -1 #if no case matches return stall=-1
-            
+
 
     def check_dependence(self, opcode,funct3,rs1,rs2,rd):
         #add data dependence check via registers
@@ -438,7 +439,7 @@ class HazardUnit:
 
 
         #Case2:
-        if i2[0]==3 or i2[0]==111 or i2[0]==103:                
+        if i2[0]==3 or i2[0]==111 or i2[0]==103:
             if opcode==51:
                 if rs1 == i2[4] and rs2 == i2[4]:    # if rs1 or rs2 == to the register where value is being loaded
                     dependency_i2=203
@@ -451,7 +452,7 @@ class HazardUnit:
                 if rs1==i2[4]:
                     dependency_i2=2
 
-       
+
 
 
 
@@ -469,9 +470,9 @@ class HazardUnit:
                 if rs1==i1[4]:
                     dependency_i1=2
 
-        
 
-        
+
+
 
         #odd Cases
         #Case1
@@ -483,7 +484,7 @@ class HazardUnit:
                     dependency_i2=101
                 elif rs2==i2[4]:
                     dependency_i2=102
-                
+
         if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==51:
                 if rs1==i1[4] and rs2==i1[4]:
@@ -492,7 +493,7 @@ class HazardUnit:
                     dependency_i1=101
                 elif rs2==i1[4]:
                     dependency_i1=102
-        
+
         if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
             if opcode==19:
                 if rs1==i2[4]:
@@ -513,7 +514,7 @@ class HazardUnit:
                     dependency_i1=3
 
 
-        
+
 
         #Case9
         if i2[0]==3 or i2[0]==103 or i2[0]==111 or i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
@@ -525,7 +526,7 @@ class HazardUnit:
                 if rs1==i1[4] or rs2==i1[4]:
                     dependency_i1=9
 
-        
+
 
         #Case13:
         if i2[0]==3 or i2[0]==103 or i2[0]==111 or i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
@@ -547,7 +548,7 @@ class HazardUnit:
                     dependency_i2=1701
                 elif rs2==i2[4]:
                     dependency_i2=1702
-                
+
         if i1[0]==51 or i1[0]==19 or i1[0]==23 or i1[0]==55:
             if opcode==35:
                 if rs1==i1[4] and rs2==i1[4]:
@@ -556,7 +557,7 @@ class HazardUnit:
                     dependency_i1=1701
                 elif rs2==i1[4]:
                     dependency_i1=1702
-        
+
 
         #Case18:
         if i2[0]==3 or i2[0]==103 or i2[0]==111:
@@ -567,7 +568,7 @@ class HazardUnit:
                     dependency_i2=1801
                 elif rs2==i2[4]:
                     dependency_i2=1802
-                
+
         if i1[0]==3 or i1[0]==103 or i1[0]==111:
             if opcode==35:
                 if rs1==i1[4] and rs2==i1[4]:
@@ -589,11 +590,11 @@ class HazardUnit:
                     dependency_i1=19
 
 
-       
-    
+
+
 
         if i1[4]==0:  # rd of i1 is x0 i.e. no dependency
-            dependency_i1=-1 
+            dependency_i1=-1
         if i2[4]==0:  # rd of i2 is x0 i.e. no dependency
             dependency_i2=-1
         return [dependency_i1,dependency_i2]
@@ -613,12 +614,45 @@ class HazardUnit:
             ret_value=self.data_stalling(dependencies[0],dependencies[1])
             print(f"Data Hazard code: {ret_value}")
             return ret_value
-            
+
 
 
     def print_table(self):
         print(self.current_list[0])
         print(self.current_list[1])
+
+    def add_table_inst(self, opcode, funct3, rs1, rs2, rd):
+        inst_temp = [opcode, funct3, rs1, rs2, rd]
+        self.inst_table.append(inst_temp)
+
+    def print_inst_table(self):
+        for i in self.inst_table:
+            print(i)
+
+    def count_data_hazards(self):  #[opcode, funct3, rs1, rs2, rd]
+        i=0
+        count=0
+        #dependence1 = False
+        while self.inst_table[i][0] != 0x11:
+            opcode = self.inst_table[i][0]
+            funct3 = self.inst_table[i][1]
+            rs1 = self.inst_table[i][2]
+            rs2 = self.inst_table[i][3]
+            rd = self.inst_table[i][4]
+
+            if i>=1: #check between i2, i3
+
+                if (rs1 != 0 and self.inst_table[i-1][4] == rs1) or (rs2 != 0 and self.inst_table[i-1][4] == rs2):
+                    count = count+1
+                    #dependence1 = True;
+
+            if i>=2:
+                if(self.inst_table[i-1][4] != self.inst_table[i-2][4])
+                    if (rs1 != 0 and self.inst_table[i-1][4] == rs1) or (rs2 != 0 and self.inst_table[i-1][4] == rs2):
+                        count = count + 1
+
+            i=i+1
+        return count
 
 
 #current=Current()
@@ -626,5 +660,3 @@ class HazardUnit:
 #current.print_table()
 #current.add_null()
 #current.print_table()
-
-
