@@ -80,6 +80,7 @@ def decode(stage, clock):
     forward_bool.global_terminate=False
     control_module.decode(registers.ReadIR(),IAGmodule.PC)
     if control_module.terminate:
+        hazard_module.add_table_inst(0x11,0,0,0,0)
         return
         # check for hazards(in this case stalls) using the hazard table.
     data_hazard=hazard_module.decision_maker(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd, 0) 	#requires stall, forwarding kno is turned off, replace 0 with knob signal
@@ -151,6 +152,7 @@ def decode(stage, clock):
         control_module.decode_operation.append(False) # False is the code to indicate a branch misprediction and the decode unit does not have to operate
     
         hazard_module.add_inst(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd)
+        hazard_module.add_table_inst(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd) # end of prog
         buffer.Decode_output_PC_temp=IAGmodule.PC_buffer
         control_module.execute_set_operate()
         control_module.memory_set_operate()
@@ -167,6 +169,7 @@ def decode(stage, clock):
         forward_bool.control_inst+=1
     forward_bool.total_inst+=1
     hazard_module.add_inst(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd)
+    hazard_module.add_table_inst(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd) # end of prog
     control_module.execute_set_operate()
     control_module.memory_set_operate()
     control_module.register_set_operate()
@@ -291,7 +294,7 @@ def RunSim(reg_print=1, buffprint=1):
             print(f"Stat5: ALU instructions: {forward_bool.ALU_ins_cnt} ")
             print(f"Stat6: Control instructions: {forward_bool.control_inst} ")
             print(f"Stat7: Bubbles: {forward_bool.bubbles}")
-            print(f"Stat8: Total Data Hazards:")
+            print(f"Stat8: Total Data Hazards: {hazard_module.count_data_hazards()}")
             print(f"Stat9: Total Control Hazards: {forward_bool.control_hazard_cnt}")
             print(f"Stat10: Total branch mispredictions Hazards: {forward_bool.branch_mis_cnt}")
             print(f"Stat11: Stall due to data hazard: {forward_bool.data_stall}")

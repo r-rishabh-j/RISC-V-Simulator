@@ -647,8 +647,8 @@ class HazardUnit:
                     #dependence1 = True;
 
             if i>=2:
-                if(self.inst_table[i-1][4] != self.inst_table[i-2][4])
-                    if (rs1 != 0 and self.inst_table[i-1][4] == rs1) or (rs2 != 0 and self.inst_table[i-1][4] == rs2):
+                if(self.inst_table[i-1][4] != self.inst_table[i-2][4]):
+                    if (rs1 != 0 and self.inst_table[i-2][4] == rs1) or (rs2 != 0 and self.inst_table[i-2][4] == rs2):
                         count = count + 1
 
             i=i+1

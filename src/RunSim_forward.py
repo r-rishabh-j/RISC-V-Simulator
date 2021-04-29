@@ -79,7 +79,8 @@ def decode(stage,clock):
     # if terminate==1, return
     # check the operation queue. If empty, then operate. Else, don't operate and pop.
     if(control_module.terminate):
-          return
+        hazard_module.add_table_inst(0x11,0,0,0,0)
+        return
     forward_bool.global_terminate=False
     print("Decode Stage")
     #mtod=False
@@ -302,6 +303,7 @@ def decode(stage,clock):
         if control_module.jump or control_module.branch:
             forward_bool.control_inst+=1
         hazard_module.add_inst(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd)
+        hazard_module.add_table_inst(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd) # end of prog
         buffer.Decode_output_PC_temp=IAGmodule.PC_buffer
         control_module.execute_set_operate()
         control_module.memory_set_operate()
@@ -318,6 +320,7 @@ def decode(stage,clock):
     if control_module.jump or control_module.branch:
             forward_bool.control_inst+=1
     hazard_module.add_inst(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd)
+    hazard_module.add_table_inst(control_module.opcode, control_module.funct3, control_module.rs1, control_module.rs2, control_module.rd) # end of prog
     control_module.execute_set_operate()
     control_module.memory_set_operate()
     control_module.register_set_operate()
@@ -494,7 +497,7 @@ def RunSim(reg_print=1, buffprint=1):
             print(f"Stat5: ALU instructions: {forward_bool.ALU_ins_cnt} ")
             print(f"Stat6: Control instructions: {forward_bool.control_inst} ")
             print(f"Stat7: Bubbles: {forward_bool.data_stall+forward_bool.control_stall}")
-            print(f"Stat8: Total Data Hazards:")
+            print(f"Stat8: Total Data Hazards: {hazard_module.count_data_hazards()}")
             print(f"Stat9: Total Control Hazards: {forward_bool.control_hazard_cnt}")
             print(f"Stat10: Total branch mispredictions Hazards: {forward_bool.branch_mis_cnt}")
             print(f"Stat11: Stall due to data hazard: {forward_bool.data_stall}")

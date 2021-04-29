@@ -256,7 +256,7 @@ class ControlModule:
         elif self.opcode in I:
             inst_list = self.decodeI(machine_code)
             self.funct7 = 0
-            self.rs1 = 0
+            self.rs2 = 0
             self.rd = inst_list[0]
             self.funct3 = inst_list[1]
             self.rs1 = inst_list[2]
