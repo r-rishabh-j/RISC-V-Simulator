@@ -7,6 +7,7 @@ Bhumika 2019CSB1152
 Keshav Krishna 2019CSB1224
 Rishabh Jain 2019CSB1286
 Vishawam Datta 2019CSB1305
+
 HOW TO RUN:
 Clone the repository to your local system. After ensuring the installation of the following dependencies, run the steps as mentioned hereafter.
 Libraries and installation Requirements:
@@ -17,9 +18,10 @@ Libraries and installation Requirements:
 Steps to run via command-line interface for pipelined and with data forwarding:
 Enter your machine code in a file with an appropriate file name.
 Run the command python main.py <path to instruction file> on windows or python3 main.py <path to instruction file> on mac or Linux.
-User will be prompted to set knobs for the simulator.
+User will be prompted to set knobs for the simulator. Inputs for setting the knobs would be printed on the commandline interface.
 Meaningful messages from the simulator will be displayed on the terminal.
-Register and memory outputs will be stored in RegisterDump_<knob_config>.mc and MemoryDump_<knob_config>.mc respectively.
+Register and memory outputs will be stored in RegisterDump_<knob_config>.mc and MemoryDump_<knob_config>.mc respectively. User will be informed at the end of the 
+program where the output has been directed to.
  
 PHASE2 DESCRIPTION:
 
@@ -42,6 +44,6 @@ As a team effort, no strict separation was followed. A loose outline of the work
 Ayush Verma: Hazard Unit(Check_dependence, type of forwarding and type of stalling), Decode unit functions, Register And Memory Update functions.
 Bhumika: Decode unit, Control Circuitry including Control Signals and ALU Control, Buffers, Hazard Table, Data Forwarding
 Keshav Krishna: Buffers, Program Flow(pipelining), Control Circuit, some parts of memory, GUI
-Rishabh Jain: Memory, register, ALU, Control and program flow and GUI,stalling mechanism, forwarding mechanism
-Vishawam Datta: Hazard Unit(Check_dependence, type of forwarding and type of stalling), Program Flow(RiscSim.py), IAG module including BTB, memory module and some parts of Control 
+Rishabh Jain: Memory, register, ALU, Control and program flow and GUI,stalling mechanism, forwarding mechanism, control signal queues, Branch predictor
+Vishawam Datta: Hazard Unit(Check_dependence, type of forwarding and type of stalling), Program Flow, IAG module including BTB, memory module and some parts of Control 
 
