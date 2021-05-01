@@ -271,6 +271,7 @@ def decode(stage,clock):
     control_module.RA_placeholder=buffer.Decode_input_PC+4 # return address
     ALUmodule.outputBool=0
     if control_module.branch:
+        forward_bool.ALU_ins_cnt+=1
         ALUmodule.ALUexecute(control_module.ALUOp, control_module.ALUcontrol, buffer.RAtemp, buffer.RBtemp)
     IAGmodule.PC_buffer=buffer.Decode_input_PC
     control_module.branching_controlUpdate(ALUmodule.outputBool)

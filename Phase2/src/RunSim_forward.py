@@ -73,7 +73,7 @@ def fetch(stage,clock):
     else:
         buffer.Fetch_output_PC_temp=IAGmodule.PC+4
     # compare it to BTB to check if that is a branch/jump. If it is, update PC to the target.
-    
+
 
 def decode(stage,clock):
     # if terminate==1, return
@@ -114,7 +114,7 @@ def decode(stage,clock):
             forward_bool.MtoEtoRA=True
             forward_bool.MtoEtoRB=True
             return
-    
+
     # decode the instruction first in the IR
     #control_module.decode(registers.ReadIR(),IAGmodule.PC)
     control_module.decode(registers.ReadIR(),buffer.Decode_input_PC)
@@ -189,7 +189,7 @@ def decode(stage,clock):
                 print("EtoEtoRB RA")
                 forward_bool.EtoEtoRA=True
                 forward_bool.EtoEtoRB=True
-            
+
         if hazard_code[0]!=-1:
             if hazard_code[0]==404:
                 print("Decode stall")
@@ -245,12 +245,12 @@ def decode(stage,clock):
             elif hazard_code[0]==33:
                 forward_bool.EtoEtoRA=True
                 forward_bool.EtoEtoRB=True
-           
+
     if to_return:
         return
     # check for branch misprediction here, use Decode_input_branch_prediction
     # read the registers or PC or forwarded value here and update RA and RB with those values. Use control signals for MuxA and MuxB to set them!!!!
-    
+
     ########## reading the registers#############
     MuxAout=0
     MuxBout=0
@@ -292,7 +292,7 @@ def decode(stage,clock):
         print(f"BTB entry created. {buffer.Decode_input_PC+control_module.imm}")
         IAGmodule.BTB_insert(buffer.Decode_input_PC,buffer.Decode_input_PC+control_module.imm,1)
 
-    if control_module.branch_misprediction: 
+    if control_module.branch_misprediction:
         # code here for handling branch misprediction
         print("Branch misprediction")
         forward_bool.branch_mis_cnt+=1
@@ -311,7 +311,7 @@ def decode(stage,clock):
         control_module.execute_set_NOP()
         control_module.memory_set_NOP()
         control_module.register_set_NOP()
-        return 
+        return
     # push NOPs whenever needed, call the exexute_set_NOP etc methods is ControlModule according to hazard code
     # if misprediction, perform corrective measures here and return if necessary follow steps given in documentation to resolve the hazard by stalling/data forwarding.
     # in case of jalr, compute effective address and update decode_output_PC_temp by that value.
@@ -339,8 +339,8 @@ def execute(stage,clock): # ALU
     ALUmodule.ALUexecute(control_module.ALUOp, control_module.ALUcontrol,buffer.getRA(), buffer.getRB())
     buffer.RZtemp=ALUmodule.output32	#simple execution
     #print(f"clock- {clock} RZtemp-{buffer.RZtemp} ALUoutput-{ALUmodule.output32}")
-    
-    
+
+
 def mem_access(stage,clock):
     # dequeue from the control signals. Check if we need to operate or not
     if not control_module.memory_deque_signal(): # this function returns False if memory is in NOP. Also, all control_module.MemRead, etc are updated to 0 in case of NOP, or correct value if O
@@ -376,11 +376,11 @@ def mem_access(stage,clock):
         elif control_module.MtoEcode==23:
             forward_bool.MtoEtoRA=True
             forward_bool.MtoEtoRB=True
-    
+
       # make MtoEToRA or MtoEtoRB true on the basis of encoding received
       # if MtoM
     # set RYtemp according to values and MuxY control
-    #print(f"MuxYSelect {control_module.MuxYSelect}") 
+    #print(f"MuxYSelect {control_module.MuxYSelect}")
     if control_module.MuxYSelect == 0:
         #print("RZ to RY")
         buffer.RYtemp = buffer.getRZ()
@@ -390,7 +390,7 @@ def mem_access(stage,clock):
     elif control_module.MuxYSelect == 2:
         #print(f"\t\tRY set to RA!! {control_module.RA_placeholder}")
         buffer.RYtemp = control_module.RA_placeholder
-    # 
+    #
 
 def reg_writeback(stage,clock):
     # dequeue from the control signals. Check if we need to operate or not
@@ -402,8 +402,8 @@ def reg_writeback(stage,clock):
     registers.WriteGpRegisters(control_module.rd, control_module.RegWrite, buffer.getRY())
 
 def buffer_update():
-    #first update the output buffers, 
-    #then forward   
+    #first update the output buffers,
+    #then forward
     #temp to Buffer data transfer
     if not forward_bool.fetch_stall:
         registers.WriteIR(buffer.IRbuffer,1)
@@ -420,35 +420,35 @@ def buffer_update():
             print(f"PC updated by decode {IAGmodule.PC_buffer}")
 
             IAGmodule.PC=IAGmodule.PC_buffer
-    if not forward_bool.execute_stall: 
+    if not forward_bool.execute_stall:
         buffer.RZ=buffer.RZtemp	#RZ update
 
     buffer.RY=buffer.RYtemp
       #forward data in priority
     if forward_bool.MtoM:
-        
+
         # RM is updated to MDR of memory in case of M to M forwarding
         buffer.RM=buffer.RY
         forward_bool.MtoM = False
-      
+
     if forward_bool.MtoEtoRA:	#MDR to RA
         buffer.RA=buffer.RY
         forward_bool.MtoEtoRA = False
-        
+
     if forward_bool.MtoEtoRB:	#MDR to RB
         buffer.RB=buffer.RY
         forward_bool.MtoEtoRB = False
-        
+
     if forward_bool.EtoEtoRA:	#RZ to RA(rs1)
         print("E to E to RA")
         buffer.RA=buffer.RZ
         forward_bool.EtoEtoRA = False
-        
+
     if forward_bool.EtoEtoRB:	#RZ to RB(rs2)
         buffer.RB=buffer.RZ
         forward_bool.EtoEtoRB = False
-    
-    
+
+
     if forward_bool.fetch_stall or forward_bool.decode_stall or forward_bool.execute_stall:
         hazard_module.add_null()
 
@@ -461,7 +461,7 @@ def buffer_update():
     control_module.branch_misprediction=False
     # print(f"RZ update, temp-{buffer.RZtemp}, RZ-{buffer.RZ}")
     # print(f"buff update- RAtemp-{buffer.RAtemp} RBtemp-{buffer.RBtemp} RA-{buffer.RA} RB-{buffer.RB}")
-    # print(f"execute queue- aluop {control_module.exe_ALUOp} aluc {control_module.ALUcontrol} opcode {control_module.exe_opcode}")      
+    # print(f"execute queue- aluop {control_module.exe_ALUOp} aluc {control_module.ALUcontrol} opcode {control_module.exe_opcode}")
 def RunSim(reg_print=1, buffprint=1):
     clock=1
     while(True):
