@@ -77,12 +77,13 @@ class SetAssociativeCache: # cache module
         self._block_size=block_size
         self._size=cache_size
         # visualize tag array in the form of a matrix(NxM), sets are the rows, set elements are along the column
-        # self.tag_array = [[0 for j in range(associativity)] for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
-        self.tag_array = [CacheSet(self.associativity,self.block_size) for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
+        self.tag_array = [[0 for j in range(associativity)] for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
+        #self.tag_array = [CacheSet(self.associativity,self.block_size) for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
+        self.set_array = [CacheSet(self.associativity,self.block_size) for i in range((cache_size//block_size)//associativity)] # contains the set objects
         # block element corresponds to a tag element in row major format, index=i*n+j, given tag is (i,j)
         # self.blocks = [CacheBlock(self._block_size) for i in range(cache_size//block_size)] #[[[] for j in range(associativity)] for i in range((cache_size//block_size)//associativity)]
 
-class CacheSet:
+class CacheSet: # set object, contains LRU
     def __init__(self, associativity, block_size):
         self._associativity=associativity
         self._block_size=block_size
