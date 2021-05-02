@@ -77,9 +77,17 @@ class SetAssociativeCache: # cache module
         self._block_size=block_size
         self._size=cache_size
         # visualize tag array in the form of a matrix(NxM), sets are the rows, set elements are along the column
-        self.tag_array = [[0 for j in range(associativity)] for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
+        # self.tag_array = [[0 for j in range(associativity)] for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
+        self.tag_array = [CacheSet(self.associativity,self.block_size) for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
         # block element corresponds to a tag element in row major format, index=i*n+j, given tag is (i,j)
-        self.blocks = [CacheBlock(self._block_size) for i in range(cache_size//block_size)] #[[[] for j in range(associativity)] for i in range((cache_size//block_size)//associativity)]
+        # self.blocks = [CacheBlock(self._block_size) for i in range(cache_size//block_size)] #[[[] for j in range(associativity)] for i in range((cache_size//block_size)//associativity)]
+
+class CacheSet:
+    def __init__(self, associativity, block_size):
+        self._associativity=associativity
+        self._block_size=block_size
+        self.blocks = [CacheBlock(self._block_size) for i in range(self._associativity)] #[[[] for j in range(associativity)] for i in range((cache_size//block_size)//associativity)]
+        
 
 class CacheBlock: # object for an individual cache block
     def __init__(self, block_size):
@@ -96,9 +104,9 @@ class TwoLevelMemory:
 
     def __init__(self, cache_associativity, cache_size, cache_block_size):
         self.memory=dict() # key as address, value as memory content. Memory byte addressable! Thus, every element stores a byte
-        if !isinstance(cache_size/block_size, int) or cache_size/block_size<1:
+        if not isinstance(cache_size/block_size, int) or cache_size/block_size<1:
             raise Exception("Invalid selection of block and cache size!")
-        if !isinstance((cache_size/block_size)/cache_associativity, int) or (cache_size/block_size)/cache_associativity<1:
+        if not isinstance((cache_size/block_size)/cache_associativity, int) or (cache_size/block_size)/cache_associativity<1:
             raise Exception("Invalid Selection of cache associativity!") 
         self.cache_module=CacheInterface(cache_associativity, cache_size, cache_block_size)
         self.cache_accesses=0
