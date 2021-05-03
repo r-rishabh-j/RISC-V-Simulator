@@ -64,12 +64,12 @@ class ProcessorMemoryInterface: # the main PMI
         self.data_module.WriteValueAtAddress(base_address, byte_size, self.MDR)
         print(f"\033[93mWrote {byte_size} bytes at {hex(base_address)}, value={RMin}\033[0m")
 
-class CacheInterface: # interface between cache and TwoLevelMemory
-    def __init__(self, associativity, cache_size, block_size):
-        self._associativity=associativity
-        self._block_size=block_size
-        self._size=cache_size
-        self.cache_module=SetAssociativeCache(self._associativity, self._size, self._block_size)
+# class CacheInterface: # interface between cache and TwoLevelMemory
+#     def __init__(self, associativity, cache_size, block_size):
+#         self._associativity=associativity
+#         self._block_size=block_size
+#         self._size=cache_size
+#         self.cache_module=SetAssociativeCache(self._associativity, self._size, self._block_size)
 
 class SetAssociativeCache: # cache module
     def __init__(self, associativity, cache_size, block_size):
@@ -77,24 +77,92 @@ class SetAssociativeCache: # cache module
         self._block_size=block_size
         self._size=cache_size
         # visualize tag array in the form of a matrix(NxM), sets are the rows, set elements are along the column
-        self.tag_array = [[0 for j in range(associativity)] for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
-        #self.tag_array = [CacheSet(self.associativity,self.block_size) for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
+        self.tag_array = [[-1 for j in range(associativity)] for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
         self.set_array = [CacheSet(self.associativity,self.block_size) for i in range((cache_size//block_size)//associativity)] # contains the set objects
         # block element corresponds to a tag element in row major format, index=i*n+j, given tag is (i,j)
-        # self.blocks = [CacheBlock(self._block_size) for i in range(cache_size//block_size)] #[[[] for j in range(associativity)] for i in range((cache_size//block_size)//associativity)]
+        
+    def checkHit(self, tag, index): # returns boolean for found/not found
+        isValid=False
+        for block in self.tag_array[index]:
+            if block!=-1:
+                if tag==block:
+                    return True
+        return False
+    
+    def readDataFromCache(self, tag, index, block_offset, no_of_bytes):# return -1 if not found, else list of bytes
+        # used for load instructions and for fetching instructions
+        isHit=False
+        block_index=0
+        for block in self.tag_array[index]:
+            if block!=-1:
+                if tag==block:
+                    isHit=True
+                    block_index=block_index+1
+                    break
+        if not isHit:
+            return -1
+        return self.set_array[index].getDataFromBlock(block_index, block_offset, no_of_bytes) # returns a list
+    
+    def writeWhenNotHit(self, tag, index, block_offset, data: list, no_of_bytes):
+        # to be called when read unsuccessful in the cache and now we have to allocate space in the cache for the data
+
+    def writeDataToCache(self, tag, index, block_offset, data: list, no_of_bytes): # returns -1 if tag not found in cache, else returns 1 and writes data
+        # to be called for store instructions only
+        # takes a list of data containing each byte
+        isHit=False
+        block_index=0
+        for block in self.tag_array[index]:
+            if block!=-1:
+                if tag==block:
+                    isHit=True
+                    block_index=block_index+1
+                    break
+        if not isHit: # tag not found
+            return -1
+        # tag found, now write data
+        self.set_array[index].writeDataToBlock(block_index, block_offset, data, no_of_bytes)
+        return 1
+
+
 
 class CacheSet: # set object, contains LRU
     def __init__(self, associativity, block_size):
         self._associativity=associativity
         self._block_size=block_size
         self.blocks = [CacheBlock(self._block_size) for i in range(self._associativity)] #[[[] for j in range(associativity)] for i in range((cache_size//block_size)//associativity)]
-        
+    
+    def getDataFromBlock(self, block_index, block_offset, no_of_bytes):
+        return self.blocks[block_index].returnData(block_offset, no_of_bytes)
+    
+    def writeDataToBlock(self, block_index, block_offset, data: list, no_of_bytes):
+        self.blocks[index].writeData(block_offset, data, no_of_bytes)
+
 
 class CacheBlock: # object for an individual cache block
     def __init__(self, block_size):
         self.size=block_size
         self.storage=[0 for byte in range(block_size)]
+        self.count=-1
         self.valid=False # boolean to check if the block contains any data
+    
+    def returnData(self, block_offset, no_of_bytes):
+        data=[]
+        for byte in range(no_of_bytes):
+            if block_offset>=self.size:
+                raise Exception("Data not word aligned!")
+            data.append(self.storage[block_offset])
+            block_offset+=1
+        return data
+
+    def writeData(self, block_offset, data: list, no_of_bytes):
+        self.valid=True
+        for byte in range(no_of_bytes):
+            if block_offset>=self.size:
+                raise Exception("Data not word aligned!")
+            self.storage[block_offset]=data[byte]
+            block_offset+=1
+        return True
+            
 
 class TwoLevelMemory:
     MAX_SIGNED_NUM=0x7fffffff
@@ -109,12 +177,20 @@ class TwoLevelMemory:
             raise Exception("Invalid selection of block and cache size!")
         if not isinstance((cache_size/block_size)/cache_associativity, int) or (cache_size/block_size)/cache_associativity<1:
             raise Exception("Invalid Selection of cache associativity!") 
-        self.cache_module=CacheInterface(cache_associativity, cache_size, cache_block_size)
+        self.cache_module=SetAssociativeCache(cache_associativity, cache_size, cache_block_size)
+        self.cache_size=cache_size
+        self.cache_block_size=cache_block_size
+        self.cache_associativity=cache_associativity
         self.cache_accesses=0
         self.cache_hits=0
         self.cache_miss=0
 
-        
+    def generateCacheAddress(self, base_address): # returns [tag, index, block_offset]
+        tag=base_address-base_address%self.cache_block_size # tag is simply the base address of the block in memory
+        index=(tag/self.cache_block_size)%self.cache_associativity # block number/associativity
+        block_offset=base_address%self.cache_block_size
+        return [tag, index, block_offset]
+
     def GetUnsignedValueAtAddress(self, base_address : int, no_of_bytes: int):
         data=0
         for _byte in range(no_of_bytes):
