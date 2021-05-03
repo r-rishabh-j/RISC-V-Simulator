@@ -145,6 +145,39 @@ class CacheSet: # set object, contains LRU
                     self.blocks[i].pref_count=self.blocks[i].pref_count-1
 
         self.blocks[index_up].pref_count=self._associativity-1  # now this has the highers value since this was most recently accessed
+
+    def update_state_miss(self):
+        c=0
+        index=-1 #index where to write block in case of miss
+        for i in range(self._associativity):
+            if self.blocks[i].valid==False:
+                c=1  # c will be 1 if the set is not full
+                break
+        if c==1:  # if not full
+            for i in range(self._associativity):
+                if self.blocks[i].valid==False:  # first empty block
+                    index=i
+                    break
+            for i in range(self._associativity):
+                if self.blocks[i].valid==True:
+                    self.blocks[i].pref_count=self.blocks[i].pref_count-1  # decrementing all counters in case of miss which are non-empty
+            self.blocks[index].pref_count=self._associativity-1 # now this has the highers value since this was most recently accessed
+            self.blocks[index].valid=True
+        if c==0: # if full
+            for i in range(self._associativity):
+                if self.blocks[i].valid==True:
+                    if self.blocks[i].pref_count==0:  # checking for least-frequently used block
+                        index=i
+                        break
+            for i in range(self._associativity):
+                if self.blocks[i].valid == True:
+                    self.blocks[i].pref_count=self.blocks[i].pref_count-1
+            self.blocks[index].pref_count=self._associativity-1 # now this has the highers value since this was most recently accessed
+            self.blocks[index].valid=True
+
+        return index
+
+
             
 class CacheBlock: # object for an individual cache block
     def __init__(self, block_size):
