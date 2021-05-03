@@ -137,12 +137,20 @@ class CacheSet: # set object, contains LRU
     def writeDataToBlock(self, block_index, block_offset, data: list, no_of_bytes):
         self.blocks[index].writeData(block_offset, data, no_of_bytes)
 
+    def update_state_hit(self,index_up):  # contains the index of the block which was just updated
+        temp=self.blocks[index_up].pref_count # now I will decrement the pref_count of all blocks whos pref_count is greater than temp
+        for i in range(self._associativity):
+            if self.blocks[i].valid == True:   # only updating if it is a valid cache block
+                if self.blocks[i].pref_count>temp:    # only decrementing if the pref_count of this block is greater than the pref value of block which was just now accessed
+                    self.blocks[i].pref_count=self.blocks[i].pref_count-1
 
+        self.blocks[index_up].pref_count=self._associativity-1  # now this has the highers value since this was most recently accessed
+            
 class CacheBlock: # object for an individual cache block
     def __init__(self, block_size):
         self.size=block_size
         self.storage=[0 for byte in range(block_size)]
-        self.count=-1
+        self.pref_count=-1
         self.valid=False # boolean to check if the block contains any data
     
     def returnData(self, block_offset, no_of_bytes):
