@@ -103,8 +103,20 @@ class SetAssociativeCache: # cache module
             return -1
         return self.set_array[index].getDataFromBlock(block_index, block_offset, no_of_bytes) # returns a list
     
-    def writeWhenNotHit(self, tag, index, block_offset, data: list, no_of_bytes):
+    def writeWhenNotHit(self, base_address, tag, index, block_offset, data: list, no_of_bytes):   # base address will also be needed
         # to be called when read unsuccessful in the cache and now we have to allocate space in the cache for the data
+        # using write allocate
+        # write to cache
+        # I assumed that update state miss is already called to get the index to write to
+        self.writeDataToCache(tag, index, block_offset, data, no_of_bytes)
+        CacheSet.update_state_hit(index)  # lru is called
+        # write to memory
+        val = 0
+        power_of_2 = 1
+        for byte in range(no_of_bytes):
+            val += data[byte] * power_of_2
+            power_of_2 *= 2
+        TwoLevelMemory.WriteValueAtAddress(base_address, no_of_bytes, val)
 
     def writeDataToCache(self, tag, index, block_offset, data: list, no_of_bytes): # returns -1 if tag not found in cache, else returns 1 and writes data
         # to be called for store instructions only
