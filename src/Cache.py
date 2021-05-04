@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # code for memory module. We will most probably be using hashes for memory
 import sys
+import math
 
 class ProcessorMemoryInterface: # the main PMI
     MAX_SIGNED_NUM = 0x7fffffff
@@ -8,20 +9,30 @@ class ProcessorMemoryInterface: # the main PMI
     MAX_UNSIGNED_NUM = 0xffffffff
     MIN_UNSIGNED_NUM = 0x00000000
     MAX_PC = 0x7ffffffc
-    def __init__(self, cache_associativity, cache_size, cache_block_size):
+    def __init__(self):
         self.MAR=0 # Memory address register
         self.MAR_pc=0
         self.MDR=0
         self.IRout=0
         self.take_from_rm=False
+        # self.text_module=TwoLevelMemory(cache_associativity, cache_size, cache_block_size) # contains I$
+        # self.data_module=TwoLevelMemory(cache_associativity, cache_size, cache_block_size) # contains D$
+        print("Enter specs for Instruction cache: ")
+        cache_size=int(input("Cache Size in bytes: "))
+        cache_block_size=int(input("Block size in bytes: "))
+        cache_associativity=int(input("Associativity: "))
         self.text_module=TwoLevelMemory(cache_associativity, cache_size, cache_block_size) # contains I$
+        print("Enter specs for Data cache: ")
+        cache_size=int(input("Cache Size in bytes: "))
+        cache_block_size=int(input("Block size in bytes: "))
+        cache_associativity=int(input("Associativity: "))
         self.data_module=TwoLevelMemory(cache_associativity, cache_size, cache_block_size) # contains D$
         
     def InitMemory(self,PC_INST,DATA): # loads instruction to memory before execution of program
         for addr in PC_INST: # loop over every instruction
-            self.text_module.WriteValueAtAddress(addr,4,PC_INST[addr])
+            self.text_module.WriteValueAtAddress(addr,4,PC_INST[addr], True)
         for addr in DATA: # loop over every data load
-            self.data_module.WriteValueAtAddress(addr,4,DATA[addr])
+            self.data_module.WriteValueAtAddress(addr,4,DATA[addr], True)
         print("\033[92mProgram and data loaded to memory successfully\033[0m")
 
     def LoadInstruction(self,PC):
@@ -61,15 +72,8 @@ class ProcessorMemoryInterface: # the main PMI
     def WriteMemory(self, base_address:int, byte_size:int, RMin:int):   # writes data in RMin to address given by base_address
         self.MAR = base_address # MAR contains the base address to be written to
         self.MDR = RMin # MDR contains data to be written at address given by MAR
-        self.data_module.WriteValueAtAddress(base_address, byte_size, self.MDR)
+        self.data_module.WriteValueAtAddress(base_address, byte_size, self.MDR, False)
         print(f"\033[93mWrote {byte_size} bytes at {hex(base_address)}, value={RMin}\033[0m")
-
-# class CacheInterface: # interface between cache and TwoLevelMemory
-#     def __init__(self, associativity, cache_size, block_size):
-#         self._associativity=associativity
-#         self._block_size=block_size
-#         self._size=cache_size
-#         self.cache_module=SetAssociativeCache(self._associativity, self._size, self._block_size)
 
 class SetAssociativeCache: # cache module
     def __init__(self, associativity, cache_size, block_size):
@@ -77,8 +81,8 @@ class SetAssociativeCache: # cache module
         self._block_size=block_size
         self._size=cache_size
         # visualize tag array in the form of a matrix(NxM), sets are the rows, set elements are along the column
-        self.tag_array = [[-1 for j in range(associativity)] for i in range((cache_size//block_size)//associativity)] # blocks in the cache are indexed 0 through num-1
-        self.set_array = [CacheSet(self.associativity,self.block_size) for i in range((cache_size//block_size)//associativity)] # contains the set objects
+        self.tag_array = [[-1 for j in range(self._associativity)] for i in range((self._size//self._block_size)//self._associativity)] # blocks in the cache are indexed 0 through num-1
+        self.set_array = [CacheSet(self._associativity,self._block_size) for i in range((self._size//self._block_size)//self._associativity)] # contains the set objects
         # block element corresponds to a tag element in row major format, index=i*n+j, given tag is (i,j)
         
     def checkHit(self, tag, index): # returns boolean for found/not found
@@ -97,26 +101,21 @@ class SetAssociativeCache: # cache module
             if block!=-1:
                 if tag==block:
                     isHit=True
-                    block_index=block_index+1
                     break
+            block_index=block_index+1
         if not isHit:
             return -1
+        #print(f"Read- Read from block {block_index}")
         return self.set_array[index].getDataFromBlock(block_index, block_offset, no_of_bytes) # returns a list
     
-    def writeWhenNotHit(self, base_address, tag, index, block_offset, data: list, no_of_bytes):   # base address will also be needed
+    def writeWhenNotHit(self, tag, index, data: list):   # base address will also be needed
         # to be called when read unsuccessful in the cache and now we have to allocate space in the cache for the data
         # using write allocate
-        # write to cache
-        # I assumed that update state miss is already called to get the index to write to
-        self.writeDataToCache(tag, index, block_offset, data, no_of_bytes)
-        CacheSet.update_state_hit(index)  # lru is called
-        # write to memory
-        val = 0
-        power_of_2 = 1
-        for byte in range(no_of_bytes):
-            val += data[byte] * power_of_2
-            power_of_2 *= 2
-        TwoLevelMemory.WriteValueAtAddress(base_address, no_of_bytes, val)
+        block_index=self.set_array[index].update_state_miss()
+        #print(f"not hit update: block index: {block_index}, set: {index}, tag: {tag}")
+        self.tag_array[index][block_index]=tag # update the tag array
+        self.set_array[index].evictBlock(block_index, data)
+
 
     def writeDataToCache(self, tag, index, block_offset, data: list, no_of_bytes): # returns -1 if tag not found in cache, else returns 1 and writes data
         # to be called for store instructions only
@@ -127,11 +126,12 @@ class SetAssociativeCache: # cache module
             if block!=-1:
                 if tag==block:
                     isHit=True
-                    block_index=block_index+1
                     break
+            block_index=block_index+1
         if not isHit: # tag not found
             return -1
         # tag found, now write data
+        #print(f"Write- Write to block {block_index}")
         self.set_array[index].writeDataToBlock(block_index, block_offset, data, no_of_bytes)
         return 1
 
@@ -144,10 +144,18 @@ class CacheSet: # set object, contains LRU
         self.blocks = [CacheBlock(self._block_size) for i in range(self._associativity)] #[[[] for j in range(associativity)] for i in range((cache_size//block_size)//associativity)]
     
     def getDataFromBlock(self, block_index, block_offset, no_of_bytes):
+        self.update_state_hit(block_index)
         return self.blocks[block_index].returnData(block_offset, no_of_bytes)
     
     def writeDataToBlock(self, block_index, block_offset, data: list, no_of_bytes):
-        self.blocks[index].writeData(block_offset, data, no_of_bytes)
+        self.update_state_hit(block_index)
+        self.blocks[block_index].writeData(block_offset, data, no_of_bytes)
+
+    def evictBlock(self, block_index, data: list): # expects list of size block_size, writes data to the block
+        if len(data)!=self._block_size:
+            raise Exception("Insufficient data recieved for block eviction")
+        self.blocks[block_index].writeData(0, data, self._block_size)
+        return True
 
     def update_state_hit(self,index_up):  # contains the index of the block which was just updated
         temp=self.blocks[index_up].pref_count # now I will decrement the pref_count of all blocks whos pref_count is greater than temp
@@ -200,6 +208,7 @@ class CacheBlock: # object for an individual cache block
     
     def returnData(self, block_offset, no_of_bytes):
         data=[]
+        print(f"Block to return data- {self.storage}")
         for byte in range(no_of_bytes):
             if block_offset>=self.size:
                 raise Exception("Data not word aligned!")
@@ -210,10 +219,11 @@ class CacheBlock: # object for an individual cache block
     def writeData(self, block_offset, data: list, no_of_bytes):
         self.valid=True
         for byte in range(no_of_bytes):
-            if block_offset>=self.size:
+            if block_offset>=self.size or block_offset<0:
                 raise Exception("Data not word aligned!")
             self.storage[block_offset]=data[byte]
             block_offset+=1
+        print(f"Block write data- {self.storage}")
         return True
             
 
@@ -226,40 +236,116 @@ class TwoLevelMemory:
 
     def __init__(self, cache_associativity, cache_size, cache_block_size):
         self.memory=dict() # key as address, value as memory content. Memory byte addressable! Thus, every element stores a byte
-        if not isinstance(cache_size/block_size, int) or cache_size/block_size<1:
-            raise Exception("Invalid selection of block and cache size!")
-        if not isinstance((cache_size/block_size)/cache_associativity, int) or (cache_size/block_size)/cache_associativity<1:
-            raise Exception("Invalid Selection of cache associativity!") 
+        # if not isinstance(cache_size/block_size, int) or cache_size/block_size<1:
+        #     raise Exception("Invalid selection of block and cache size!")
+        # if not isinstance((cache_size/block_size)/cache_associativity, int) or (cache_size/block_size)/cache_associativity<1:
+        #     raise Exception("Invalid Selection of cache associativity!") 
+        if cache_size<cache_block_size:
+            raise Exception("Invalid selection of cache block size and cache size")
+        if cache_block_size<4 or math.log(cache_block_size,2)!=int(math.log(cache_block_size,2)):
+            raise Exception("Cache block size must be a power of 2 and >=4 bytes")
+        if cache_size<4 or math.log(cache_size,2)!=int(math.log(cache_size,2)):
+            raise Exception("Cache size must be a power of 2 and >=4 bytes")
+        if math.log(cache_associativity,2)!=int(math.log(cache_associativity,2)) or cache_associativity>cache_size//cache_block_size:
+            raise Exception("Associativity must be a power of 2 and less than total number of blocks!")
+
         self.cache_module=SetAssociativeCache(cache_associativity, cache_size, cache_block_size)
         self.cache_size=cache_size
         self.cache_block_size=cache_block_size
         self.cache_associativity=cache_associativity
+        self.total_blocks=self.cache_size//self.cache_block_size
+        self.total_sets=self.total_blocks//self.cache_associativity
         self.cache_accesses=0
         self.cache_hits=0
         self.cache_miss=0
 
     def generateCacheAddress(self, base_address): # returns [tag, index, block_offset]
         tag=base_address-base_address%self.cache_block_size # tag is simply the base address of the block in memory
-        index=(tag/self.cache_block_size)%self.cache_associativity # block number/associativity
+        index=(tag//self.cache_block_size)%self.total_sets # block number/associativity
         block_offset=base_address%self.cache_block_size
+        # print(f"Cache address: {[tag, index, block_offset]}")
         return [tag, index, block_offset]
 
     def GetUnsignedValueAtAddress(self, base_address : int, no_of_bytes: int):
-        data=0
+        return_data=0
+        # for _byte in range(no_of_bytes):
+        #     if base_address + _byte < self.MIN_UNSIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
+        #         raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
+        #     data+=self.memory.get(base_address+_byte,0)*(256**_byte)
+        # return data
+        cache_address=self.generateCacheAddress(base_address)
+        self.cache_accesses+=1
+        isHitInCache=self.cache_module.checkHit(cache_address[0], cache_address[1])
+        data=[] # list containing bytes fetched from cache/memory
+        if isHitInCache:
+            print("Cache hit!")
+            print(f"Cache address: {[cache_address[0], cache_address[1], cache_address[2]]}H")
+            self.cache_hits+=1
+            data=self.cache_module.readDataFromCache(tag=cache_address[0],index=cache_address[1],block_offset=cache_address[2],no_of_bytes=no_of_bytes)
+            print(f"data is {data}")
+        else:
+            # get block from memory
+            print("Cache miss!")
+            self.cache_miss+=1
+            block=[]
+            block_base_address=cache_address[0]
+            for _byte in range(self.cache_block_size): # fetching the block from memory
+                if block_base_address + _byte < self.MIN_UNSIGNED_NUM or block_base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
+                    raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
+                block.append(self.memory.get(block_base_address+_byte,0))
+            # write te whole block to cache
+            self.cache_module.writeWhenNotHit(tag=cache_address[0], index=cache_address[1], data=block)
+            # extract the required bytes from data accessed from memory
+            block_offset=cache_address[2]
+            for byte in range(no_of_bytes):
+                if block_offset+byte>=self.cache_block_size or block_offset+byte<0:
+                    raise Exception("Data not word aligned!")
+                data.append(block[block_offset+byte])
+        # combine the bytes into a word and return
         for _byte in range(no_of_bytes):
-            if base_address + _byte < self.MIN_UNSIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
-                raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
-            data+=self.memory.get(base_address+_byte,0)*(256**_byte)
-        return data
+            return_data+=data[_byte]*(256**_byte)
+        return return_data
 
     def GetSignedValueAtAddress(self, base_address : int, no_of_bytes: int):
         if(no_of_bytes==3):
             raise Exception("\033[1;31mInstruction not supported\033[0m")
-        data=0
-        for _byte in range(no_of_bytes):  # different number of bytes need to be accessed based on the command, ld , lw etc.
-            if base_address + _byte < self.MIN_UNSIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
-                raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
-            data+=self.memory.get(base_address+_byte,0)*(256**_byte)
+        # data=0
+        # for _byte in range(no_of_bytes):  # different number of bytes need to be accessed based on the command, ld , lw etc.
+        #     if base_address + _byte < self.MIN_UNSIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
+        #         raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
+        #     data+=self.memory.get(base_address+_byte,0)*(256**_byte)
+        return_data=0
+        cache_address=self.generateCacheAddress(base_address)
+        self.cache_accesses+=1
+        isHitInCache=self.cache_module.checkHit(cache_address[0], cache_address[1])
+        data=[] # list containing bytes fetched from cache/memory
+        if isHitInCache:
+            print("Cache hit!")
+            self.cache_hits+=1
+            print(f"Cache address: {[cache_address[0], cache_address[1], cache_address[2]]}H")
+            data=self.cache_module.readDataFromCache(tag=cache_address[0],index=cache_address[1],block_offset=cache_address[2],no_of_bytes=no_of_bytes)
+            print(data)
+        else:
+            # get block from memory
+            print("Cache miss!")
+            self.cache_miss+=1
+            block=[]
+            block_base_address=cache_address[0]
+            for _byte in range(self.cache_block_size): # fetching the block from memory
+                if block_base_address + _byte < self.MIN_UNSIGNED_NUM or block_base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
+                    raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
+                block.append(self.memory.get(block_base_address+_byte,0))
+            # write te whole block to cache
+            self.cache_module.writeWhenNotHit(tag=cache_address[0], index=cache_address[1], data=block)
+            # extract the required bytes from data accessed from memory
+            block_offset=cache_address[2]
+            for byte in range(no_of_bytes):
+                if block_offset+byte>=self.cache_block_size or block_offset+byte<0:
+                    raise Exception("Data not word aligned!")
+                data.append(block[block_offset+byte])
+        # combine the bytes into a word
+        for _byte in range(no_of_bytes):
+            return_data+=data[_byte]*(256**_byte)
         # conversion to signed value
         MSmask=0 # to get MSB
         unsigned_num_mask=0 # to get all bits except MSB
@@ -272,14 +358,45 @@ class TwoLevelMemory:
         elif(no_of_bytes==4):
             MSmask=0x80000000
             unsigned_num_mask=0x7fffffff
-        data=(-(data&MSmask)+(data&unsigned_num_mask))
-        return data
+        return_data=(-(return_data&MSmask)+(return_data&unsigned_num_mask))
+        return return_data
 
-    def WriteValueAtAddress(self, base_address : int, no_of_bytes: int, write_val: int): # can take both signed/unsigned value
+    def WriteValueAtAddress(self, base_address : int, no_of_bytes: int, write_val: int, init_bool): # can take both signed/unsigned value
         val=write_val
+        data_to_write=[]
+
+        if init_bool:
+            for _byte in range(no_of_bytes): # loop over every byte in the instruction, extract it and store it in little-endian format
+                byte=val&0x000000ff # bitmask to extract LS byte
+                if base_address+_byte>self.MAX_SIGNED_NUM or base_address+_byte<self.MIN_UNSIGNED_NUM:
+                    raise Exception("\033[1;31mMemory address out of range! Segmentation fault(core dumped)\033[0m")
+                self.memory[base_address+_byte]=byte
+                val=val>>8 # bitwise right shift
+            return
+        
+        cache_address=self.generateCacheAddress(base_address)
+        self.cache_accesses+=1
+        isHitInCache=self.cache_module.checkHit(cache_address[0], cache_address[1])
+        # writing to memory
         for _byte in range(no_of_bytes): # loop over every byte in the instruction, extract it and store it in little-endian format
             byte=val&0x000000ff # bitmask to extract LS byte
+            data_to_write.append(byte)
             if base_address+_byte>self.MAX_SIGNED_NUM or base_address+_byte<self.MIN_UNSIGNED_NUM:
                 raise Exception("\033[1;31mMemory address out of range! Segmentation fault(core dumped)\033[0m")
             self.memory[base_address+_byte]=byte
             val=val>>8 # bitwise right shift
+        
+        # verifying data in cache, if hit then update, else write allocate full block
+        if isHitInCache:
+            self.cache_hits+=1
+            self.cache_module.writeDataToCache(tag=cache_address[0], index=cache_address[1], block_offset=cache_address[2], data=data_to_write, no_of_bytes=no_of_bytes)
+        else:
+            self.cache_miss+=1
+            block=[]
+            block_base_address=cache_address[0]
+            for _byte in range(self.cache_block_size): # fetching the block from memory
+                if block_base_address + _byte < self.MIN_UNSIGNED_NUM or block_base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
+                    raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
+                block.append(self.memory.get(block_base_address+_byte,0))
+            # write te whole block to cache
+            self.cache_module.writeWhenNotHit(tag=cache_address[0], index=cache_address[1], data=block)

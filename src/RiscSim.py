@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # this file contains code for the simulator. Contains the ALU
 from Registers import Registers as reg # contains 32 GP registers and IR
-from Memory import ProcessorMemoryInterface# processor memory interface
+# from Memory import ProcessorMemoryInterface# processor memory interface
+from Cache import ProcessorMemoryInterface# processor memory interface
 from ControlCircuit import ControlModule # generates control signals
 from IAG import InstructionAddressGenerator_non_pipelined
 from ALU import ArithmeticLogicUnit
@@ -105,6 +106,15 @@ def RunSim(reg_print=1, buffprint=1, part_inst=-1):
         stage=1
         decode(stage)
         if(control_module.terminate==1):
+            print("Cache Stats-")
+            print("I$: ")
+            print(f"Total Accesses: {memory.text_module.cache_accesses}")
+            print(f"Total Hits: {memory.text_module.cache_hits}")
+            print(f"Total Miss: {memory.text_module.cache_miss}")
+            print("D$: ")
+            print(f"Total Accesses: {memory.data_module.cache_accesses}")
+            print(f"Total Hits: {memory.data_module.cache_hits}")
+            print(f"Total Miss: {memory.data_module.cache_miss}")
             return
         stage=2
         execute(stage)
