@@ -106,4 +106,4 @@ with open(f"MemoryDump_forward.mc", "w") as fileMem:  # input is dictionary with
         else:
             fileMem.write("00  ")
         fileMem.write("\n")  # new line
-print("\033[1;92mRegister and memory outputs written in RegisterDump.mc and MemoryDump.mc respectively\033[0m")
+print("\033[1;92mRegister and memory outputs written in RegisterDump_forward.mc and MemoryDump_forward.mc respectively\033[0m")

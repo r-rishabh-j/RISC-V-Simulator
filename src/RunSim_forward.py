@@ -2,7 +2,7 @@
 # this file contains code for the simulator. Contains the ALU
 from Registers import Registers as reg # contains 32 GP registers and IR
 # from Memory import ProcessorMemoryInterface# processor memory interface
-from Cache import ProcessorMemoryInterface# processor memory interface
+from TwoLevelMemory import ProcessorMemoryInterface# processor memory interface
 from ControlCircuit_piped import ControlModule # generates control signals
 from IAG import InstructionAddressGenerator
 from ALU import ArithmeticLogicUnit
@@ -501,9 +501,9 @@ def RunSim(reg_print=1, buffprint=1):
             print(f"Stat7: Bubbles: {forward_bool.data_stall+forward_bool.control_stall}")
             print(f"Stat8: Total Data Hazards: {hazard_module.count_data_hazards()}")
             print(f"Stat9: Total Control Hazards: {forward_bool.control_hazard_cnt}")
-            print(f"Stat10: Total branch mispredictions Hazards: {forward_bool.branch_mis_cnt}")
-            print(f"Stat11: Stall due to data hazard: {forward_bool.data_stall}")
-            print(f"Stat12: Stall due to control hazard: {forward_bool.control_stall}")
+            print(f"Stat10: Total branch mispredictions: {forward_bool.branch_mis_cnt}")
+            print(f"Stat11: Stalls due to data hazard: {forward_bool.data_stall}")
+            print(f"Stat12: Stalls due to control hazard: {forward_bool.control_stall}")
             print("Cache Stats-")
             print("I$: ")
             print(f"Total Accesses: {memory.text_module.cache_accesses}")

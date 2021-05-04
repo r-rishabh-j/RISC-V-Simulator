@@ -15,8 +15,6 @@ class ProcessorMemoryInterface: # the main PMI
         self.MDR=0
         self.IRout=0
         self.take_from_rm=False
-        # self.text_module=TwoLevelMemory(cache_associativity, cache_size, cache_block_size) # contains I$
-        # self.data_module=TwoLevelMemory(cache_associativity, cache_size, cache_block_size) # contains D$
         print("Enter specs for Instruction cache: ")
         cache_size=int(input("Cache Size in bytes: "))
         cache_block_size=int(input("Block size in bytes: "))
@@ -236,10 +234,7 @@ class TwoLevelMemory:
 
     def __init__(self, cache_associativity, cache_size, cache_block_size):
         self.memory=dict() # key as address, value as memory content. Memory byte addressable! Thus, every element stores a byte
-        # if not isinstance(cache_size/block_size, int) or cache_size/block_size<1:
-        #     raise Exception("Invalid selection of block and cache size!")
-        # if not isinstance((cache_size/block_size)/cache_associativity, int) or (cache_size/block_size)/cache_associativity<1:
-        #     raise Exception("Invalid Selection of cache associativity!") 
+        
         if cache_size<cache_block_size:
             raise Exception("Invalid selection of cache block size and cache size")
         if cache_block_size<4 or math.log(cache_block_size,2)!=int(math.log(cache_block_size,2)):
@@ -268,11 +263,6 @@ class TwoLevelMemory:
 
     def GetUnsignedValueAtAddress(self, base_address : int, no_of_bytes: int):
         return_data=0
-        # for _byte in range(no_of_bytes):
-        #     if base_address + _byte < self.MIN_UNSIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
-        #         raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
-        #     data+=self.memory.get(base_address+_byte,0)*(256**_byte)
-        # return data
         cache_address=self.generateCacheAddress(base_address)
         self.cache_accesses+=1
         isHitInCache=self.cache_module.checkHit(cache_address[0], cache_address[1])
@@ -309,11 +299,6 @@ class TwoLevelMemory:
     def GetSignedValueAtAddress(self, base_address : int, no_of_bytes: int):
         if(no_of_bytes==3):
             raise Exception("\033[1;31mInstruction not supported\033[0m")
-        # data=0
-        # for _byte in range(no_of_bytes):  # different number of bytes need to be accessed based on the command, ld , lw etc.
-        #     if base_address + _byte < self.MIN_UNSIGNED_NUM or base_address + _byte > self.MAX_SIGNED_NUM:  # check if the address lies in range of data segment or not
-        #         raise Exception("\033[1;31mAddress is not in range of data segment\033[0m")
-        #     data+=self.memory.get(base_address+_byte,0)*(256**_byte)
         return_data=0
         cache_address=self.generateCacheAddress(base_address)
         self.cache_accesses+=1

@@ -94,4 +94,4 @@ with open(f"MemoryDump_non_pipelined.mc", "w") as fileMem:  # input is dictionar
         else:
             fileMem.write("00  ")
         fileMem.write("\n")  # new line
-print("\033[1;92mRegister and memory outputs written in RegisterDump.mc and MemoryDump.mc respectively\033[0m")
+print("\033[1;92mRegister and memory outputs written in RegisterDump_non_pipelined.mc and MemoryDump_non_pipelined.mc respectively\033[0m")

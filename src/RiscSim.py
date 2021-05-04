@@ -2,7 +2,7 @@
 # this file contains code for the simulator. Contains the ALU
 from Registers import Registers as reg # contains 32 GP registers and IR
 # from Memory import ProcessorMemoryInterface# processor memory interface
-from Cache import ProcessorMemoryInterface# processor memory interface
+from TwoLevelMemory import ProcessorMemoryInterface# processor memory interface
 from ControlCircuit import ControlModule # generates control signals
 from IAG import InstructionAddressGenerator_non_pipelined
 from ALU import ArithmeticLogicUnit
