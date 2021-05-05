@@ -3,7 +3,6 @@ import numpy as np
 class Registers:
     def __init__(self):
         self.IR=0 # instruction register, holds the instruction to be executed
-        # self.PC=0 # program counter, holds pointer to memory location containing instruction
         self.reg=[] # 32 general purpose registers
         for i in range(32):
             self.reg.append(0)

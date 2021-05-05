@@ -122,6 +122,9 @@ def RunSim(reg_print=1, buffprint=1, part_inst=-1):
         mem_access(stage)
         stage=4
         reg_writeback(stage)
+        if buffprint==1:
+            print("Buffers: ")
+            print(f"\033[1;96mPC: {hex(IAGmodule.PC)} IR: {hex(registers.IR)} RZ: {buffer.RZ} RY: {buffer.RY} RA: {buffer.RA}")
         clock=clock+1
         
 

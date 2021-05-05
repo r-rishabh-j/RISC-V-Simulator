@@ -80,9 +80,6 @@ class ControlModule:
         # 2- Return address from PC # PC has to be incremented in fetch stage itself
         # 0- rs2
         # 1- imm
-        # self.MuxMASelect  # Present at address input of memory
-        # self.MuxMDRSelect  # present at output of memory
-        # self.decoder=DecodeModule()
         #############fetch queue##################
         self.fetch_operation=deque() # if this queue is empty, then the stage will operate. Else,it won't.
         #############decode queue##################

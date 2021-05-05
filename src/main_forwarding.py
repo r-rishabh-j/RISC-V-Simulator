@@ -7,8 +7,7 @@ if(len(sys.argv)==1):
     print("File name not supplied!")
     sys.exit()
 MachineCodeParser.parser(sys.argv[1]) # supply input file name
-# for key in MachineCodeParser.PC_INST:
-#     print(hex(key),hex(MachineCodeParser.PC_INST[key]))
+
 
 #program load
 #Run the simulator
@@ -20,16 +19,12 @@ print_buff_file=int(input("Printing the pipeline buffer at the end of each cycle
 if print_reg_file not in [0,1]:
     print("Wrong knob")
     sys.exit()
-# print_nth_buff=int(input("Specific instruction: 0 for off, instruction for on: "))
-# if print_nth_buff<0:
-#     print("Wrong knob")
-#     sys.exit()
+
 RunSim_forward.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA)
 RunSim_forward.RunSim(reg_print=print_reg_file, buffprint=print_buff_file)
 
 ####################################################file dumping############################################################
-#fileReg=open("RegisterDump.mc",'w')
-#fileMem=open("MemoryDump.mc",'w')
+
 
 # this fxn extends 0x2 to 0x00000002
 def padhexa(s):

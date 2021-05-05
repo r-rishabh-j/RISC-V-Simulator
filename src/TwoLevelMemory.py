@@ -206,7 +206,7 @@ class CacheBlock: # object for an individual cache block
     
     def returnData(self, block_offset, no_of_bytes):
         data=[]
-        print(f"Block to return data- {self.storage}")
+        #print(f"Block to return data- {self.storage}")
         for byte in range(no_of_bytes):
             if block_offset>=self.size:
                 raise Exception("Data not word aligned!")
@@ -221,7 +221,7 @@ class CacheBlock: # object for an individual cache block
                 raise Exception("Data not word aligned!")
             self.storage[block_offset]=data[byte]
             block_offset+=1
-        print(f"Block write data- {self.storage}")
+        #print(f"Block write data- {self.storage}")
         return True
             
 
