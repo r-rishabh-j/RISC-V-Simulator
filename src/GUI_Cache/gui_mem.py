@@ -48,17 +48,37 @@ class Ui_MainWindow(object):
         self.line_edit3.setGeometry(QtCore.QRect(725, 200, 100, 25))
         self.line_edit3.setObjectName("line_edit3")
         #self.line_edit3.returnPressed.connect(lambda: self.do_action_associativity())
+        self.label_param4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_param4.setGeometry(QtCore.QRect(525, 275, 200, 25))
+        self.label_param4.setObjectName("label_param4")
+        self.line_edit4 = QtWidgets.QLineEdit(self.centralwidget)
+        self.line_edit4.setGeometry(QtCore.QRect(725, 275, 100, 25))
+        self.line_edit4.setObjectName("line_edit4")
+
+        self.label_param5 = QtWidgets.QLabel(self.centralwidget)
+        self.label_param5.setGeometry(QtCore.QRect(525, 325, 200, 25))
+        self.label_param5.setObjectName("label_param5")
+        self.line_edit5 = QtWidgets.QLineEdit(self.centralwidget)
+        self.line_edit5.setGeometry(QtCore.QRect(725, 325, 100, 25))
+        self.line_edit5.setObjectName("line_edit5")
+
+        self.label_param6 = QtWidgets.QLabel(self.centralwidget)
+        self.label_param6.setGeometry(QtCore.QRect(525, 375, 200, 25))
+        self.label_param6.setObjectName("label_param6")
+        self.line_edit6 = QtWidgets.QLineEdit(self.centralwidget)
+        self.line_edit6.setGeometry(QtCore.QRect(725, 375, 100, 25))
+        self.line_edit6.setObjectName("line_edit6")
 
         self.radiobutton_pipeline_no_fwd = QtWidgets.QRadioButton(self.centralwidget)
-        self.radiobutton_pipeline_no_fwd.setGeometry(QtCore.QRect(550, 500, 225, 50))
+        self.radiobutton_pipeline_no_fwd.setGeometry(QtCore.QRect(550, 450, 225, 50))
         self.radiobutton_pipeline_no_fwd.toggled.connect(self.pipeline_no_fwd_selected)
 
         self.radiobutton_pipeline_fwd = QtWidgets.QRadioButton(self.centralwidget)
-        self.radiobutton_pipeline_fwd.setGeometry(QtCore.QRect(550, 550, 225, 50))
+        self.radiobutton_pipeline_fwd.setGeometry(QtCore.QRect(550, 500, 225, 50))
         self.radiobutton_pipeline_fwd.toggled.connect(self.pipeline_fwd_selected)
 
         self.radiobutton_non_pipeline = QtWidgets.QRadioButton(self.centralwidget)
-        self.radiobutton_non_pipeline.setGeometry(QtCore.QRect(550, 600, 225, 50))
+        self.radiobutton_non_pipeline.setGeometry(QtCore.QRect(550, 550, 225, 50))
         self.radiobutton_non_pipeline.toggled.connect(self.non_pipeline_selected)
 
 
@@ -138,9 +158,12 @@ class Ui_MainWindow(object):
         #self.label_3.setText(_translate("RISC-V-Simulator", "Registers"))
         self.label_4.setText(_translate("RISC-V-Simulator", "D$"))
 
-        self.label_param1.setText(_translate("RISC-V-Simulator", "Cache Size (Bytes)"))
-        self.label_param2.setText(_translate("RISC-V-Simulator", "Block Size (Bytes)"))
-        self.label_param3.setText(_translate("RISC-V-Simulator", "Associativity"))
+        self.label_param1.setText(_translate("RISC-V-Simulator", "I$ Cache Size (Bytes)"))
+        self.label_param2.setText(_translate("RISC-V-Simulator", "I$ Block Size (Bytes)"))
+        self.label_param3.setText(_translate("RISC-V-Simulator", "I$ Associativity"))
+        self.label_param4.setText(_translate("RISC-V-Simulator", "D$ Cache Size (Bytes)"))
+        self.label_param5.setText(_translate("RISC-V-Simulator", "D$ Block Size (Bytes)"))
+        self.label_param6.setText(_translate("RISC-V-Simulator", "D$ Associativity"))
 
         self.radiobutton_pipeline_fwd.setText(_translate("RISC-V-Simulator", "Pipelined with Forwarding"))
         self.radiobutton_pipeline_no_fwd.setText(_translate("RISC-V-Simulator", "Pipelined without Forwarding"))
@@ -208,10 +231,10 @@ class Ui_MainWindow(object):
         importlib.reload(RunSim_non_pipelined)
         importlib.reload(MachineCodeParser)
         MachineCodeParser.parser(sys.argv[1])
-        RunSim_forward.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA, int(self.line_edit1.text()), int(self.line_edit2.text()), int(self.line_edit3.text()))
-        RunSim_stall.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA, int(self.line_edit1.text()), int(self.line_edit2.text()), int(self.line_edit3.text()))
-        RunSim_non_pipelined.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA, int(self.line_edit1.text()), int(self.line_edit2.text()), int(self.line_edit3.text()))
-        
+        RunSim_forward.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA, int(self.line_edit1.text()), int(self.line_edit2.text()), int(self.line_edit3.text()), int(self.line_edit4.text()), int(self.line_edit5.text()), int(self.line_edit6.text()))
+        RunSim_stall.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA, int(self.line_edit1.text()), int(self.line_edit2.text()), int(self.line_edit3.text()), int(self.line_edit4.text()), int(self.line_edit5.text()), int(self.line_edit6.text()))
+        RunSim_non_pipelined.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA, int(self.line_edit1.text()), int(self.line_edit2.text()), int(self.line_edit3.text()), int(self.line_edit4.text()), int(self.line_edit5.text()), int(self.line_edit6.text()))
+
     def padhexa(self, s):
         return '0x' + s[2:].zfill(8)
 

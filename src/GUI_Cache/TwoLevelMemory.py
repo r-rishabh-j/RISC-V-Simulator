@@ -37,33 +37,43 @@ class ProcessorMemoryInterface:  # the main PMI
         # self.data_module = TwoLevelMemory(cache_associativity, cache_size, cache_block_size)  # contains D$
         self.data_module = TwoLevelMemory()  # contains D$
 
-    def InitMemory(self, PC_INST, DATA, cache_size, cache_block_size, cache_associativity):  # loads instruction to memory before execution of program
-        if cache_size < cache_block_size:
+    def InitMemory(self, PC_INST, DATA, inst_cache_size, inst_cache_block_size, inst_cache_associativity, data_cache_size, data_cache_block_size, data_cache_associativity):  # loads instruction to memory before execution of program
+        if inst_cache_size < inst_cache_block_size:
             raise Exception("Invalid selection of cache block size and cache size")
-        if cache_block_size < 4 or math.log(cache_block_size, 2) != int(math.log(cache_block_size, 2)):
+        if inst_cache_block_size < 4 or math.log(inst_cache_block_size, 2) != int(math.log(inst_cache_block_size, 2)):
             raise Exception("Cache block size must be a power of 2 and >=4 bytes")
-        if cache_size < 4 or math.log(cache_size, 2) != int(math.log(cache_size, 2)):
+        if inst_cache_size < 4 or math.log(inst_cache_size, 2) != int(math.log(inst_cache_size, 2)):
             raise Exception("Cache size must be a power of 2 and >=4 bytes")
-        if math.log(cache_associativity, 2) != int(
-                math.log(cache_associativity, 2)) or cache_associativity > cache_size // cache_block_size:
+        if math.log(inst_cache_associativity, 2) != int(
+                math.log(inst_cache_associativity, 2)) or inst_cache_associativity > inst_cache_size // inst_cache_block_size:
             raise Exception("Associativity must be a power of 2 and less than total number of blocks!")
-        
+
+        if data_cache_size < data_cache_block_size:
+            raise Exception("Invalid selection of cache block size and cache size")
+        if data_cache_block_size < 4 or math.log(data_cache_block_size, 2) != int(math.log(data_cache_block_size, 2)):
+            raise Exception("Cache block size must be a power of 2 and >=4 bytes")
+        if data_cache_size < 4 or math.log(data_cache_size, 2) != int(math.log(data_cache_size, 2)):
+            raise Exception("Cache size must be a power of 2 and >=4 bytes")
+        if math.log(data_cache_associativity, 2) != int(
+                math.log(data_cache_associativity, 2)) or data_cache_associativity > data_cache_size // data_cache_block_size:
+            raise Exception("Associativity must be a power of 2 and less than total number of blocks!")
+
         for addr in PC_INST:  # loop over every instruction
             self.text_module.WriteValueAtAddress(addr, 4, PC_INST[addr], True)
-        self.text_module.cache_module=SetAssociativeCache(cache_associativity, cache_size, cache_block_size)
-        self.text_module.cache_size=cache_size
-        self.text_module.cache_associativity=cache_associativity
-        self.text_module.cache_block_size=cache_block_size
-        self.text_module.total_blocks=cache_size // cache_block_size
-        self.text_module.total_sets=self.text_module.total_blocks // cache_associativity
+        self.text_module.cache_module=SetAssociativeCache(inst_cache_associativity, inst_cache_size, inst_cache_block_size)
+        self.text_module.cache_size=inst_cache_size
+        self.text_module.cache_associativity=inst_cache_associativity
+        self.text_module.cache_block_size=inst_cache_block_size
+        self.text_module.total_blocks=inst_cache_size // inst_cache_block_size
+        self.text_module.total_sets=self.text_module.total_blocks // inst_cache_associativity
         for addr in DATA:  # loop over every data load
             self.data_module.WriteValueAtAddress(addr, 4, DATA[addr], True)
-        self.data_module.cache_module=SetAssociativeCache(cache_associativity, cache_size, cache_block_size)
-        self.data_module.cache_size=cache_size
-        self.data_module.cache_associativity=cache_associativity
-        self.data_module.cache_block_size=cache_block_size
-        self.data_module.total_blocks=cache_size // cache_block_size
-        self.data_module.total_sets=self.data_module.total_blocks // cache_associativity
+        self.data_module.cache_module=SetAssociativeCache(data_cache_associativity, data_cache_size, data_cache_block_size)
+        self.data_module.cache_size=data_cache_size
+        self.data_module.cache_associativity=data_cache_associativity
+        self.data_module.cache_block_size=data_cache_block_size
+        self.data_module.total_blocks=data_cache_size // data_cache_block_size
+        self.data_module.total_sets=self.data_module.total_blocks // data_cache_associativity
         print("\033[92mProgram and data loaded to memory successfully\033[0m")
 
     def LoadInstruction(self, PC):
@@ -133,7 +143,8 @@ class SetAssociativeCache:  # cache module
     def set_cache_dict(self, cache_size, block_size, associativity, tag_array, set_array):
         for i in range((cache_size// block_size) // associativity):
             for j in range(associativity):
-                self.cache_dict[tag_array[i][j]] = set_array[i].blocks[j].storage
+                if tag_array[i][j] != -1:
+                    self.cache_dict[tag_array[i][j]] = set_array[i].blocks[j].storage
 
     def readDataFromCache(self, tag, index, block_offset, no_of_bytes):  # return -1 if not found, else list of bytes
         # used for load instructions and for fetching instructions
