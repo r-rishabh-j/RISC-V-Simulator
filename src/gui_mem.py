@@ -16,6 +16,19 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.label.setFont(font)
         self.label.setObjectName("label")
+
+        self.label_param1 = QtWidgets.QLabel(self.centralwidget)
+        self.label_param1.setGeometry(QtCore.QRect(525, 100, 200, 25))
+        self.label_param1.setObjectName("label_param1")
+
+        self.label_param2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_param2.setGeometry(QtCore.QRect(525, 150, 200, 25))
+        self.label_param2.setObjectName("label_param2")
+
+        self.label_param3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_param3.setGeometry(QtCore.QRect(525, 200, 200, 25))
+        self.label_param3.setObjectName("label_param3")
+
         self.frame = QtWidgets.QFrame(self.centralwidget)
         self.frame.setGeometry(QtCore.QRect(20, 50, 451, 711))
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -52,11 +65,11 @@ class Ui_MainWindow(object):
         font.setPointSize(10)
         self.label_4.setFont(font)
         self.label_4.setObjectName("label_4")
-        self.tableWidget = QtWidgets.QTableWidget(self.frame_3)
-        self.tableWidget.setGeometry(QtCore.QRect(20, 40, 411, 671))
-        self.tableWidget.setRowCount(0)
-        self.tableWidget.setColumnCount(0)
-        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget2 = QtWidgets.QTableWidget(self.frame_3)
+        self.tableWidget2.setGeometry(QtCore.QRect(20, 40, 411, 671))
+        self.tableWidget2.setRowCount(0)
+        self.tableWidget2.setColumnCount(0)
+        self.tableWidget2.setObjectName("tableWidget2")
         #
         self.Run = QtWidgets.QPushButton(self.centralwidget)
         self.Run.setGeometry(QtCore.QRect(640, 740, 141, 41))
@@ -86,8 +99,40 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("RISC-V-Simulator", "I$"))
         #self.label_3.setText(_translate("RISC-V-Simulator", "Registers"))
         self.label_4.setText(_translate("RISC-V-Simulator", "D$"))
+
+        self.label_param1.setText(_translate("RISC-V-Simulator", "Cache Size (Bytes)"))
+        self.label_param2.setText(_translate("RISC-V-Simulator", "Block Size (Bytes)"))
+        self.label_param3.setText(_translate("RISC-V-Simulator", "Associativity"))
+
         self.Run.setText(_translate("RISC-V-Simulator", "RUN"))
         self.Step.setText(_translate("RISC-V-Simulator", "STEP"))
+
+    def update_inst_cache(self):
+        #cache_list = list of sets(list of blocks)
+        #maintain a non empty set boolean!!!??!!
+        self.tableWidget.setRowCount(0)
+        self.tableWidget.setColumnCount(3)
+        self.tableWidget.setColumnWidth(0, 130)
+        self.tableWidget.setColumnWidth(1, 130)
+        self.tableWidget.setColumnWidth(2, 150)
+
+        self.tableWidget.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Tag"))
+        self.tableWidget.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Block Offset"))
+        self.tableWidget.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Contents"))
+
+    def update_data_cache(self):
+        #cache_list = list of sets(list of blocks)
+        #maintain a non empty set boolean!!!??!!
+        self.tableWidget2.setRowCount(0)
+        self.tableWidget2.setColumnCount(3)
+        self.tableWidget2.setColumnWidth(0, 130)
+        self.tableWidget2.setColumnWidth(1, 130)
+        self.tableWidget2.setColumnWidth(2, 150)
+
+        self.tableWidget2.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Tag"))
+        self.tableWidget2.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Block Offset"))
+        self.tableWidget2.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Contents"))
+
 
     def run(self):
         import MachineCodeParser
@@ -108,12 +153,15 @@ class Ui_MainWindow(object):
         #RiscSim.RunSim()
         ####temp_main.runMain()
         # reg = np.array([1, -2, 3])
-        #self.update_registers(RiscSim.registers.reg)
+        self.update_inst_cache()
+        self.update_data_cache()
         # #code to add memory in memory text Box
         # dic = {19: 3, 4: 11, 6: 7, 241: 241}
         #self.update_memory(RiscSim.memory.memory_module.memory)
         importlib.reload(temp_main)
         importlib.reload(MachineCodeParser)
+
+
 
 
 if __name__ == "__main__":
