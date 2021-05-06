@@ -1,5 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import importlib
+import MachineCodeParser
+MachineCodeParser.parser("temp_gui_instructions.mc")
+
 pipeline = 0    #0 for non-pipelined, 1 for pipeline w/o forwarding, 2 for pipeline with forwarding
 
 class Ui_MainWindow(object):
@@ -103,6 +106,9 @@ class Ui_MainWindow(object):
         self.Step = QtWidgets.QPushButton(self.centralwidget)
         self.Step.setGeometry(QtCore.QRect(640, 680, 141, 41))
         self.Step.setObjectName("Step")
+        self.Assemble = QtWidgets.QPushButton(self.centralwidget)
+        self.Assemble.setGeometry(QtCore.QRect(640, 620, 141, 41))
+        self.Assemble.setObjectName("Assemble")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1390, 26))
@@ -136,8 +142,9 @@ class Ui_MainWindow(object):
 
         self.Run.setText(_translate("RISC-V-Simulator", "RUN"))
         self.Step.setText(_translate("RISC-V-Simulator", "STEP"))
+        self.Assemble.setText(_translate("RISC-V-Simulator", "ASSEMBLE"))
 
-    def update_inst_cache(self):
+    def update_inst_cache(self, dic):
         #cache_list = list of sets(list of blocks)
         #maintain a non empty set boolean!!!??!!
         self.tableWidget.setRowCount(0)
@@ -149,6 +156,14 @@ class Ui_MainWindow(object):
         self.tableWidget.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Tag"))
         self.tableWidget.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Block Offset"))
         self.tableWidget.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Contents"))
+
+        i=0
+        for key, value in dic.items():
+            self.tableWidget.insertRow(self.tableWidget.rowCount())
+            self.tableWidget.setItem(self.tableWidget.rowCount(), 1,
+                                     QtWidgets.QTableWidgetItem())
+            print(key, value)
+
 
     def update_data_cache(self):
         #cache_list = list of sets(list of blocks)
@@ -181,8 +196,8 @@ class Ui_MainWindow(object):
 
 
     def run(self):
-        import MachineCodeParser
-        import temp_main
+
+        #import temp_main
         # code to start running the code
         # code to add data in register text Box
         #code = self.MachineCode.toPlainText()
@@ -191,7 +206,7 @@ class Ui_MainWindow(object):
         #fhand.write(code)
         #fhand.close()
 
-        MachineCodeParser.parser("temp_gui_instructions.mc")
+
         #print(MachineCodeParser.PC_INST)
         # program load
         #RiscSim.memory.InitMemory(MachineCodeParser.PC_INST)
@@ -212,15 +227,21 @@ class Ui_MainWindow(object):
         f.write(self.line_edit1.text()+" "+self.line_edit2.text()+" "+self.line_edit3.text())
         f.close()
 
-        temp_main.runMain(pipeline)
+        #temp_main.runMain(pipeline)
+        if pipeline == 0:
+            import RunSim_non_pipelined
+            RunSim_non_pipelined.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA)
+            RunSim_non_pipelined.RunSim()
+            #add dumping functions
+            self.update_inst_cache(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
+            #self.update_data_cache(RunSim_non_pipelined.memory.data_module.cache_module.cache_dict)
 
-        self.update_inst_cache()
-        self.update_data_cache()
+
         # #code to add memory in memory text Box
         # dic = {19: 3, 4: 11, 6: 7, 241: 241}
         #self.update_memory(RiscSim.memory.memory_module.memory)
-        importlib.reload(temp_main)
-        importlib.reload(MachineCodeParser)
+        #importlib.reload(temp_main)
+        #importlib.reload(MachineCodeParser)
 
 
 

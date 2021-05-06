@@ -110,7 +110,7 @@ class SetAssociativeCache:  # cache module
         for i in range(
                 (cache_size// block_size) // associativity):
             for j in range(associativity):
-                self.cache_dict[tag_array[i][j]] = set_array[i][j]
+                self.cache_dict[tag_array[i][j]] = set_array[i].blocks[j]
 
     def readDataFromCache(self, tag, index, block_offset, no_of_bytes):  # return -1 if not found, else list of bytes
         # used for load instructions and for fetching instructions
@@ -134,11 +134,7 @@ class SetAssociativeCache:  # cache module
         # print(f"not hit update: block index: {block_index}, set: {index}, tag: {tag}")
         self.tag_array[index][block_index] = tag  # update the tag array
         self.set_array[index].evictBlock(block_index, data)
-<<<<<<< HEAD
-        #Gui_dict_cache.set_cache_dict(self.tag_array, self.set_array, self._associativity, self._size, self._block_size) #there is some error I don't know why
-=======
         self.set_cache_dict(self._size, self._block_size, self._associativity, self.tag_array, self.set_array) #there is some error I don't know why
->>>>>>> 8ac3d424988e0856db3be90a00920ed17cd39ebf
 
     def writeDataToCache(self, tag, index, block_offset, data: list,
                          no_of_bytes):  # returns -1 if tag not found in cache, else returns 1 and writes data
@@ -255,20 +251,6 @@ class CacheBlock:  # object for an individual cache block
         # print(f"Block write data- {self.storage}")
         return True
 
-<<<<<<< HEAD
-#class Gui_dict_cache:
-    #def __init__(self):
-        #self.cache_dict = dict()
-
-    #def set_cache_dict(self, tag_array, set_array, associativity, size, block_size):
-        #for i in range(
-                #(size // block_size) // associativity):
-            #for j in range(associativity):
-                #self.cache_dict[tag_array[i][j]] = set_array[i][j]
-
-
-=======
->>>>>>> 8ac3d424988e0856db3be90a00920ed17cd39ebf
 class TwoLevelMemory:
     MAX_SIGNED_NUM = 0x7fffffff
     MIN_SIGNED_NUM = -0x80000000
