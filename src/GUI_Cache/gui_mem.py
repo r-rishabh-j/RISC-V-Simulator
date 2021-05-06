@@ -177,35 +177,49 @@ class Ui_MainWindow(object):
         #cache_list = list of sets(list of blocks)
         #maintain a non empty set boolean!!!??!!
         self.tableWidget.setRowCount(0)
-        self.tableWidget.setColumnCount(3)
-        self.tableWidget.setColumnWidth(0, 130)
-        self.tableWidget.setColumnWidth(1, 130)
-        self.tableWidget.setColumnWidth(2, 150)
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.setColumnWidth(0, 100)
+        self.tableWidget.setColumnWidth(1, 300)
+        #self.tableWidget.setColumnWidth(2, 150)
 
         self.tableWidget.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Tag"))
-        self.tableWidget.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Block Offset"))
-        self.tableWidget.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Contents"))
+        self.tableWidget.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Contents"))
+        #self.tableWidget.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Contents"))
 
         i=0
         for key, value in dic.items():
             self.tableWidget.insertRow(self.tableWidget.rowCount())
-            self.tableWidget.setItem(self.tableWidget.rowCount(), 1,
-                                     QtWidgets.QTableWidgetItem())
+            self.tableWidget.setItem(self.tableWidget.rowCount()-1, 0,
+                                     QtWidgets.QTableWidgetItem(str(key)))
+            s = [str(i) for i in value]
+            self.tableWidget.setItem(self.tableWidget.rowCount()-1, 1,
+                                     QtWidgets.QTableWidgetItem(" | ".join(s)))
+            print(key, "|".join(s))
             #print(key, value)
 
 
-    def update_data_cache(self):
+    def update_data_cache(self, dic):
         #cache_list = list of sets(list of blocks)
         #maintain a non empty set boolean!!!??!!
         self.tableWidget2.setRowCount(0)
-        self.tableWidget2.setColumnCount(3)
-        self.tableWidget2.setColumnWidth(0, 130)
-        self.tableWidget2.setColumnWidth(1, 130)
-        self.tableWidget2.setColumnWidth(2, 150)
+        self.tableWidget2.setColumnCount(2)
+        self.tableWidget2.setColumnWidth(0, 100)
+        self.tableWidget2.setColumnWidth(1, 300)
+        #self.tableWidget2.setColumnWidth(2, 150)
 
         self.tableWidget2.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Tag"))
-        self.tableWidget2.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Block Offset"))
-        self.tableWidget2.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Contents"))
+        self.tableWidget2.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Contents"))
+        #self.tableWidget2.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Contents"))
+
+        i=0
+        for key, value in dic.items():
+            self.tableWidget2.insertRow(self.tableWidget2.rowCount())
+            self.tableWidget2.setItem(self.tableWidget2.rowCount()-1, 0,
+                                     QtWidgets.QTableWidgetItem(str(key)))
+            s = [str(i) for i in value]
+            self.tableWidget2.setItem(self.tableWidget2.rowCount()-1, 1,
+                                     QtWidgets.QTableWidgetItem(" | ".join(s)))
+            print(key, "|".join(s))
 
     def pipeline_no_fwd_selected(self, selected):   #without data forwarding
         if selected:
@@ -247,12 +261,15 @@ class Ui_MainWindow(object):
             RunSim_forward.RunSim(1,1)
         if pipeline==0:
             self.update_inst_cache(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
+            self.update_data_cache(RunSim_non_pipelined.memory.data_module.cache_module.cache_dict)
             #print(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
         if pipeline==1:
             self.update_inst_cache(RunSim_stall.memory.text_module.cache_module.cache_dict)
+            self.update_data_cache(RunSim_stall.memory.data_module.cache_module.cache_dict)
             #print(RunSim_stall.memory.text_module.cache_module.cache_dict)
         if pipeline==2:
             self.update_inst_cache(RunSim_forward.memory.text_module.cache_module.cache_dict)
+            self.update_data_cache(RunSim_forward.memory.data_module.cache_module.cache_dict)
             #print(RunSim_forward.memory.text_module.cache_module.cache_dict)
         #def print_reg(arr):  # input is numpy array
         with open(f"RegisterDump.mc", "w") as fileReg:
