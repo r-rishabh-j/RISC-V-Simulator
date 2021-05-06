@@ -206,6 +206,14 @@ class Ui_MainWindow(object):
         value = self.line_edit3.text()
         print(int(value))
         print(pipeline)
+
+
+        f = open("cache_specs.txt", "w")
+        f.write(self.line_edit1.text()+" "+self.line_edit2.text()+" "+self.line_edit3.text())
+        f.close()
+
+        temp_main.runMain(pipeline)
+
         self.update_inst_cache()
         self.update_data_cache()
         # #code to add memory in memory text Box
