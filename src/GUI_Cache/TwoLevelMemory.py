@@ -83,6 +83,8 @@ class ProcessorMemoryInterface:  # the main PMI
         print(f"\033[93mWrote {byte_size} bytes at {hex(base_address)}, value={RMin}\033[0m")
 
 
+
+
 class SetAssociativeCache:  # cache module
     def __init__(self, associativity, cache_size, block_size):
         self._associativity = associativity
@@ -93,6 +95,7 @@ class SetAssociativeCache:  # cache module
             (self._size // self._block_size) // self._associativity)]  # blocks in the cache are indexed 0 through num-1
         self.set_array = [CacheSet(self._associativity, self._block_size) for i in
                           range((self._size // self._block_size) // self._associativity)]  # contains the set objects
+        self.cache_dict = dict()
         # block element corresponds to a tag element in row major format, index=i*n+j, given tag is (i,j)
 
     def checkHit(self, tag, index):  # returns boolean for found/not found
@@ -102,6 +105,12 @@ class SetAssociativeCache:  # cache module
                 if tag == block:
                     return True
         return False
+
+    def set_cache_dict(self, cache_size, block_size, associativity, tag_array, set_array):
+        for i in range(
+                (cache_size// block_size) // associativity):
+            for j in range(associativity):
+                self.cache_dict[tag_array[i][j]] = set_array[i][j]
 
     def readDataFromCache(self, tag, index, block_offset, no_of_bytes):  # return -1 if not found, else list of bytes
         # used for load instructions and for fetching instructions
@@ -125,7 +134,11 @@ class SetAssociativeCache:  # cache module
         # print(f"not hit update: block index: {block_index}, set: {index}, tag: {tag}")
         self.tag_array[index][block_index] = tag  # update the tag array
         self.set_array[index].evictBlock(block_index, data)
+<<<<<<< HEAD
         #Gui_dict_cache.set_cache_dict(self.tag_array, self.set_array, self._associativity, self._size, self._block_size) #there is some error I don't know why
+=======
+        self.set_cache_dict(self._size, self._block_size, self._associativity, self.tag_array, self.set_array) #there is some error I don't know why
+>>>>>>> 8ac3d424988e0856db3be90a00920ed17cd39ebf
 
     def writeDataToCache(self, tag, index, block_offset, data: list,
                          no_of_bytes):  # returns -1 if tag not found in cache, else returns 1 and writes data
@@ -242,6 +255,7 @@ class CacheBlock:  # object for an individual cache block
         # print(f"Block write data- {self.storage}")
         return True
 
+<<<<<<< HEAD
 #class Gui_dict_cache:
     #def __init__(self):
         #self.cache_dict = dict()
@@ -253,6 +267,8 @@ class CacheBlock:  # object for an individual cache block
                 #self.cache_dict[tag_array[i][j]] = set_array[i][j]
 
 
+=======
+>>>>>>> 8ac3d424988e0856db3be90a00920ed17cd39ebf
 class TwoLevelMemory:
     MAX_SIGNED_NUM = 0x7fffffff
     MIN_SIGNED_NUM = -0x80000000
