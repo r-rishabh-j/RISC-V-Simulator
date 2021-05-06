@@ -17,10 +17,17 @@ class ProcessorMemoryInterface:  # the main PMI
         self.MDR = 0
         self.IRout = 0
         self.take_from_rm = False
-        print("Enter specs for Instruction cache: ")
-        cache_size = int(input("Cache Size in bytes: "))
-        cache_block_size = int(input("Block size in bytes: "))
-        cache_associativity = int(input("Associativity: "))
+        f = open("cache_specs.txt", "r")
+        cache_specs = f.readline().rstrip().split(" ")
+        f.close()
+        cache_size = int(cache_specs[0])
+        cache_block_size = int(cache_specs[1])
+        cache_associativity = int(cache_specs[2])
+        print(cache_size, cache_block_size, cache_associativity)
+        #print("Enter specs for Instruction cache: ")
+        #cache_size = int(input("Cache Size in bytes: "))
+        #cache_block_size = int(input("Block size in bytes: "))
+        #cache_associativity = int(input("Associativity: "))
         self.text_module = TwoLevelMemory(cache_associativity, cache_size, cache_block_size)  # contains I$
         print("Enter specs for Data cache: ")
         cache_size = int(input("Cache Size in bytes: "))
@@ -118,7 +125,7 @@ class SetAssociativeCache:  # cache module
         # print(f"not hit update: block index: {block_index}, set: {index}, tag: {tag}")
         self.tag_array[index][block_index] = tag  # update the tag array
         self.set_array[index].evictBlock(block_index, data)
-        Gui_dict_cache.set_cache_dict(self.tag_array, self.set_array, self._associativity, self._size, self._block_size) #there is some error I don't know why
+        #Gui_dict_cache.set_cache_dict(self.tag_array, self.set_array, self._associativity, self._size, self._block_size) #there is some error I don't know why
 
     def writeDataToCache(self, tag, index, block_offset, data: list,
                          no_of_bytes):  # returns -1 if tag not found in cache, else returns 1 and writes data
@@ -235,15 +242,15 @@ class CacheBlock:  # object for an individual cache block
         # print(f"Block write data- {self.storage}")
         return True
 
-class Gui_dict_cache:
-    def __init__(self):
-        self.cache_dict = dict()
+#class Gui_dict_cache:
+    #def __init__(self):
+        #self.cache_dict = dict()
 
-    def set_cache_dict(self, tag_array, set_array, associativity, size, block_size):
-        for i in range(
-                (size // block_size) // associativity):
-            for j in range(associativity):
-                self.cache_dict[tag_array[i][j]] = set_array[i][j]
+    #def set_cache_dict(self, tag_array, set_array, associativity, size, block_size):
+        #for i in range(
+                #(size // block_size) // associativity):
+            #for j in range(associativity):
+                #self.cache_dict[tag_array[i][j]] = set_array[i][j]
 
 
 class TwoLevelMemory:
