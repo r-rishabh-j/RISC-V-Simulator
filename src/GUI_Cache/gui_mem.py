@@ -1,7 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import importlib
 import MachineCodeParser
-MachineCodeParser.parser("temp_gui_instructions.mc")
+import RunSim_forward
+import RunSim_stall
+import RunSim_non_pipelined
+import sys
+#MachineCodeParser.parser("temp_gui_instructions.mc")
 
 pipeline = 0    #0 for non-pipelined, 1 for pipeline w/o forwarding, 2 for pipeline with forwarding
 
@@ -123,6 +127,8 @@ class Ui_MainWindow(object):
 
         # running button
         self.Run.clicked.connect(self.run)
+        self.Assemble.clicked.connect(self.assemble)
+        self.Step.clicked.connect(self.step)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -162,7 +168,7 @@ class Ui_MainWindow(object):
             self.tableWidget.insertRow(self.tableWidget.rowCount())
             self.tableWidget.setItem(self.tableWidget.rowCount(), 1,
                                      QtWidgets.QTableWidgetItem())
-            print(key, value)
+            #print(key, value)
 
 
     def update_data_cache(self):
@@ -193,47 +199,242 @@ class Ui_MainWindow(object):
             global pipeline
             pipeline = 0
 
-
+    def assemble(self):
+        # f = open("cache_specs.txt", "w")
+        # f.write(self.line_edit1.text()+" "+self.line_edit2.text()+" "+self.line_edit3.text())
+        # f.close()
+        importlib.reload(RunSim_forward)
+        importlib.reload(RunSim_stall)
+        importlib.reload(RunSim_non_pipelined)
+        importlib.reload(MachineCodeParser)
+        MachineCodeParser.parser(sys.argv[1])
+        RunSim_forward.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA, int(self.line_edit1.text()), int(self.line_edit2.text()), int(self.line_edit3.text()))
+        RunSim_stall.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA, int(self.line_edit1.text()), int(self.line_edit2.text()), int(self.line_edit3.text()))
+        RunSim_non_pipelined.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA, int(self.line_edit1.text()), int(self.line_edit2.text()), int(self.line_edit3.text()))
+        
+    def padhexa(self, s):
+        return '0x' + s[2:].zfill(8)
 
     def run(self):
-
-        #import temp_main
-        # code to start running the code
-        # code to add data in register text Box
-        #code = self.MachineCode.toPlainText()
-        #print(code)
-        #fhand = open("gui_instructions.mc", 'r')
-        #fhand.write(code)
-        #fhand.close()
-
-
-        #print(MachineCodeParser.PC_INST)
-        # program load
-        #RiscSim.memory.InitMemory(MachineCodeParser.PC_INST)
-        # Run the simulator
-        #RiscSim.RunSim()
-        ###temp_main.runMain()
-        # reg = np.array([1, -2, 3])
-        value = self.line_edit1.text()
-        print(int(value))
-        value = self.line_edit2.text()
-        print(int(value))
-        value = self.line_edit3.text()
-        print(int(value))
-        print(pipeline)
-
-
-        f = open("cache_specs.txt", "w")
-        f.write(self.line_edit1.text()+" "+self.line_edit2.text()+" "+self.line_edit3.text())
-        f.close()
-
-        #temp_main.runMain(pipeline)
-        if pipeline == 0:
-            import RunSim_non_pipelined
-            RunSim_non_pipelined.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA)
-            RunSim_non_pipelined.RunSim()
-            #add dumping functions
+        if pipeline==0:
+            RunSim_non_pipelined.RunSim(1,1)
+        if pipeline==1:
+            RunSim_stall.RunSim(1,1)
+        if pipeline==2:
+            RunSim_forward.RunSim(1,1)
+        if pipeline==0:
             self.update_inst_cache(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
+            #print(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
+        if pipeline==1:
+            self.update_inst_cache(RunSim_stall.memory.text_module.cache_module.cache_dict)
+            #print(RunSim_stall.memory.text_module.cache_module.cache_dict)
+        if pipeline==2:
+            self.update_inst_cache(RunSim_forward.memory.text_module.cache_module.cache_dict)
+            #print(RunSim_forward.memory.text_module.cache_module.cache_dict)
+        #def print_reg(arr):  # input is numpy array
+        with open(f"RegisterDump.mc", "w") as fileReg:
+            for i in range(32): # for all 32 registers
+                fileReg.write(f"x{i} ")  # print address of register for eg. x5
+                if (RunSim_forward.registers.reg[i] >= 0):
+                    fileReg.write(self.padhexa(hex(RunSim_forward.registers.reg[i])).upper().replace('X', 'x'))
+                else:
+                    reg = RunSim_forward.registers.reg[i] & 0xffffffff  # signed
+                    fileReg.write(hex(reg).upper().replace('X', 'x'))
+                fileReg.write("\n")
+
+        #dumping memory
+        with open(f"MemoryDump.mc", "w") as fileMem:  # input is dictionary with key as address and value as data
+            lst = []  # stores keys present in dictionary
+            temp_lst = []  # stores base address
+            for key in RunSim_forward.memory.data_module.memory:
+                lst.append(key)
+            lst.sort()
+            for x in lst:
+                temp = x - (x % 4)  # storing base address in temp
+                if temp not in temp_lst:  # if base address not present in temp_list , then append it
+                    temp_lst.append(temp)
+            temp_lst.sort()
+            for i in temp_lst:
+                fileMem.write(f"{(self.padhexa(hex(i)).upper().replace('X', 'x'))} ")  # printing base address
+                if i in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.data_module.memory[i])).upper())[8:]} " )  # if key in dictionary, print its data
+                else:
+                    fileMem.write("00 ")  # if key not in dictionary, print 00
+                if (i + 1) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.data_module.memory[i + 1])).upper())[8:]} ")
+                else:
+                    fileMem.write("00 ")
+                if (i + 2) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.data_module.memory[i + 2])).upper())[8:]} ")
+                else:
+                    fileMem.write("00 ")
+                if (i + 3) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.data_module.memory[i + 3])).upper())[8:]} ")
+                else:
+                    fileMem.write("00  ")
+                fileMem.write("\n")  # new line
+            lst = []  # stores keys present in dictionary
+            temp_lst = []
+            for key in RunSim_forward.memory.text_module.memory:
+                lst.append(key)
+            lst.sort()
+            for x in lst:
+                temp = x - (x % 4)  # storing base address in temp
+                if temp not in temp_lst:  # if base address not present in temp_list , then append it
+                    temp_lst.append(temp)
+            temp_lst.sort()
+            for i in temp_lst:
+                fileMem.write(f"{(self.padhexa(hex(i)).upper().replace('X', 'x'))} ")  # printing base address
+                if i in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.text_module.memory[i])).upper())[8:]} " )  # if key in dictionary, print its data
+                else:
+                    fileMem.write("00 ")  # if key not in dictionary, print 00
+                if (i + 1) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.text_module.memory[i + 1])).upper())[8:]} ")
+                else:
+                    fileMem.write("00 ")
+                if (i + 2) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.text_module.memory[i + 2])).upper())[8:]} ")
+                else:
+                    fileMem.write("00 ")
+                if (i + 3) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.text_module.memory[i + 3])).upper())[8:]} ")
+                else:
+                    fileMem.write("00  ")
+                fileMem.write("\n")  # new line
+        print("\033[1;92mRegister and memory outputs written in RegisterDump.mc and MemoryDump.mc respectively\033[0m")
+        importlib.reload(RunSim_forward)
+        importlib.reload(RunSim_stall)
+        importlib.reload(RunSim_non_pipelined)
+        importlib.reload(MachineCodeParser)
+
+    def step(self):
+        if pipeline==0:
+            RunSim_non_pipelined.RunSim_step(1,1)
+        if pipeline==1:
+            RunSim_stall.RunSim_step(1,1)
+        if pipeline==2:
+            RunSim_forward.RunSim_step(1,1)
+        if pipeline==0:
+            self.update_inst_cache(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
+            #print(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
+        if pipeline==1:
+            self.update_inst_cache(RunSim_stall.memory.text_module.cache_module.cache_dict)
+            #print(RunSim_stall.memory.text_module.cache_module.cache_dict)
+        if pipeline==2:
+            self.update_inst_cache(RunSim_forward.memory.text_module.cache_module.cache_dict)
+            #print(RunSim_forward.memory.text_module.cache_module.cache_dict)
+        #def print_reg(arr):  # input is numpy array
+        with open(f"RegisterDump.mc", "w") as fileReg:
+            for i in range(32): # for all 32 registers
+                fileReg.write(f"x{i} ")  # print address of register for eg. x5
+                if (RunSim_forward.registers.reg[i] >= 0):
+                    fileReg.write(self.padhexa(hex(RunSim_forward.registers.reg[i])).upper().replace('X', 'x'))
+                else:
+                    reg = RunSim_forward.registers.reg[i] & 0xffffffff  # signed
+                    fileReg.write(hex(reg).upper().replace('X', 'x'))
+                fileReg.write("\n")
+
+        #dumping memory
+        with open(f"MemoryDump.mc", "w") as fileMem:  # input is dictionary with key as address and value as data
+            lst = []  # stores keys present in dictionary
+            temp_lst = []  # stores base address
+            for key in RunSim_forward.memory.data_module.memory:
+                lst.append(key)
+            lst.sort()
+            for x in lst:
+                temp = x - (x % 4)  # storing base address in temp
+                if temp not in temp_lst:  # if base address not present in temp_list , then append it
+                    temp_lst.append(temp)
+            temp_lst.sort()
+            for i in temp_lst:
+                fileMem.write(f"{(self.padhexa(hex(i)).upper().replace('X', 'x'))} ")  # printing base address
+                if i in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.data_module.memory[i])).upper())[8:]} " )  # if key in dictionary, print its data
+                else:
+                    fileMem.write("00 ")  # if key not in dictionary, print 00
+                if (i + 1) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.data_module.memory[i + 1])).upper())[8:]} ")
+                else:
+                    fileMem.write("00 ")
+                if (i + 2) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.data_module.memory[i + 2])).upper())[8:]} ")
+                else:
+                    fileMem.write("00 ")
+                if (i + 3) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.data_module.memory[i + 3])).upper())[8:]} ")
+                else:
+                    fileMem.write("00  ")
+                fileMem.write("\n")  # new line
+            lst = []  # stores keys present in dictionary
+            temp_lst = []
+            for key in RunSim_forward.memory.text_module.memory:
+                lst.append(key)
+            lst.sort()
+            for x in lst:
+                temp = x - (x % 4)  # storing base address in temp
+                if temp not in temp_lst:  # if base address not present in temp_list , then append it
+                    temp_lst.append(temp)
+            temp_lst.sort()
+            for i in temp_lst:
+                fileMem.write(f"{(self.padhexa(hex(i)).upper().replace('X', 'x'))} ")  # printing base address
+                if i in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.text_module.memory[i])).upper())[8:]} " )  # if key in dictionary, print its data
+                else:
+                    fileMem.write("00 ")  # if key not in dictionary, print 00
+                if (i + 1) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.text_module.memory[i + 1])).upper())[8:]} ")
+                else:
+                    fileMem.write("00 ")
+                if (i + 2) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.text_module.memory[i + 2])).upper())[8:]} ")
+                else:
+                    fileMem.write("00 ")
+                if (i + 3) in lst:
+                    fileMem.write(f"{(self.padhexa(hex(RunSim_forward.memory.text_module.memory[i + 3])).upper())[8:]} ")
+                else:
+                    fileMem.write("00  ")
+                fileMem.write("\n")  # new line
+
+    # def run(self):
+
+    #     #import temp_main
+    #     # code to start running the code
+    #     # code to add data in register text Box
+    #     #code = self.MachineCode.toPlainText()
+    #     #print(code)
+    #     #fhand = open("gui_instructions.mc", 'r')
+    #     #fhand.write(code)
+    #     #fhand.close()
+
+
+    #     #print(MachineCodeParser.PC_INST)
+    #     # program load
+    #     #RiscSim.memory.InitMemory(MachineCodeParser.PC_INST)
+    #     # Run the simulator
+    #     #RiscSim.RunSim()
+    #     ###temp_main.runMain()
+    #     # reg = np.array([1, -2, 3])
+    #     value = self.line_edit1.text()
+    #     print(int(value))
+    #     value = self.line_edit2.text()
+    #     print(int(value))
+    #     value = self.line_edit3.text()
+    #     print(int(value))
+    #     print(pipeline)
+
+
+    #     # f = open("cache_specs.txt", "w")
+    #     # f.write(self.line_edit1.text()+" "+self.line_edit2.text()+" "+self.line_edit3.text())
+    #     # f.close()
+
+    #     #temp_main.runMain(pipeline)
+    #     if pipeline == 0:
+    #         import RunSim_non_pipelined
+    #         RunSim_non_pipelined.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA)
+    #         RunSim_non_pipelined.RunSim()
+    #         #add dumping functions
+    #         self.update_inst_cache(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
             #self.update_data_cache(RunSim_non_pipelined.memory.data_module.cache_module.cache_dict)
 
 

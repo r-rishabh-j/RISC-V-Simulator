@@ -95,10 +95,12 @@ def reg_writeback(stage):
     buffer.setRY(MuxY(control_module.MuxYSelect))    # sets the value of RY buffer as the output of MuxY which will be selected based on control signals
     registers.WriteGpRegisters(control_module.rd,control_module.RegWrite,buffer.getRY())  # This will simply write back to the registers based on the control signal
 
+clock=1
 
 def RunSim(reg_print=1, buffprint=1, part_inst=-1):
     #loop
-    clock=1
+    global clock
+    #clock=1
     while(1):
         print(f"\n\033[1;96mCycle {clock}\033[0m")
         stage=0
@@ -126,5 +128,35 @@ def RunSim(reg_print=1, buffprint=1, part_inst=-1):
             print("Buffers: ")
             print(f"\033[1;96mPC: {hex(IAGmodule.PC)} IR: {hex(registers.IR)} RZ: {buffer.RZ} RY: {buffer.RY} RA: {buffer.RA}")
         clock=clock+1
+
+def RunSim_step(reg_print=1, buffprint=1, part_inst=-1):
+    #loop
+    global clock
+    print(f"\n\033[1;96mCycle {clock}\033[0m")
+    stage=0
+    fetch(stage)
+    stage=1
+    decode(stage)
+    if(control_module.terminate==1):
+        print("Cache Stats-")
+        print("I$: ")
+        print(f"Total Accesses: {memory.text_module.cache_accesses}")
+        print(f"Total Hits: {memory.text_module.cache_hits}")
+        print(f"Total Miss: {memory.text_module.cache_miss}")
+        print("D$: ")
+        print(f"Total Accesses: {memory.data_module.cache_accesses}")
+        print(f"Total Hits: {memory.data_module.cache_hits}")
+        print(f"Total Miss: {memory.data_module.cache_miss}")
+        return
+    stage=2
+    execute(stage)
+    stage=3
+    mem_access(stage)
+    stage=4
+    reg_writeback(stage)
+    if buffprint==1:
+        print("Buffers: ")
+        print(f"\033[1;96mPC: {hex(IAGmodule.PC)} IR: {hex(registers.IR)} RZ: {buffer.RZ} RY: {buffer.RY} RA: {buffer.RA}")
+    clock=clock+1
         
 

@@ -463,9 +463,11 @@ def buffer_update():
     control_module.branch_misprediction=False
     # print(f"RZ update, temp-{buffer.RZtemp}, RZ-{buffer.RZ}")
     # print(f"buff update- RAtemp-{buffer.RAtemp} RBtemp-{buffer.RBtemp} RA-{buffer.RA} RB-{buffer.RB}")
-    # print(f"execute queue- aluop {control_module.exe_ALUOp} aluc {control_module.ALUcontrol} opcode {control_module.exe_opcode}")      
+    # print(f"execute queue- aluop {control_module.exe_ALUOp} aluc {control_module.ALUcontrol} opcode {control_module.exe_opcode}") 
+
+clock=1     
 def RunSim(reg_print=1, buffprint=1):
-    clock=1
+    global clock
     while(True):
         print(f"\n\033[1;96mCycle {clock}\033[0m")
         forward_bool.global_terminate=True
@@ -515,3 +517,53 @@ def RunSim(reg_print=1, buffprint=1):
             print(f"Total Miss: {memory.data_module.cache_miss}")
             return
         clock=clock+1
+
+def RunSim_step(reg_print=1, buffprint=1):
+    global clock
+    print(f"\n\033[1;96mCycle {clock}\033[0m")
+    forward_bool.global_terminate=True
+    reg_writeback(4, clock)
+    mem_access(3,clock)
+    execute(2,clock)
+    print("Hazard Table:")
+    hazard_module.print_table()
+    decode(1,clock)
+    fetch(0,clock)
+    buffer_update()
+    #print(f"PC{(IAGmodule.PC)} IR {hex(registers.IR)} RZ {buffer.RZ} RY {buffer.RY}\n###########################################\n")
+    if reg_print==1:
+        print("Register file: ")
+        for i in range(32):
+            print(f"reg[{i}]={hex(registers.reg[i]) }",end=" ")
+            if i%8==0 and i>0:
+                print()
+    print()
+    if buffprint==1:
+        print("Pipeline buffers: ")
+        print(f"\033[1;96mPC: {hex(IAGmodule.PC)} IR: {hex(registers.IR)} RZ: {buffer.RZ} RY: {buffer.RY}\nRA: {buffer.RA} RB: {buffer.RB} Decode-Input-PC: {buffer.Decode_input_PC}\nBranch prediction buffer: {buffer.Decode_input_branch_prediction}\033[0m")
+    print("##################################################")
+    if forward_bool.global_terminate:
+        print("Stats-")
+        print(f"Stat1: Cycles: {clock}")
+        print(f"Stat2: Total Instructions: {forward_bool.total_inst}")
+        print(f"Stat3: CPI: {clock/forward_bool.total_inst}")
+        print(f"Stat4: Load/Store: {forward_bool.load_store} ")
+        print(f"Stat5: ALU instructions: {forward_bool.ALU_ins_cnt} ")
+        print(f"Stat6: Control instructions: {forward_bool.control_inst} ")
+        print(f"Stat7: Bubbles: {forward_bool.data_stall+forward_bool.control_stall}")
+        print(f"Stat8: Total Data Hazards: {hazard_module.count_data_hazards()}")
+        print(f"Stat9: Total Control Hazards: {forward_bool.control_hazard_cnt}")
+        print(f"Stat10: Total branch mispredictions: {forward_bool.branch_mis_cnt}")
+        print(f"Stat11: Stalls due to data hazard: {forward_bool.data_stall}")
+        print(f"Stat12: Stalls due to control hazard: {forward_bool.control_stall}")
+        print("Cache Stats-")
+        print("I$: ")
+        print(f"Total Accesses: {memory.text_module.cache_accesses}")
+        print(f"Total Hits: {memory.text_module.cache_hits}")
+        print(f"Total Miss: {memory.text_module.cache_miss}")
+        print("D$: ")
+        print(f"Total Accesses: {memory.data_module.cache_accesses}")
+        print(f"Total Hits: {memory.data_module.cache_hits}")
+        print(f"Total Miss: {memory.data_module.cache_miss}")
+        return
+    clock=clock+1
