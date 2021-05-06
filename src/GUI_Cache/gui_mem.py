@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import importlib
+pipeline = 0    #0 for non-pipelined, 1 for pipeline w/o forwarding, 2 for pipeline with forwarding
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -20,14 +21,39 @@ class Ui_MainWindow(object):
         self.label_param1 = QtWidgets.QLabel(self.centralwidget)
         self.label_param1.setGeometry(QtCore.QRect(525, 100, 200, 25))
         self.label_param1.setObjectName("label_param1")
+        self.line_edit1 = QtWidgets.QLineEdit(self.centralwidget)
+        self.line_edit1.setGeometry(QtCore.QRect(725, 100, 100, 25))
+        self.line_edit1.setObjectName("line_edit1")
+        #self.line_edit1.returnPressed.connect(lambda: self.do_action_cache_size())
 
         self.label_param2 = QtWidgets.QLabel(self.centralwidget)
         self.label_param2.setGeometry(QtCore.QRect(525, 150, 200, 25))
         self.label_param2.setObjectName("label_param2")
+        self.line_edit2 = QtWidgets.QLineEdit(self.centralwidget)
+        self.line_edit2.setGeometry(QtCore.QRect(725, 150, 100, 25))
+        self.line_edit2.setObjectName("line_edit2")
+        #self.line_edit2.returnPressed.connect(lambda: self.do_action_block_size())
 
         self.label_param3 = QtWidgets.QLabel(self.centralwidget)
         self.label_param3.setGeometry(QtCore.QRect(525, 200, 200, 25))
         self.label_param3.setObjectName("label_param3")
+        self.line_edit3 = QtWidgets.QLineEdit(self.centralwidget)
+        self.line_edit3.setGeometry(QtCore.QRect(725, 200, 100, 25))
+        self.line_edit3.setObjectName("line_edit3")
+        #self.line_edit3.returnPressed.connect(lambda: self.do_action_associativity())
+
+        self.radiobutton_pipeline_no_fwd = QtWidgets.QRadioButton(self.centralwidget)
+        self.radiobutton_pipeline_no_fwd.setGeometry(QtCore.QRect(550, 500, 225, 50))
+        self.radiobutton_pipeline_no_fwd.toggled.connect(self.pipeline_no_fwd_selected)
+
+        self.radiobutton_pipeline_fwd = QtWidgets.QRadioButton(self.centralwidget)
+        self.radiobutton_pipeline_fwd.setGeometry(QtCore.QRect(550, 550, 225, 50))
+        self.radiobutton_pipeline_fwd.toggled.connect(self.pipeline_fwd_selected)
+
+        self.radiobutton_non_pipeline = QtWidgets.QRadioButton(self.centralwidget)
+        self.radiobutton_non_pipeline.setGeometry(QtCore.QRect(550, 600, 225, 50))
+        self.radiobutton_non_pipeline.toggled.connect(self.non_pipeline_selected)
+
 
         self.frame = QtWidgets.QFrame(self.centralwidget)
         self.frame.setGeometry(QtCore.QRect(20, 50, 451, 711))
@@ -104,6 +130,10 @@ class Ui_MainWindow(object):
         self.label_param2.setText(_translate("RISC-V-Simulator", "Block Size (Bytes)"))
         self.label_param3.setText(_translate("RISC-V-Simulator", "Associativity"))
 
+        self.radiobutton_pipeline_fwd.setText(_translate("RISC-V-Simulator", "Pipelined with Forwarding"))
+        self.radiobutton_pipeline_no_fwd.setText(_translate("RISC-V-Simulator", "Pipelined without Forwarding"))
+        self.radiobutton_non_pipeline.setText(_translate("RISC-V-Simulator", "Non-Pipelined"))
+
         self.Run.setText(_translate("RISC-V-Simulator", "RUN"))
         self.Step.setText(_translate("RISC-V-Simulator", "STEP"))
 
@@ -133,6 +163,22 @@ class Ui_MainWindow(object):
         self.tableWidget2.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Block Offset"))
         self.tableWidget2.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Contents"))
 
+    def pipeline_no_fwd_selected(self, selected):   #without data forwarding
+        if selected:
+            global pipeline
+            pipeline = 1
+
+    def pipeline_fwd_selected(self, selected):   #with data forwarding
+        if selected:
+            global pipeline
+            pipeline = 2
+
+    def non_pipeline_selected(self, selected):
+        if selected:
+            global pipeline
+            pipeline = 0
+
+
 
     def run(self):
         import MachineCodeParser
@@ -151,8 +197,15 @@ class Ui_MainWindow(object):
         #RiscSim.memory.InitMemory(MachineCodeParser.PC_INST)
         # Run the simulator
         #RiscSim.RunSim()
-        ####temp_main.runMain()
+        ###temp_main.runMain()
         # reg = np.array([1, -2, 3])
+        value = self.line_edit1.text()
+        print(int(value))
+        value = self.line_edit2.text()
+        print(int(value))
+        value = self.line_edit3.text()
+        print(int(value))
+        print(pipeline)
         self.update_inst_cache()
         self.update_data_cache()
         # #code to add memory in memory text Box
