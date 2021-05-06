@@ -110,7 +110,7 @@ class SetAssociativeCache:  # cache module
         for i in range(
                 (cache_size// block_size) // associativity):
             for j in range(associativity):
-                self.cache_dict[tag_array[i][j]] = set_array[i][j]
+                self.cache_dict[tag_array[i][j]] = set_array[i].blocks[j]
 
     def readDataFromCache(self, tag, index, block_offset, no_of_bytes):  # return -1 if not found, else list of bytes
         # used for load instructions and for fetching instructions
