@@ -56,8 +56,6 @@ class ControlModule:
         self.RegWrite = 0  # 1-to update the register(write back stage)
         self.IRwrite = 0
         self.PCwrite = 0
-        # self.BytesToRead = 0  # for the memory
-        # self.BytesToWrite = 0  # for the memory
         self.BytesToAccess=0 # memory access
         self.MuxINCSelect = 0  # to IAG, 0 for 4(sequential next), 1 for branch offset(imm)
         self.MuxPCSelect = 1  # to IAG, 0 for ra and 1 for normal PC
@@ -68,14 +66,6 @@ class ControlModule:
         self.MuxBSelect=0  # present at 2nd input of ALU
         self.MuxASelect = 0
         self.terminate=0
-        # 0- RZ
-        # 1- MDR
-        # 2- Return address from PC # PC has to be incremented in fetch stage itself
-        # 0- rs2
-        # 1- imm
-        # self.MuxMASelect  # Present at address input of memory
-        # self.MuxMDRSelect  # present at output of memory
-        # self.decoder=DecodeModule()
 
     def controlStateUpdate(self, stage): # for stage dependant control signals
         if stage==0:
@@ -100,11 +90,8 @@ class ControlModule:
             self.MuxYSelect = 0  #choose output of ALU in RZ
             self.MuxPCSelect = 1     #not ra
             self.BytesToAccess = 0
-            #self.BytestoWrite = 0
             self.MuxINCSelect = 0    #sequentially next PC
-            #self.#MuxMASelect = 1     #PC send to MAR in step1
         elif self.opcode == 19:    #I-type (ori, andi, addi)
-            #print("ho")
             self.ALUOp = 1
             self.RegWrite = 1    #update register
             self.MemRead = False
@@ -116,10 +103,7 @@ class ControlModule:
             self.MuxYSelect = 0    #choose output of ALU in RZ
             self.MuxPCSelect = 1     #not ra
             self.BytesToAccess=0
-            # self.BytestoRead = 0
-            # self.BytestoWrite = 0
             self.MuxINCSelect = 0    #sequentially next PC
-            #self.#MuxMASelect = 1     #PC send to MAR in step1
         elif self.opcode == 3:   #I-type(load-instructions)
             self.ALUOp = 1       #ALU used to calculate effective address
             self.RegWrite = 1    #update register
@@ -133,7 +117,6 @@ class ControlModule:
                 self.BytesToAccess = 4
             else:
                 raise Exception("\033[1;31mInvalid funct3\033[0m")
-            #self.BytestoWrite = 0
             self.MuxINCSelect = 0  #sequentially next PC
             self.MuxASelect = 0  # rs1
             self.MuxBSelect = 1  # imm value used in MuxB
@@ -141,13 +124,10 @@ class ControlModule:
             self.branch = 0 #required to update control for branch inst
             self.jump = 0 #required to update control for jump inst
             self.MuxPCSelect = 1 # not ra
-            #MuxMASelect = 1     #PC send to MAR in step1
         elif self.opcode == 103:     #I-type(jalr)
             self.ALUOp = 0   #ALU not used, done in IAG
             self.MuxBSelect = 0  #don't-care
             self.MuxYSelect = 2  #ra given to MuxY
-            # self.BytestoRead = 0
-            # self.BytestoWrite = 0
             self.BytesToAccess=0
             self.RegWrite = 1    #update register
             self.MuxINCSelect = 1 # receive imm
@@ -157,12 +137,10 @@ class ControlModule:
             self.MuxPCSelect = 0     #ra input to MuxPC
             self.MemRead = False
             self.MemWrite = False
-            #MuxMASelect = 1     #PC send to MAR in step1
         elif self.opcode == 35:      #S-type
             self.ALUOp = 1   #ALU used to calculate effective address
             self.MuxBSelect = 1  #imm value used in MuxB
             self.MuxYSelect = 0  #don't-care
-            #self.BytestoRead = 0
             if self.funct3 == 0: #sb
                 self.BytesToAccess = 1
             elif self.funct3 == 1: #sh
@@ -179,13 +157,10 @@ class ControlModule:
             self.MuxPCSelect = 1     #not ra
             self.MemRead = False
             self.MemWrite = True
-            #self.MuxMASelect = 1     #PC send to MAR in step1
         elif self.opcode == 23 :  #U-type(auipc)
             self.ALUOp = 1
             self.MuxBSelect = 1
             self.MuxYSelect = 0  #choose output of ALU in RZ
-            # self.BytestoRead = 0
-            # self.BytestoWrite = 0
             self.BytesToAccess=0
             self.RegWrite = 1
             self.MuxINCSelect = 0    #sequentially next PC
@@ -195,13 +170,10 @@ class ControlModule:
             self.jump=0
             self.MemWrite = False
             self.MemRead = False
-            #MuxMASelect = 1     #PC send to MAR in step1
         elif self.opcode == 55:  #U-type(lui)
             self.ALUOp = 1
             self.MuxBSelect = 1
             self.MuxYSelect = 0  #choose output of ALU in RZ
-            # self.BytestoRead = 0
-            # self.BytestoWrite = 0
             self.BytesToAccess=0
             self.RegWrite = 1
             self.MuxINCSelect = 0    #sequentially next PC(4)
@@ -211,13 +183,10 @@ class ControlModule:
             self.MuxPCSelect = 1     #not ra
             self.MemRead = False
             self.MemWrite = False
-            #self.#MuxMASelect = 1     #PC send to MAR in step1
         elif self.opcode == 111: #UJ-type(jal)
             self.ALUOp = 0   #ALU not required, done in IAG
             self.MuxBSelect = 0  #don't-care
             self.MuxYSelect = 2  #ra given to MuxY
-            # self.BytestoRead = 0
-            # self.BytestoWrite = 0
             self.BytesToAccess=0
             self.RegWrite = 1    #update register
             self.MuxINCSelect = 1
@@ -227,14 +196,11 @@ class ControlModule:
             self.MuxPCSelect = 1     #not ra
             self.MemRead = False
             self.MemWrite = False
-            #MuxMASelect = 1     #PC send to MAR in step1
         elif self.opcode == 99:  #SB type
             self.ALUOp = 1 # ALU computes boolean for branch
             self.MuxBSelect = 0  #rs2 is required, imm is used in IAG
             self.MuxYSelect = 0  #RZ, but don't-care
             self.RegWrite = 0    #do not update register
-            # self.BytestoRead = 0
-            # self.BytestoWrite = 0
             self.BytesToAccess=0
             self.MuxINCSelect = 0   #to be updated after ALU
             self.MuxASelect = 0      #rs1
@@ -243,7 +209,6 @@ class ControlModule:
             self.MuxPCSelect = 1     #not ra
             self.MemRead = False
             self.MemWrite = False
-            #MuxMASelect = 1     #PC send to MAR in step1
 
     def decode(self, IR, PC):
         machine_code = IR
@@ -262,7 +227,6 @@ class ControlModule:
             self.rs1 = inst_list[2]
             self.imm = inst_list[3]
             print(f"I type, opt: {self.opcode}, funct3: {self.funct3}, rs1: {self.rs1}, rd: {self.rd}, imm: {self.imm}")
-            #self.Interpret_I()
         elif self.opcode in S:
             inst_list = self.decodeS(machine_code)
             self.funct7 = 0
@@ -272,7 +236,6 @@ class ControlModule:
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
             print(f"S type, opt: {self.opcode}, funct3: {self.funct3}, rs1: {self.rs1}, rs2: {self.rs2}, imm: {self.imm}")
-            #self.Interpret_S()
         elif self.opcode in U:
             inst_list = self.decodeU(machine_code)
             self.funct3 = 0
@@ -282,7 +245,6 @@ class ControlModule:
             self.rd = inst_list[0]
             self.imm = inst_list[1]
             print(f"U type, opt: {self.opcode}, rd: {self.rd}, imm: {self.imm}")
-            #self.Interpret_U()
         elif self.opcode in R:
             inst_list = self.decodeR(machine_code)
             self.imm = 0
@@ -292,7 +254,6 @@ class ControlModule:
             self.rs2 = inst_list[3]
             self.funct7 = inst_list[4]
             print(f"R type, opt: {self.opcode}, funct3: {self.funct3}, funct7: {self.funct7}, rs1: {self.rs1}, rs2: {self.rs2}, rd: {self.rd}")
-            #self.Interpret_R()
         elif self.opcode in SB:
             inst_list = self.decodeSB(machine_code)
             self.funct7 = 0
@@ -302,7 +263,6 @@ class ControlModule:
             self.rs2 = inst_list[2]
             self.imm = inst_list[3]
             print(f"SB type, opt: {self.opcode}, funct3: {self.funct3}, rs1: {self.rs1}, rs2: {self.rs2}, imm: {self.imm}")
-            #self.Interpret_SB()
         elif self.opcode in UJ:
             inst_list = self.decodeUJ(machine_code)
             self.funct3 = 0
@@ -312,8 +272,6 @@ class ControlModule:
             self.rd = inst_list[0]
             self.imm = inst_list[1]
             print(f"UJ type, opt: {self.opcode}, rd: {self.rd}, imm: {self.imm}")
-            #self.Interpret_UJ()
-            # sys.exit("Program Terminated Successfully.")
         else:
             raise Exception("\033[1;31mNot a valid Instruction\033[0m")
         # generate control signals for ALU and other modules

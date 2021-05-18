@@ -179,7 +179,7 @@ class Ui_MainWindow(object):
         self.tableWidget.setRowCount(0)
         self.tableWidget.setColumnCount(2)
         self.tableWidget.setColumnWidth(0, 100)
-        self.tableWidget.setColumnWidth(1, 300)
+        self.tableWidget.setColumnWidth(1, 1000)
         #self.tableWidget.setColumnWidth(2, 150)
 
         self.tableWidget.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Tag"))
@@ -204,7 +204,7 @@ class Ui_MainWindow(object):
         self.tableWidget2.setRowCount(0)
         self.tableWidget2.setColumnCount(2)
         self.tableWidget2.setColumnWidth(0, 100)
-        self.tableWidget2.setColumnWidth(1, 300)
+        self.tableWidget2.setColumnWidth(1, 1000)
         #self.tableWidget2.setColumnWidth(2, 150)
 
         self.tableWidget2.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Tag"))
@@ -237,9 +237,6 @@ class Ui_MainWindow(object):
             pipeline = 0
 
     def assemble(self):
-        # f = open("cache_specs.txt", "w")
-        # f.write(self.line_edit1.text()+" "+self.line_edit2.text()+" "+self.line_edit3.text())
-        # f.close()
         importlib.reload(RunSim_forward)
         importlib.reload(RunSim_stall)
         importlib.reload(RunSim_non_pipelined)
@@ -354,15 +351,19 @@ class Ui_MainWindow(object):
         if pipeline==1:
             RunSim_stall.RunSim_step(1,1)
         if pipeline==2:
-            RunSim_forward.RunSim_step(1,1)
+            RunSim_stall.RunSim_step(1,1)
         if pipeline==0:
             self.update_inst_cache(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
+            self.update_data_cache(RunSim_non_pipelined.memory.data_module.cache_module.cache_dict)
+
             #print(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
         if pipeline==1:
             self.update_inst_cache(RunSim_stall.memory.text_module.cache_module.cache_dict)
+            self.update_data_cache(RunSim_stall.memory.data_module.cache_module.cache_dict)
             #print(RunSim_stall.memory.text_module.cache_module.cache_dict)
         if pipeline==2:
             self.update_inst_cache(RunSim_forward.memory.text_module.cache_module.cache_dict)
+            self.update_data_cache(RunSim_forward.memory.data_module.cache_module.cache_dict)
             #print(RunSim_forward.memory.text_module.cache_module.cache_dict)
         #def print_reg(arr):  # input is numpy array
         with open(f"RegisterDump.mc", "w") as fileReg:

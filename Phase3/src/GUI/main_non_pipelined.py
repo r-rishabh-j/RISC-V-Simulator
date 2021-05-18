@@ -2,13 +2,6 @@
 import MachineCodeParser # import parser for parsing machine code into PC and corresponding instructions.
 import RunSim_non_pipelined
 import sys
-#import memory
-#if(len(sys.argv)==1):
-#    print("File name not supplied!")
-#    sys.exit()
-#MachineCodeParser.parser(sys.argv[1]) # supply input file name
-#MachineCodeParser.parser(input("Enter filename: "")) # supply input file name
-
 
 #program load
 RunSim_non_pipelined.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA)

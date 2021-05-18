@@ -24,8 +24,6 @@ class Registers:
             raise Exception("\033[1;31mInvalid register number!\033[0m")
         elif(RegNumber==0 or RegWrite==False):
             return 0
-        # elif(RegWrite==0):
-        #     raise Exception("RegWrite not activated! Cannot write to register")
         elif(WriteVal>=2**31 or WriteVal<-2**31):
             raise Exception("\033[1;31mWriteValue out of range!\033[0m")
         self.reg[RegNumber]=WriteVal
@@ -34,8 +32,6 @@ class Registers:
     def ReadGpRegisters(self, RegNumber):
         if(RegNumber<0 or RegNumber>31):
             raise Exception("\033[1;31mInvalid register number!\033[0m")
-        # elif(RegRead==0):
-        #     raise Exception("RegRead not activated! Cannot read register")
         elif(RegNumber==0):
             return 0
         val=self.reg[RegNumber]

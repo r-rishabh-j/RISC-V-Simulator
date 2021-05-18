@@ -49,9 +49,6 @@ def parser(FileName):
         if(line[0]>0x7fffffff):
             print(f"Line {line_number}: Address out of range")
             sys.exit()
-        # if(line[1]>0x7fffffff):
-        #     print(f"Line {line_number}: Instruction word out of range")
-        #     sys.exit()
         
         if is_instruction==1:
             PC_INST[line[0]]=line[1]

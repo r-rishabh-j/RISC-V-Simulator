@@ -24,8 +24,7 @@ class HazardUnit:
     def data_forwarding(self,i1,i2):     # to determine the type of forwarding and stalling
         i2_forwarding=-1
         i1_forwarding=-1
-
-
+        
         #first dealing with all cases of i2 and i3 dependence if these does not exist, then only going to i1
         # Case 1 , dependancy with i2
         if i2== 103:

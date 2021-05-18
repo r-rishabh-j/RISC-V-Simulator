@@ -94,9 +94,6 @@ def decode(stage,clock):
             forward_bool.fetch_stall=False
             forward_bool.decode_stall=True
             return
-        # if control_module.MtoEcode==-1:
-        #     mtod=True
-          #	return # M to D stall
         forward_bool.decode_stall=True
         forward_bool.fetch_stall=True
         if control_module.MtoEcode==21:
@@ -117,7 +114,6 @@ def decode(stage,clock):
             return
     
     # decode the instruction first in the IR
-    #control_module.decode(registers.ReadIR(),IAGmodule.PC)
     control_module.decode(registers.ReadIR(),buffer.Decode_input_PC)
     if control_module.terminate:
         return

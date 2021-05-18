@@ -17,24 +17,7 @@ class ProcessorMemoryInterface:  # the main PMI
         self.MDR = 0
         self.IRout = 0
         self.take_from_rm = False
-        # f = open("cache_specs.txt", "r")
-        # cache_specs = f.readline().rstrip().split(" ")
-        # f.close()
-        # cache_size = int(cache_specs[0])
-        # cache_block_size = int(cache_specs[1])
-        # cache_associativity = int(cache_specs[2])
-        # print(cache_size, cache_block_size, cache_associativity)
-        #print("Enter specs for Instruction cache: ")
-        #cache_size = int(input("Cache Size in bytes: "))
-        #cache_block_size = int(input("Block size in bytes: "))
-        #cache_associativity = int(input("Associativity: "))
-        # self.text_module = TwoLevelMemory(cache_associativity, cache_size, cache_block_size)  # contains I$
         self.text_module = TwoLevelMemory()  # contains I$
-        # print("Enter specs for Data cache: ")
-        # cache_size = int(input("Cache Size in bytes: "))
-        # cache_block_size = int(input("Block size in bytes: "))
-        # cache_associativity = int(input("Associativity: "))
-        # self.data_module = TwoLevelMemory(cache_associativity, cache_size, cache_block_size)  # contains D$
         self.data_module = TwoLevelMemory()  # contains D$
 
     def InitMemory(self, PC_INST, DATA, inst_cache_size, inst_cache_block_size, inst_cache_associativity, data_cache_size, data_cache_block_size, data_cache_associativity):  # loads instruction to memory before execution of program
@@ -294,17 +277,6 @@ class TwoLevelMemory:
 
     def __init__(self, cache_associativity=0, cache_size=0, cache_block_size=0):
         self.memory = dict()  # key as address, value as memory content. Memory byte addressable! Thus, every element stores a byte
-
-        # if cache_size < cache_block_size:
-        #     raise Exception("Invalid selection of cache block size and cache size")
-        # if cache_block_size < 4 or math.log(cache_block_size, 2) != int(math.log(cache_block_size, 2)):
-        #     raise Exception("Cache block size must be a power of 2 and >=4 bytes")
-        # if cache_size < 4 or math.log(cache_size, 2) != int(math.log(cache_size, 2)):
-        #     raise Exception("Cache size must be a power of 2 and >=4 bytes")
-        # if math.log(cache_associativity, 2) != int(
-        #         math.log(cache_associativity, 2)) or cache_associativity > cache_size // cache_block_size:
-        #     raise Exception("Associativity must be a power of 2 and less than total number of blocks!")
-
         self.cache_module =None #SetAssociativeCache(cache_associativity, cache_size, cache_block_size)
         self.cache_size = 0#cache_size
         self.cache_block_size = 0#cache_block_size

@@ -2,7 +2,7 @@
 import MachineCodeParser # import parser for parsing machine code into PC and corresponding instructions.
 import RunSim_stall
 import sys
-#import memory
+
 if(len(sys.argv)==1):
     print("File name not supplied!")
     sys.exit()

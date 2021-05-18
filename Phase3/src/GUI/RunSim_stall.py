@@ -203,9 +203,6 @@ def mem_access(stage, clock):
     if control_module.MemRead or control_module.MemWrite:
         forward_bool.load_store+=1
     memory.AccessMemory(control_module.MemRead, control_module.MemWrite, buffer.getRZ(), control_module.BytesToAccess, control_module.RM_placeholder) # why RMtemp? RM is updated at the end of cycle
-    #print(f"Memory MDR- {memory.MDR} Memory MAR- {memory.MAR}")
-    # MuxY
-    #print(f"MuxYSelect {control_module.MuxYSelect}") 
     if control_module.MuxYSelect == 0:
         #print("RZ to RY")
         buffer.RYtemp = buffer.getRZ()

@@ -5,9 +5,8 @@ import RunSim_forward
 import RunSim_stall
 import RunSim_non_pipelined
 import sys
-#MachineCodeParser.parser("temp_gui_instructions.mc")
 
-pipeline = 0    #0 for non-pipelined, 1 for pipeline w/o forwarding, 2 for pipeline with forwarding
+pipeline = 0    # 0 for non-pipelined, 1 for pipeline w/o forwarding, 2 for pipeline with forwarding
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -70,7 +69,7 @@ class Ui_MainWindow(object):
         self.line_edit6.setObjectName("line_edit6")
 
         self.radiobutton_pipeline_no_fwd = QtWidgets.QRadioButton(self.centralwidget)
-        self.radiobutton_pipeline_no_fwd.setGeometry(QtCore.QRect(550, 450, 225, 50))
+        self.radiobutton_pipeline_no_fwd.setGeometry(QtCore.QRect(550, 450, 250, 50))
         self.radiobutton_pipeline_no_fwd.toggled.connect(self.pipeline_no_fwd_selected)
 
         self.radiobutton_pipeline_fwd = QtWidgets.QRadioButton(self.centralwidget)
@@ -174,8 +173,6 @@ class Ui_MainWindow(object):
         self.Assemble.setText(_translate("RISC-V-Simulator", "ASSEMBLE"))
 
     def update_inst_cache(self, dic):
-        #cache_list = list of sets(list of blocks)
-        #maintain a non empty set boolean!!!??!!
         self.tableWidget.setRowCount(0)
         self.tableWidget.setColumnCount(2)
         self.tableWidget.setColumnWidth(0, 100)
@@ -194,13 +191,11 @@ class Ui_MainWindow(object):
             s = [str(i) for i in value]
             self.tableWidget.setItem(self.tableWidget.rowCount()-1, 1,
                                      QtWidgets.QTableWidgetItem(" | ".join(s)))
-            print(key, "|".join(s))
+            # print(key, "|".join(s))
             #print(key, value)
 
 
     def update_data_cache(self, dic):
-        #cache_list = list of sets(list of blocks)
-        #maintain a non empty set boolean!!!??!!
         self.tableWidget2.setRowCount(0)
         self.tableWidget2.setColumnCount(2)
         self.tableWidget2.setColumnWidth(0, 100)
@@ -219,7 +214,7 @@ class Ui_MainWindow(object):
             s = [str(i) for i in value]
             self.tableWidget2.setItem(self.tableWidget2.rowCount()-1, 1,
                                      QtWidgets.QTableWidgetItem(" | ".join(s)))
-            print(key, "|".join(s))
+            # print(key, "|".join(s))
 
     def pipeline_no_fwd_selected(self, selected):   #without data forwarding
         if selected:
@@ -237,9 +232,6 @@ class Ui_MainWindow(object):
             pipeline = 0
 
     def assemble(self):
-        # f = open("cache_specs.txt", "w")
-        # f.write(self.line_edit1.text()+" "+self.line_edit2.text()+" "+self.line_edit3.text())
-        # f.close()
         importlib.reload(RunSim_forward)
         importlib.reload(RunSim_stall)
         importlib.reload(RunSim_non_pipelined)
@@ -262,16 +254,12 @@ class Ui_MainWindow(object):
         if pipeline==0:
             self.update_inst_cache(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
             self.update_data_cache(RunSim_non_pipelined.memory.data_module.cache_module.cache_dict)
-            #print(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
         if pipeline==1:
             self.update_inst_cache(RunSim_stall.memory.text_module.cache_module.cache_dict)
             self.update_data_cache(RunSim_stall.memory.data_module.cache_module.cache_dict)
-            #print(RunSim_stall.memory.text_module.cache_module.cache_dict)
         if pipeline==2:
             self.update_inst_cache(RunSim_forward.memory.text_module.cache_module.cache_dict)
             self.update_data_cache(RunSim_forward.memory.data_module.cache_module.cache_dict)
-            #print(RunSim_forward.memory.text_module.cache_module.cache_dict)
-        #def print_reg(arr):  # input is numpy array
         with open(f"RegisterDump.mc", "w") as fileReg:
             for i in range(32): # for all 32 registers
                 fileReg.write(f"x{i} ")  # print address of register for eg. x5
@@ -357,14 +345,13 @@ class Ui_MainWindow(object):
             RunSim_forward.RunSim_step(1,1)
         if pipeline==0:
             self.update_inst_cache(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
-            #print(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
+            self.update_data_cache(RunSim_non_pipelined.memory.data_module.cache_module.cache_dict)
         if pipeline==1:
             self.update_inst_cache(RunSim_stall.memory.text_module.cache_module.cache_dict)
-            #print(RunSim_stall.memory.text_module.cache_module.cache_dict)
+            self.update_data_cache(RunSim_stall.memory.data_module.cache_module.cache_dict)
         if pipeline==2:
             self.update_inst_cache(RunSim_forward.memory.text_module.cache_module.cache_dict)
-            #print(RunSim_forward.memory.text_module.cache_module.cache_dict)
-        #def print_reg(arr):  # input is numpy array
+            self.update_data_cache(RunSim_forward.memory.data_module.cache_module.cache_dict)
         with open(f"RegisterDump.mc", "w") as fileReg:
             for i in range(32): # for all 32 registers
                 fileReg.write(f"x{i} ")  # print address of register for eg. x5
@@ -435,57 +422,6 @@ class Ui_MainWindow(object):
                 else:
                     fileMem.write("00  ")
                 fileMem.write("\n")  # new line
-
-    # def run(self):
-
-    #     #import temp_main
-    #     # code to start running the code
-    #     # code to add data in register text Box
-    #     #code = self.MachineCode.toPlainText()
-    #     #print(code)
-    #     #fhand = open("gui_instructions.mc", 'r')
-    #     #fhand.write(code)
-    #     #fhand.close()
-
-
-    #     #print(MachineCodeParser.PC_INST)
-    #     # program load
-    #     #RiscSim.memory.InitMemory(MachineCodeParser.PC_INST)
-    #     # Run the simulator
-    #     #RiscSim.RunSim()
-    #     ###temp_main.runMain()
-    #     # reg = np.array([1, -2, 3])
-    #     value = self.line_edit1.text()
-    #     print(int(value))
-    #     value = self.line_edit2.text()
-    #     print(int(value))
-    #     value = self.line_edit3.text()
-    #     print(int(value))
-    #     print(pipeline)
-
-
-    #     # f = open("cache_specs.txt", "w")
-    #     # f.write(self.line_edit1.text()+" "+self.line_edit2.text()+" "+self.line_edit3.text())
-    #     # f.close()
-
-    #     #temp_main.runMain(pipeline)
-    #     if pipeline == 0:
-    #         import RunSim_non_pipelined
-    #         RunSim_non_pipelined.memory.InitMemory(MachineCodeParser.PC_INST, MachineCodeParser.DATA)
-    #         RunSim_non_pipelined.RunSim()
-    #         #add dumping functions
-    #         self.update_inst_cache(RunSim_non_pipelined.memory.text_module.cache_module.cache_dict)
-            #self.update_data_cache(RunSim_non_pipelined.memory.data_module.cache_module.cache_dict)
-
-
-        # #code to add memory in memory text Box
-        # dic = {19: 3, 4: 11, 6: 7, 241: 241}
-        #self.update_memory(RiscSim.memory.memory_module.memory)
-        #importlib.reload(temp_main)
-        #importlib.reload(MachineCodeParser)
-
-
-
 
 if __name__ == "__main__":
     import sys

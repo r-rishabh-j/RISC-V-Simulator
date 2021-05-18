@@ -84,7 +84,6 @@ def decode(stage,clock):
         return
     forward_bool.global_terminate=False
     print("Decode Stage")
-    #mtod=False
     if not (control_module.decode_deque_signal()):
         # decode stage is inactive. Perform other tasks
         if control_module.MtoEcode==0: # decode init
@@ -94,9 +93,6 @@ def decode(stage,clock):
             forward_bool.fetch_stall=False
             forward_bool.decode_stall=True
             return
-        # if control_module.MtoEcode==-1:
-        #     mtod=True
-          #	return # M to D stall
         forward_bool.decode_stall=True
         forward_bool.fetch_stall=True
         if control_module.MtoEcode==21:
@@ -117,7 +113,6 @@ def decode(stage,clock):
             return
     
     # decode the instruction first in the IR
-    #control_module.decode(registers.ReadIR(),IAGmodule.PC)
     control_module.decode(registers.ReadIR(),buffer.Decode_input_PC)
     if control_module.terminate:
         return
@@ -264,7 +259,6 @@ def decode(stage,clock):
     elif control_module.MuxASelect==1:
         MuxAout=buffer.Decode_input_PC
     # code for executing ALU for branch misprediction here.
-    # if not control_module.jump:
     buffer.RAtemp=MuxAout
     buffer.RBtemp=MuxBout
     buffer.RMtemp=registers.ReadGpRegisters(control_module.rs2)
@@ -356,8 +350,6 @@ def mem_access(stage,clock):
         print("Taken from M")
         control_module.RM_placeholder=buffer.RM
         memory.take_from_rm=False
-    # import sys
-    #print(f"memory- {control_module.MemRead} {control_module.MemWrite} {hex(buffer.getRZ())} {control_module.BytesToAccess} {control_module.RM_placeholder}")
     if control_module.MemRead or control_module.MemWrite:
         forward_bool.load_store+=1
     memory.AccessMemory(control_module.MemRead, control_module.MemWrite, buffer.getRZ(), control_module.BytesToAccess, control_module.RM_placeholder) # why RMtemp? RM is updated at the end of cycle
@@ -381,8 +373,6 @@ def mem_access(stage,clock):
     
       # make MtoEToRA or MtoEtoRB true on the basis of encoding received
       # if MtoM
-    # set RYtemp according to values and MuxY control
-    #print(f"MuxYSelect {control_module.MuxYSelect}") 
     if control_module.MuxYSelect == 0:
         #print("RZ to RY")
         buffer.RYtemp = buffer.getRZ()
@@ -392,7 +382,6 @@ def mem_access(stage,clock):
     elif control_module.MuxYSelect == 2:
         #print(f"\t\tRY set to RA!! {control_module.RA_placeholder}")
         buffer.RYtemp = control_module.RA_placeholder
-    # 
 
 def reg_writeback(stage,clock):
     # dequeue from the control signals. Check if we need to operate or not
@@ -530,7 +519,6 @@ def RunSim_step(reg_print=1, buffprint=1):
     decode(1,clock)
     fetch(0,clock)
     buffer_update()
-    #print(f"PC{(IAGmodule.PC)} IR {hex(registers.IR)} RZ {buffer.RZ} RY {buffer.RY}\n###########################################\n")
     if reg_print==1:
         print("Register file: ")
         for i in range(32):

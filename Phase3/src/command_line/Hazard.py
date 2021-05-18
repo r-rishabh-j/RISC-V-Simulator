@@ -20,11 +20,9 @@ class HazardUnit:
         self.current_list.popleft()
         self.current_list.append([-1, -1, -1, -1, -1])
 
-
     def data_forwarding(self,i1,i2):     # to determine the type of forwarding and stalling
         i2_forwarding=-1
         i1_forwarding=-1
-
 
         #first dealing with all cases of i2 and i3 dependence if these does not exist, then only going to i1
         # Case 1 , dependancy with i2
@@ -262,10 +260,7 @@ class HazardUnit:
 
         #Case 4: None
 
-
-
         #Case 6 : None
-
 
         # Case 8: None
 
@@ -342,20 +337,15 @@ class HazardUnit:
             stall = 2
             return stall
 
-
-
         # case9
         if i2 == 9:
             stall = 2
             return stall
 
-
         #case13
         if i2 == 13:
             stall = 2
             return stall
-
-
 
         #case17
         if i2 == 1703 or i2==1702 or i2==1701:
@@ -367,13 +357,10 @@ class HazardUnit:
             stall = 2
             return stall
 
-
-
         #case19
         if i2 == 19:
             stall = 2
             return stall
-
 
         # dependency with i1:-
         # Case1
@@ -391,8 +378,6 @@ class HazardUnit:
             stall = 1
             return stall
 
-
-
         # case9
         if i1 == 9:
             stall = 1
@@ -404,8 +389,6 @@ class HazardUnit:
             stall = 1
             return stall
 
-
-
         #case17
         if i1 == 1703 or i1==1702 or i1==1701:
             stall = 1
@@ -416,19 +399,12 @@ class HazardUnit:
             stall = 1
             return stall
 
-
-
         #case19
         if i1 == 19:
             stall = 1
             return stall
 
-
-
-
-
         return -1 #if no case matches return stall=-1
-
 
     def check_dependence(self, opcode,funct3,rs1,rs2,rd):
         #add data dependence check via registers
@@ -452,10 +428,6 @@ class HazardUnit:
                 if rs1==i2[4]:
                     dependency_i2=2
 
-
-
-
-
         if i1[0]==3 or i1[0]==103 or i1[0]==111:                # i1 is load and i3 is R type
             if opcode==51:
                 if rs1 == i1[4] and rs2 == i1[4]:    # if rs1 or rs2 == to the register where value is being loaded
@@ -469,11 +441,6 @@ class HazardUnit:
             if opcode==19:
                 if rs1==i1[4]:
                     dependency_i1=2
-
-
-
-
-
         #odd Cases
         #Case1
         if i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
@@ -513,9 +480,6 @@ class HazardUnit:
                 if rs1==i1[4]:
                     dependency_i1=3
 
-
-
-
         #Case9
         if i2[0]==3 or i2[0]==103 or i2[0]==111 or i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
             if opcode==99:
@@ -525,8 +489,6 @@ class HazardUnit:
             if opcode==99:
                 if rs1==i1[4] or rs2==i1[4]:
                     dependency_i1=9
-
-
 
         #Case13:
         if i2[0]==3 or i2[0]==103 or i2[0]==111 or i2[0]==51 or i2[0]==19 or i2[0]==23 or i2[0]==55:
@@ -589,10 +551,6 @@ class HazardUnit:
                 if rs1==i1[4]:
                     dependency_i1=19
 
-
-
-
-
         if i1[4]==0:  # rd of i1 is x0 i.e. no dependency
             dependency_i1=-1
         if i2[4]==0:  # rd of i2 is x0 i.e. no dependency
@@ -653,10 +611,3 @@ class HazardUnit:
 
             i=i+1
         return count
-
-
-#current=Current()
-#current.add_inst(1, 2, 3, 4, 5)
-#current.print_table()
-#current.add_null()
-#current.print_table()

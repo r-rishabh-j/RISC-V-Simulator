@@ -83,14 +83,6 @@ class ArithmeticLogicUnit:
         self.outputBool=True
         return out
 
-    # def LUI(self): # input1=rs1, input2=imm20
-    #     op1=self.input2&0xfffff
-    #     op1<<=12
-    #     out=self.input1+op1
-    #     out=(-(out&MSmask32)+(out&bit_0_to_31_mask))
-    #     self.output32=out
-    #     self.outputBool=True
-    #     return out
     def setIfLessThan(self):
         self.outputBool=True if self.input1<self.input2 else False
         self.output32=self.outputBool
@@ -107,7 +99,6 @@ class ArithmeticLogicUnit:
     def division(self): # div
         if self.input2 == 0:
             raise Exception("Divide by 0 error")
-        #div=self.input1//self.input2 # floor division
         div=int(self.input1/self.input2)
         div=(-(div&MSmask32)+(div&bit_0_to_31_mask)) # truncated and signed extended
         self.output32=div
@@ -213,6 +204,3 @@ class ArithmeticLogicUnit:
             self.outputBool=False
             self.output32=0
             return False
-
-
-# comparision operation TBD

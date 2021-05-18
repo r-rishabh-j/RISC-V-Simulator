@@ -49,14 +49,6 @@ class InstructionAddressGenerator:
             if self.PC_buffer > self.MAX_PC:
                 print("Address is not in range of data segment")
                 sys.exit()
-    # def PCUpdate(self,MuxINCSelect):   # in this step we will get the mux select line from control based on the comparison operations performed by the ALU , which decides whether to jump or to not
-    #     if MuxINCSelect==0:    # if mux select is 0 then add 4 to PC
-    #         self.PC+=4
-    #     elif MuxINCSelect==1:  # in case mux select is 1 then add immediate / offset to PC
-    #         self.PC+=self.IAGimmediate
-    #         if self.PC > self.MAX_PC:
-    #             print("Address is not in range of data segment")
-    #             sys.exit()
 
     def BTB_check(self,Inst_PC_Value):  # to check wether a particular control instruction is present in the table or not.
         if Inst_PC_Value in self.BTB:   # if the instruction is already present in the BTB then 1 is returned else 0
