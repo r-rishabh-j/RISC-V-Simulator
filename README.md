@@ -21,23 +21,45 @@ Vishawam Datta	2019CSB1305<br/>
 	-PyQt5 >= 5.12
     
 **Steps to run via GUI:**
+- Navigate to src/GUI
 - Run the command ```python GuiSim.py``` or ```python3 GuiSim.py``` on Windows and Linux 		 respectively
 - The user-interface pops up. Type in your machine code in the “Machine Code” Editor in the format specified in the description below.
-- Press the Run button. The Register and Memory state of the program is updated and displayed
+- Press the assemble button to load the the program to memory
+- Feed in the I$ and D$ specifications in bytes. Enter associativity as the number of blocks per set.
+- Select one of the three pipelining configurations.
+- Press the run button to execute the program or step button to step through the program.
 - Meaningful messages from the simulator will be displayed on the terminal.
+- Register, main memory and cache contents will be displayed on the interface.
+- Cache stats contents and stats will be printed on the 'Cache' tab
+- Register and memory outputs of the program will be saved in RegisterDump.mc and MemoryDump.mc respectively.
 
 **Steps to run via command line interface:**
+- Navigate to src/command_line
 - Enter your machine code in a file with an appropriate file name.
 - Run the command ```python main.py <path to instruction file>``` on windows or ```python3 main.py <path to instruction file>``` on mac or linux.
+- User will be prompted to set knobs for pipelining configurations and cache specifications.
+- Feed in the I$ and D$ specifications in bytes. Enter associativity as the number of blocks per set.
 - Meaningful messages from the simulator will be displayed on the terminal.
-- Register and memory outputs will be stored in RegisterDump.mc and MemoryDump.mc respectively.
+- Register and memory outputs will be stored in RegisterDump_\<knob_config>.mc and MemoryDump_\<knob_config>.mc respectively. User will be informed the location of output at program termination.
 
-**PHASE1 DESCRIPTION:**</br>
-    A 5-step single-cycle instruction execution is implemented. The input is taken in the form of a list of machine codes in the format:
+**DESCRIPTION:**</br>
 
+The simulator supports 5-stage-single-cycle pipelined execution, which includes control hazard detection, and their resolution via stalling/flushing and data forwarding.
+A 1-bit static branch predictor for the 5-step-single-cycle instruction execution has been implemented.
+
+A memory Hierarchy has been implemented with L1 cache and the main memory. The L1 cache
+is set associative. Write through and write allocate policies have been followed. LRU block
+eviction has been followed in the cache module.
+
+Cache size, block size in bytes must be a power of 2 and at least 4 bytes. Cache associativity
+must also be a power of 2, including 1.
+
+Program input code:
+The input is taken in the form of a list of machine codes in the format:
 > \<address of instruction\> \<machine code of the instruction\> \<optional ‘#’ beginning comments\>
 
-The program terminates with the "\<address of instruction\> 0x11" code.
+Text segment has to be flagged by ‘~text’ and the data segment by ‘~data’.
+The program terminates with the "\<address of instruction> 0x11" code.
 
 ```
 Type of instructions supported:
@@ -51,7 +73,7 @@ UJ format - jal
 
 The instruction goes through- fetch, decode, execute, memory access and write-back stage. This process is governed by a datapath and a control path depending on the type of the identified instruction and the corresponding fields. The code supports and successfully executes programs comprising the above instruction types and is tested on programs like Fibonacci, Factorial and Bubble Sort.
 
-Information regarding the status of the program and the results including register values and memory elements are displayed with the help of a user-friendly GUI developed with PyQt(a sample shown below).
+Information regarding the status of the program and the results including register values and memory elements are displayed with the help of a user-friendly GUI developed with PyQt5(a sample shown below).
 
 <p align="center">
 <img src="https://github.com/r-rishabh-j/RISC-V-Simulator/blob/main/sample_gui.png" width="600" height="450">
@@ -59,9 +81,19 @@ Information regarding the status of the program and the results including regist
 
 **CONTRIBUTIONS:**</br>
 As a team effort, no strict separation was followed. A loose outline of the work is as follows:
-- Ayush Verma:  Decode unit functions, Register And Memory Update functions. 
-- Bhumika: Decode unit, Control Circuitry including Control Signals and ALU Control, Buffers
-- Keshav Krishna: Control circuitry, memory, GUI frontend and backend
-- Rishabh Jain: Memory, register, ALU, some parts of Control, program flow and GUI
-- Vishawam Datta: Program Flow(RiscSim.py), IAG module , memory module and some parts of Control
+
+- Ayush Verma: LRU Unit(Cache), Hazard Unit(Check_dependence, type of forwarding and type
+of stalling), Decode unit functions, Register And Memory output functions.
+
+- Bhumika: Decode unit, Control Circuitry including Control Signals and ALU Control, Buffers,
+Hazard Table, Data Forwarding, GUI, some part of cache
+
+- Keshav Krishna: Buffers, Program Flow(pipelining), Control Circuit, some parts of memory, some part of cache, GUI
+
+- Rishabh Jain: Memory, register, ALU, Control and program flow and GUI(final), stalling
+mechanism, forwarding mechanism, control signal queues, Branch prediction, cache read/write
+methods and design
+
+- Vishawam Datta: Hazard Unit,LRUunit (cache), IAG module including BTB, memory module and some parts of
+Control
 
