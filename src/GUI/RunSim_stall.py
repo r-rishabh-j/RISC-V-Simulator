@@ -312,7 +312,7 @@ def RunSim(reg_print=1, buffprint=1):
             print(f"Total Accesses: {memory.data_module.cache_accesses}")
             print(f"Total Hits: {memory.data_module.cache_hits}")
             print(f"Total Miss: {memory.data_module.cache_miss}")
-            return
+            return stats
 
 def RunSim_step(reg_print=1, buffprint=1):
     global clock
@@ -370,4 +370,4 @@ def RunSim_step(reg_print=1, buffprint=1):
         print(f"Total Accesses: {memory.data_module.cache_accesses}")
         print(f"Total Hits: {memory.data_module.cache_hits}")
         print(f"Total Miss: {memory.data_module.cache_miss}")
-        return
+        return stats
