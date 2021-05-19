@@ -95,6 +95,6 @@ mechanism, forwarding mechanism, control signal queues, Branch prediction, cache
 methods and design
 
 - Vishawam Datta: Hazard Unit(Check_dependence, type of forwarding and type
-of stalling),LRU Unit (cache), IAG module including BTB, memory module and some parts of
+of stalling),LRU Unit (cache), IAG module including BTB, Program flow (Phase 1) , memory module and some parts of
 Control
 
