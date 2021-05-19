@@ -95,8 +95,7 @@ def reg_writeback(stage):
     buffer.setRY(MuxY(control_module.MuxYSelect))    # sets the value of RY buffer as the output of MuxY which will be selected based on control signals
     registers.WriteGpRegisters(control_module.rd,control_module.RegWrite,buffer.getRY())  # This will simply write back to the registers based on the control signal
 
-clock=1
-
+clock=0
 def RunSim(reg_print=1, buffprint=1, part_inst=-1):
     #loop
     global clock
@@ -104,6 +103,7 @@ def RunSim(reg_print=1, buffprint=1, part_inst=-1):
     if(control_module.terminate==1):
         return
     while(1):
+        clock=clock+1
         print(f"\n\033[1;96mCycle {clock}\033[0m")
         stage=0
         fetch(stage)
@@ -129,13 +129,13 @@ def RunSim(reg_print=1, buffprint=1, part_inst=-1):
         if buffprint==1:
             print("Buffers: ")
             print(f"\033[1;96mPC: {hex(IAGmodule.PC)} IR: {hex(registers.IR)} RZ: {buffer.RZ} RY: {buffer.RY} RA: {buffer.RA}")
-        clock=clock+1
 
 def RunSim_step(reg_print=1, buffprint=1, part_inst=-1):
     #loop
     global clock
     if(control_module.terminate==1):
         return
+    clock=clock+1
     print(f"\n\033[1;96mCycle {clock}\033[0m")
     stage=0
     fetch(stage)
@@ -161,6 +161,5 @@ def RunSim_step(reg_print=1, buffprint=1, part_inst=-1):
     if buffprint==1:
         print("Buffers: ")
         print(f"\033[1;96mPC: {hex(IAGmodule.PC)} IR: {hex(registers.IR)} RZ: {buffer.RZ} RY: {buffer.RY} RA: {buffer.RA}")
-    clock=clock+1
         
 

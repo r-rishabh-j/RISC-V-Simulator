@@ -285,6 +285,7 @@ def RunSim(reg_print=1, buffprint=1):
             print(f"\033[1;96mPC: {hex(IAGmodule.PC)} IR: {hex(registers.IR)} RZ: {buffer.RZ} RY: {buffer.RY}\nRA: {buffer.RA} RB: {buffer.RB} Decode-Input-PC: {buffer.Decode_input_PC}\nBranch prediction buffer: {buffer.Decode_input_branch_prediction}\033[0m")
         print("##################################################")
         if forward_bool.global_terminate:
+            clock+=-1
             print("\033[1;92m\nProgram Terminated Successfully\033[0m")
             print("Stats-")
             print(f"Stat1: Cycles: {clock}")
@@ -343,6 +344,7 @@ def RunSim_step(reg_print=1, buffprint=1):
         print(f"\033[1;96mPC: {hex(IAGmodule.PC)} IR: {hex(registers.IR)} RZ: {buffer.RZ} RY: {buffer.RY}\nRA: {buffer.RA} RB: {buffer.RB} Decode-Input-PC: {buffer.Decode_input_PC}\nBranch prediction buffer: {buffer.Decode_input_branch_prediction}\033[0m")
     print("##################################################")
     if forward_bool.global_terminate:
+        clock+=-1
         print("\033[1;92m\nProgram Terminated Successfully\033[0m")
         print("Stats-")
         print(f"Stat1: Cycles: {clock}")
