@@ -11,6 +11,7 @@ import math
 
 pipeline=0 # 0 for non-pipelined, 1 for pipeline w/o forwarding, 2 for pipeline with forwarding
 error=True
+finished=True
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -394,6 +395,8 @@ class Ui_MainWindow(object):
             return
 
         self.reload_modules()
+        global finished
+        finished=False
         code = self.MachineCodeInput.toPlainText()
         fhand = open("gui_instructions.mc", "w")
         fhand.write(code)
@@ -501,7 +504,8 @@ class Ui_MainWindow(object):
 
     def run(self):
         global error
-        if error:
+        global finished
+        if error or finished:
             return
         reg_list=[]
         mem_dict={}
@@ -584,6 +588,7 @@ class Ui_MainWindow(object):
         print("\033[1;92mRegister and memory outputs written in RegisterDump.mc and MemoryDump.mc respectively\033[0m")
         if stats=="NPE": # for non pipelined ending
             self.console.setPlainText("Program Terminated Successfully!")
+            finished=True
         elif stats!=None:
             self.console.setPlainText("Program Terminated Successfully!")
             self.console.appendPlainText("Stats-")
@@ -599,12 +604,14 @@ class Ui_MainWindow(object):
             self.console.appendPlainText(f"Stat10: Total branch mispredictions: {stats[9]}")
             self.console.appendPlainText(f"Stat11: Stalls due to data hazard: {stats[10]}")
             self.console.appendPlainText(f"Stat12: Stalls due to control hazard: {stats[11]}")
+            finished=True
             self.console.verticalScrollBar().setValue(0)
 
 
     def step(self):
         global error
-        if error:
+        global finished
+        if error or finished:
             return
         reg_list=[]
         mem_dict={}
@@ -685,6 +692,7 @@ class Ui_MainWindow(object):
                 fileMem.write("\n")  # new line
         if stats=="NPE": # for non pipelined ending
             self.console.setPlainText("Program Terminated Successfully!")
+            finished=True
         elif stats!=None:
             self.console.setPlainText("Program Terminated Successfully!")
             self.console.appendPlainText("Stats-")
@@ -700,6 +708,7 @@ class Ui_MainWindow(object):
             self.console.appendPlainText(f"Stat10: Total branch mispredictions: {stats[9]}")
             self.console.appendPlainText(f"Stat11: Stalls due to data hazard: {stats[10]}")
             self.console.appendPlainText(f"Stat12: Stalls due to control hazard: {stats[11]}")
+            finished=True
             self.console.verticalScrollBar().setValue(0)
             print("\033[1;92mRegister and memory outputs written in RegisterDump.mc and MemoryDump.mc respectively\033[0m")
         else:
