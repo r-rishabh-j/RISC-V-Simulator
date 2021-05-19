@@ -94,6 +94,7 @@ Hazard Table, Data Forwarding, GUI, some part of cache
 mechanism, forwarding mechanism, control signal queues, Branch prediction, cache read/write
 methods and design
 
-- Vishawam Datta: Hazard Unit,LRUunit (cache), IAG module including BTB, memory module and some parts of
+- Vishawam Datta: Hazard Unit(Check_dependence, type of forwarding and type
+of stalling),LRU Unit (cache), IAG module including BTB, memory module and some parts of
 Control
 
