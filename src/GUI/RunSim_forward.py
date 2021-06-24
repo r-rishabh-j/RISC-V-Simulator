@@ -489,7 +489,8 @@ def RunSim(reg_print=1, buffprint=1):
             print("Stats-")
             print(f"Stat1: Cycles: {clock}")
             print(f"Stat2: Total Instructions: {forward_bool.total_inst}")
-            print(f"Stat3: CPI: {clock/forward_bool.total_inst}")
+            CPI = round(clock/forward_bool.total_inst,4) if forward_bool.total_inst!=0 else "Not Defined!"
+            print(f"Stat3: CPI: {CPI}")
             print(f"Stat4: Load/Store: {forward_bool.load_store} ")
             print(f"Stat5: ALU instructions: {forward_bool.ALU_ins_cnt} ")
             print(f"Stat6: Control instructions: {forward_bool.control_inst} ")
@@ -500,7 +501,7 @@ def RunSim(reg_print=1, buffprint=1):
             print(f"Stat10: Total branch mispredictions: {forward_bool.branch_mis_cnt}")
             print(f"Stat11: Stalls due to data hazard: {forward_bool.data_stall}")
             print(f"Stat12: Stalls due to control hazard: {forward_bool.control_stall}")
-            stats=[clock, forward_bool.total_inst, clock/forward_bool.total_inst, forward_bool.load_store,
+            stats=[clock, forward_bool.total_inst, CPI, forward_bool.load_store,
             forward_bool.ALU_ins_cnt, forward_bool.control_inst, forward_bool.data_stall+forward_bool.control_stall,
             tot_data_hazards, forward_bool.control_hazard_cnt, forward_bool.branch_mis_cnt, forward_bool.data_stall, forward_bool.control_stall]
             print("Cache Stats-")
@@ -546,7 +547,8 @@ def RunSim_step(reg_print=1, buffprint=1):
         print("Stats-")
         print(f"Stat1: Cycles: {clock}")
         print(f"Stat2: Total Instructions: {forward_bool.total_inst}")
-        print(f"Stat3: CPI: {clock/forward_bool.total_inst}")
+        CPI = round(clock/forward_bool.total_inst,4) if forward_bool.total_inst!=0 else "Not Defined!"
+        print(f"Stat3: CPI: {CPI}")
         print(f"Stat4: Load/Store: {forward_bool.load_store} ")
         print(f"Stat5: ALU instructions: {forward_bool.ALU_ins_cnt} ")
         print(f"Stat6: Control instructions: {forward_bool.control_inst} ")
@@ -557,7 +559,7 @@ def RunSim_step(reg_print=1, buffprint=1):
         print(f"Stat10: Total branch mispredictions: {forward_bool.branch_mis_cnt}")
         print(f"Stat11: Stalls due to data hazard: {forward_bool.data_stall}")
         print(f"Stat12: Stalls due to control hazard: {forward_bool.control_stall}")
-        stats=[clock, forward_bool.total_inst, clock/forward_bool.total_inst, forward_bool.load_store,
+        stats=[clock, forward_bool.total_inst, CPI, forward_bool.load_store,
         forward_bool.ALU_ins_cnt, forward_bool.control_inst, forward_bool.data_stall+forward_bool.control_stall,
         tot_data_hazards, forward_bool.control_hazard_cnt, forward_bool.branch_mis_cnt, forward_bool.data_stall, forward_bool.control_stall]
         print("Cache Stats-")

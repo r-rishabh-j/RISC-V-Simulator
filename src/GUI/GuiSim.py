@@ -714,13 +714,13 @@ class Ui_MainWindow(object):
         else:
             self.console.setPlainText("Executing....")
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    MainWindow.setGeometry(225,60,1436, 944)
-    MainWindow.setFixedSize(1436, 944)
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+import sys
+app = QtWidgets.QApplication(sys.argv)
+MainWindow = QtWidgets.QMainWindow()
+ui = Ui_MainWindow()
+MainWindow.setGeometry(225,60,1436, 944)
+MainWindow.setFixedSize(1436, 944)
+ui.setupUi(MainWindow)
+MainWindow.show()
+sys.exit(app.exec_())

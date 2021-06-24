@@ -13,6 +13,7 @@ def parser(FileName):
     # PC INST -> in hex format
     line_number=0
     is_instruction=False
+    max_instruction_addr = -4
     for line in instructions:
         line_number=line_number+1
         line=line.strip() # removing unnecessary whitespaces \t, \n etc
@@ -55,9 +56,12 @@ def parser(FileName):
         
         if is_instruction==1:
             PC_INST[line[0]]=line[1]
+            if line[0]>max_instruction_addr:
+                max_instruction_addr = line[0]
         else:
             DATA[line[0]]=line[1]
 
+    PC_INST[max_instruction_addr+4] = 17 # termination instruction
     instructions.close()
         #print(line)
     
