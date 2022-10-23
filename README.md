@@ -11,6 +11,10 @@ Keshav Krishna	2019CSB1224<br/>
 Rishabh Jain	2019CSB1286<br/>
 Vishawam Datta	2019CSB1305<br/>
 
+<p align="center">
+<img src="https://github.com/r-rishabh-j/RISC-V-Simulator/blob/main/sample_gui.png" width="600" height="450">
+</p>
+
 **HOW TO RUN:**<br/>
     Clone the repository to your local system. After ensuring the installation of the following dependencies, run the steps as mentioned hereafter.
 
@@ -73,11 +77,7 @@ UJ format - jal
 
 The instruction goes through- fetch, decode, execute, memory access and write-back stage. This process is governed by a datapath and a control path depending on the type of the identified instruction and the corresponding fields. The code supports and successfully executes programs comprising the above instruction types and is tested on programs like Fibonacci, Factorial and Bubble Sort.
 
-Information regarding the status of the program and the results including register values and memory elements are displayed with the help of a user-friendly GUI developed with PyQt5(a sample shown below).
-
-<p align="center">
-<img src="https://github.com/r-rishabh-j/RISC-V-Simulator/blob/main/sample_gui.png" width="600" height="450">
-</p>
+Information regarding the status of the program and the results including register values and memory elements are displayed with the help of a user-friendly GUI developed with PyQt5.
 
 **CONTRIBUTIONS:**</br>
 As a team effort, no strict separation was followed. A loose outline of the work is as follows:
